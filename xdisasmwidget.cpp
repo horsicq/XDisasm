@@ -6,13 +6,25 @@ XDisasmWidget::XDisasmWidget(QWidget *parent) :
     ui(new Ui::XDisasmWidget)
 {
     ui->setupUi(this);
+
+    pModel=0;
 }
 
 void XDisasmWidget::setData(QIODevice *pDevice, XDisasm::STATS *pStats, XDisasmModel::SHOWOPTIONS *pOptions)
 {
-    XDisasmModel *pModel=new XDisasmModel(pDevice,pStats,pOptions,this);
+    pModel=new XDisasmModel(pDevice,pStats,pOptions,this);
     ui->tableViewDisasm->setModel(pModel);
     //    ui->tableViewDisasm->setColumnHidden(1, true);
+}
+
+void XDisasmWidget::goToAddress(qint64 nAddress)
+{
+    qint64 nPosition=pModel->addressToPosition(nAddress);
+    qDebug("goToAddress: %x",nAddress);
+    qDebug("position: %x",nPosition);
+//    ui->tableViewDisasm->scrollTo(pModel->index(nPosition,0));
+
+    ui->tableViewDisasm->verticalScrollBar()->setValue(nPosition);
 }
 
 void XDisasmWidget::clear()

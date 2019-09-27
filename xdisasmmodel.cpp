@@ -141,24 +141,25 @@ XDisasmModel::VEIW_RECORD XDisasmModel::getViewRecord(int nRow)
 
     qint64 nAddress=positionToAddress(nRow);
 
-    qDebug("Row: %x",nRow);
-    qDebug("Address: %x",nAddress);
+//    qDebug("Row: %x",nRow);
+//    qDebug("Address: %x",nAddress);
 
+//    qint64 nOffset=pStats->mapVB.value(nAddress).nOffset;
+    qint64 nOffset=XBinary::addressToOffset(&(pStats->listMM),nAddress);
 
-    qDebug("Address!: %x",nAddress);
-    qDebug("Row!: %x",addressToPosition(nAddress));
-
-    qint64 nAddress2=pStats->mapVB.lowerBound(nAddress).key();
-    qint64 nAddress3=pStats->mapVB.upperBound(nAddress).key();
-
-    qDebug("lowerBound: %x",nAddress2);
-    qDebug("upperBound: %x",nAddress3);
-
-    qint64 nOffset=pStats->mapVB.value(nAddress).nOffset;
-    qint64 nSize=pStats->mapVB.value(nAddress).nSize;
+    qint64 nSize=1;
 
     result.sAddress=QString("%1").arg(nAddress,0,16);
-    result.sOffset=QString("%1").arg(nOffset,0,16);
+
+    if(nOffset!=-1)
+    {
+        result.sOffset=QString("%1").arg(nOffset,0,16);
+    }
+
+    if(pStats->mapVB.contains(nAddress))
+    {
+        nSize=pStats->mapVB.value(nAddress).nSize;
+    }
 
     if(pStats->mapVB.value(nAddress).type==XDisasm::VBT_OPCODE)
     {
