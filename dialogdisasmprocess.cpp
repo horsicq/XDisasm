@@ -37,7 +37,6 @@ DialogDisasmProcess::DialogDisasmProcess(QWidget *parent) :
 
     pTimer=new QTimer(this);
     connect(pTimer,SIGNAL(timeout()),this,SLOT(timerSlot()));
-
 }
 
 DialogDisasmProcess::~DialogDisasmProcess()
