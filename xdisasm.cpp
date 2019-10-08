@@ -58,7 +58,7 @@ void XDisasm::_process(qint64 nInitAddress, qint64 nAddress)
             break;
         }
 
-        bool bStop=false;
+        bool bStopBranch=false;
         int nDelta=0;
         qint64 nOffset=pBinary->addressToOffset(&(pDisasmStats->listMM),nAddress);
         if(nOffset!=-1)
@@ -115,14 +115,14 @@ void XDisasm::_process(qint64 nInitAddress, qint64 nAddress)
 
                 if(isEndBranchOpcode(insn->id))
                 {
-                    bStop=true;
+                    bStopBranch=true;
                 }
 
                 cs_free(insn,count);
             }
             else
             {
-                bStop=true;
+                bStopBranch=true;
             }
         }
 
@@ -132,10 +132,10 @@ void XDisasm::_process(qint64 nInitAddress, qint64 nAddress)
         }
         else
         {
-            bStop=true;
+            bStopBranch=true;
         }
 
-        if(bStop)
+        if(bStopBranch)
         {
             break;
         }
@@ -151,35 +151,39 @@ void XDisasm::process()
     cs_arch arch=CS_ARCH_X86;
     cs_mode _mode=CS_MODE_16;
 
+    pDisasmStats->listMM=pBinary->getMemoryMapList();
+
     pDisasmStats->nEntryPointAddress=nStartAddress;
 
     if(mode==MODE_UNKNOWN)
     {
-        if(pBinary->metaObject()->className()==QString("XPE"))
-        {
-            XPE *pPE=(XPE *)pBinary;
-            if(pPE->isValid())
-            {
-                if(pPE->is64())
-                {
-                    arch=CS_ARCH_X86;
-                    _mode=CS_MODE_64;
-                }
-                else
-                {
-                    arch=CS_ARCH_X86;
-                    _mode=CS_MODE_32;
-                }
-                pDisasmStats->nImageBase=(qint64)pPE->getOptionalHeader_ImageBase();
-                pDisasmStats->nImageSize=(qint64)pPE->getOptionalHeader_SizeOfImage();
-                pDisasmStats->nEntryPointAddress=(qint64)(pPE->getOptionalHeader_AddressOfEntryPoint()+pDisasmStats->nImageBase);
-            }
-        }
+        pDisasmStats->nImageBase=pBinary->getLowestAddress(&(pDisasmStats->listMM));
+        pDisasmStats->nImageSize=pBinary->getTotalVirtualSize(&(pDisasmStats->listMM));
+        pDisasmStats->nEntryPointAddress=pBinary->getEntryPointAddress();
+
+        XBinary::MODE modeBinary=pBinary->getMode();
+        XBinary::ARCH archBinary=pBinary->getArch();
+
+        if(archBinary==XBinary::ARCH_X86) arch=CS_ARCH_X86;
+
+        if      (modeBinary==XBinary::MODE_16) _mode=CS_MODE_16;
+        else if (modeBinary==XBinary::MODE_32) _mode=CS_MODE_32;
+        else if (modeBinary==XBinary::MODE_64) _mode=CS_MODE_64;
+    }
+    else if(mode==MODE_X86_16)
+    {
+        arch=CS_ARCH_X86;
+        _mode=CS_MODE_16;
     }
     else if(mode==MODE_X86_32)
     {
         arch=CS_ARCH_X86;
         _mode=CS_MODE_32;
+    }
+    else if(mode==MODE_X86_64)
+    {
+        arch=CS_ARCH_X86;
+        _mode=CS_MODE_64;
     }
 
     cs_err err=cs_open(arch,_mode,&disasm_handle);
@@ -188,7 +192,7 @@ void XDisasm::process()
         cs_option(disasm_handle,CS_OPT_DETAIL,CS_OPT_ON);
     }
 
-    if(pBinary->metaObject()->className()==QString("QPE"))
+    if(pBinary->metaObject()->className()==QString("XPE"))
     {
         XPE *pPE=(XPE *)pBinary;
         if(pPE->isValid())
@@ -197,7 +201,7 @@ void XDisasm::process()
         }
     }
 
-    pDisasmStats->listMM=pBinary->getMemoryMapList();
+
 
     _process(0,pDisasmStats->nEntryPointAddress);
     _adjust();

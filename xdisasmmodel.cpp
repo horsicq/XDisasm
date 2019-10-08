@@ -141,19 +141,22 @@ XDisasmModel::VEIW_RECORD XDisasmModel::getViewRecord(int nRow)
 
     qint64 nAddress=positionToAddress(nRow);
 
-//    qDebug("Row: %x",nRow);
-//    qDebug("Address: %x",nAddress);
-
-//    qint64 nOffset=pStats->mapVB.value(nAddress).nOffset;
     qint64 nOffset=XBinary::addressToOffset(&(pStats->listMM),nAddress);
 
     qint64 nSize=1;
 
-    result.sAddress=QString("%1").arg(nAddress,0,16);
+    if(nAddress>0xFFFFFFFF)
+    {
+        result.sAddress=XBinary::valueToHex((quint64)nAddress);
+    }
+    else
+    {
+        result.sAddress=XBinary::valueToHex((quint32)nAddress);
+    }
 
     if(nOffset!=-1)
     {
-        result.sOffset=QString("%1").arg(nOffset,0,16);
+        result.sOffset=XBinary::valueToHex((quint32)nOffset);
     }
 
     if(pStats->mapVB.contains(nAddress))
@@ -202,29 +205,34 @@ qint64 XDisasmModel::getPositionCount() const
 
 qint64 XDisasmModel::positionToAddress(qint64 nPosition)
 {
-    qint64 nResult=pStats->mapPositions.value(nPosition,-1);
+    qint64 nResult=0;
 
-    if(nResult==-1)
+    if(pStats->mapPositions.count())
     {
-        QMap<qint64,qint64>::const_iterator iter=pStats->mapPositions.lowerBound(nPosition);
+        nResult=pStats->mapPositions.value(nPosition,-1);
 
-        if(iter!=pStats->mapPositions.end())
+        if(nResult==-1)
         {
-            qint64 nDelta=iter.key()-nPosition;
+            QMap<qint64,qint64>::const_iterator iter=pStats->mapPositions.lowerBound(nPosition);
 
-            nResult=iter.value()-nDelta;
-        }
-        else
-        {
-            qint64 nLastPosition=pStats->mapPositions.lastKey();
-            qint64 nDelta=nPosition-nLastPosition;
-
-            nResult=pStats->mapPositions.value(nLastPosition);
-            nResult+=pStats->mapVB.value(nResult).nSize;
-
-            if(nDelta>1)
+            if(iter!=pStats->mapPositions.end())
             {
-                nResult+=(nDelta-1);
+                qint64 nDelta=iter.key()-nPosition;
+
+                nResult=iter.value()-nDelta;
+            }
+            else
+            {
+                qint64 nLastPosition=pStats->mapPositions.lastKey();
+                qint64 nDelta=nPosition-nLastPosition;
+
+                nResult=pStats->mapPositions.value(nLastPosition);
+                nResult+=pStats->mapVB.value(nResult).nSize;
+
+                if(nDelta>1)
+                {
+                    nResult+=(nDelta-1);
+                }
             }
         }
     }
@@ -234,29 +242,34 @@ qint64 XDisasmModel::positionToAddress(qint64 nPosition)
 
 qint64 XDisasmModel::addressToPosition(qint64 nAddress)
 {
-    qint64 nResult=pStats->mapAddresses.value(nAddress,-1);
+    qint64 nResult=0;
 
-    if(nResult==-1)
+    if(pStats->mapPositions.count())
     {
-        QMap<qint64,qint64>::const_iterator iter=pStats->mapAddresses.lowerBound(nAddress);
+        nResult=pStats->mapAddresses.value(nAddress,-1);
 
-        if(iter!=pStats->mapAddresses.end())
+        if(nResult==-1)
         {
-            qint64 nDelta=iter.key()-nAddress;
+            QMap<qint64,qint64>::const_iterator iter=pStats->mapAddresses.lowerBound(nAddress);
 
-            nResult=iter.value()-nDelta;
-        }
-        else
-        {
-            qint64 nLastAddress=pStats->mapAddresses.lastKey();
-            nResult=pStats->mapAddresses.value(nLastAddress);
-            nResult++;
-
-            qint64 nDelta=nAddress-(nLastAddress+pStats->mapVB.value(nLastAddress).nSize);
-
-            if(nDelta>0)
+            if(iter!=pStats->mapAddresses.end())
             {
-                nResult+=(nDelta);
+                qint64 nDelta=iter.key()-nAddress;
+
+                nResult=iter.value()-nDelta;
+            }
+            else
+            {
+                qint64 nLastAddress=pStats->mapAddresses.lastKey();
+                nResult=pStats->mapAddresses.value(nLastAddress);
+                nResult++;
+
+                qint64 nDelta=nAddress-(nLastAddress+pStats->mapVB.value(nLastAddress).nSize);
+
+                if(nDelta>0)
+                {
+                    nResult+=(nDelta);
+                }
             }
         }
     }

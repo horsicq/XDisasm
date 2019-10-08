@@ -34,7 +34,9 @@ public:
     enum MODE
     {
         MODE_UNKNOWN=0,
-        MODE_X86_32
+        MODE_X86_16,
+        MODE_X86_32,
+        MODE_X86_64
     };
 
     enum RECORD_TYPE
