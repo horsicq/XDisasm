@@ -38,25 +38,11 @@ QVariant XDisasmModel::headerData(int section, Qt::Orientation orientation, int 
         {
             switch(section)
             {
-            case DMCOLUMN_ADDRESS:
-                result=tr("Address");
-                break;
-
-            case DMCOLUMN_OFFSET:
-                result=tr("Offset");
-                break;
-
-            case DMCOLUMN_LABEL:
-                result=tr("Label");
-                break;
-
-            case DMCOLUMN_BYTES:
-                result=tr("Bytes");
-                break;
-
-            case DMCOLUMN_OPCODE:
-                result=tr("Opcode");
-                break;
+                case DMCOLUMN_ADDRESS:  result=tr("Address");       break;
+                case DMCOLUMN_OFFSET:   result=tr("Offset");        break;
+                case DMCOLUMN_LABEL:    result=tr("Label");         break;
+                case DMCOLUMN_BYTES:    result=tr("Bytes");         break;
+                case DMCOLUMN_OPCODE:   result=tr("Opcode");        break;
             }
         }
     }

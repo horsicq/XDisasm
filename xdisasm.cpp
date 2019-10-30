@@ -201,8 +201,6 @@ void XDisasm::process()
         }
     }
 
-
-
     _process(0,pDisasmStats->nEntryPointAddress);
     _adjust();
     _updatePositions();
