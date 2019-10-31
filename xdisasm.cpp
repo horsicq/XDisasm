@@ -63,7 +63,7 @@ void XDisasm::_process(qint64 nInitAddress, qint64 nAddress)
         qint64 nOffset=pBinary->addressToOffset(&(pDisasmStats->listMM),nAddress);
         if(nOffset!=-1)
         {
-            QByteArray baData=pBinary->read_array(nOffset,15); // TODO
+            QByteArray baData=pBinary->read_array(nOffset,15); // TODO CONST
 
             uint8_t *pData=(uint8_t *)baData.data();
             size_t nDataSize=(size_t)baData.size();
@@ -197,7 +197,7 @@ void XDisasm::process()
         XPE *pPE=(XPE *)pBinary;
         if(pPE->isValid())
         {
-
+            // TODO
         }
     }
 
@@ -242,7 +242,7 @@ void XDisasm::_adjust()
 
             if(!pDisasmStats->mapLabelStrings.contains(nAddress))
             {
-                pDisasmStats->mapLabelStrings.insert(nAddress,QString("loc_%1").arg(nAddress,0,16));
+                pDisasmStats->mapLabelStrings.insert(nAddress,QString("lab_%1").arg(nAddress,0,16));
             }
         }
 
