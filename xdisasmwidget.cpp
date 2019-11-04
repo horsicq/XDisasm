@@ -36,3 +36,13 @@ XDisasmWidget::~XDisasmWidget()
 {
     delete ui;
 }
+
+void XDisasmWidget::on_pushButtonLabels_clicked()
+{
+    if(pModel)
+    {
+        DialogDisasmLabels dialogDisasmLabels(this,pModel->getStats());
+
+        dialogDisasmLabels.exec();
+    }
+}

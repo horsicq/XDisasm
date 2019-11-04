@@ -262,3 +262,8 @@ qint64 XDisasmModel::addressToPosition(qint64 nAddress)
 
     return nResult;
 }
+
+XDisasm::STATS *XDisasmModel::getStats()
+{
+    return pStats;
+}

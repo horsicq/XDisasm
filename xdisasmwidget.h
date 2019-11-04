@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QScrollBar>
 #include "xdisasmmodel.h"
+#include "dialogdisasmlabels.h"
 
 namespace Ui {
 class XDisasmWidget;
@@ -19,6 +20,9 @@ public:
     void goToAddress(qint64 nAddress);
     void clear();
     ~XDisasmWidget();
+
+private slots:
+    void on_pushButtonLabels_clicked();
 
 private:
     Ui::XDisasmWidget *ui;
