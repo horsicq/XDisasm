@@ -54,22 +54,16 @@ public:
     };
 
     explicit XDisasmModel(QIODevice *pDevice, XDisasm::STATS *pStats,SHOWOPTIONS *pShowOptions,QObject *parent);
-
     // Header:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
-
     // Basic functionality:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
-
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-
     VEIW_RECORD getViewRecord(int nRow);
-
     qint64 getPositionCount() const;
     qint64 positionToAddress(qint64 nPosition);
     qint64 addressToPosition(qint64 nAddress);
-
     XDisasm::STATS *getStats();
 
 private:

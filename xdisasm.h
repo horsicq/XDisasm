@@ -82,7 +82,6 @@ public:
     struct STATS
     {
         QList<XBinary::MEMORY_MAP> listMM;
-
         qint64 nImageBase;
         qint64 nImageSize;
         qint64 nEntryPointAddress;
@@ -99,13 +98,10 @@ public:
         QMap<qint64,qint64> mapAddresses;
     };
 
-    explicit XDisasm(QObject *parent = nullptr);
+    explicit XDisasm(QObject *parent=nullptr);
     ~XDisasm();
-
     bool setData(XBinary *pBinary, XDisasm::MODE mode,qint64 nStartAddress,XDisasm::STATS *pDisasmStats);
-
     void stop();
-
     STATS *getStats();
     static qint64 getVBSize(QMap<qint64,VIEW_BLOCK> *pMapVB);
 
