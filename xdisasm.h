@@ -69,7 +69,8 @@ public:
     {
         VBT_UNKNOWN=0,
         VBT_OPCODE,
-        VBT_DATA
+        VBT_DATA,
+        VBT_DATABLOCK
     };
 
     struct VIEW_BLOCK
@@ -109,6 +110,8 @@ public slots:
     void process();
 
 private:
+    const int N_OPCODE_SIZE=15;
+
     void clear();
     bool isEndBranchOpcode(uint nOpcodeID);
     bool isJmpOpcode(uint nOpcodeID);

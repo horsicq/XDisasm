@@ -7,6 +7,10 @@ XDisasmWidget::XDisasmWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    QFont font=ui->tableViewDisasm->font();
+    font.setFamily("Courier");
+    ui->tableViewDisasm->setFont(font);
+
     pModel=0;
 }
 

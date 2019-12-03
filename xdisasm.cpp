@@ -63,7 +63,7 @@ void XDisasm::_process(qint64 nInitAddress, qint64 nAddress)
         qint64 nOffset=pBinary->addressToOffset(&(pDisasmStats->listMM),nAddress);
         if(nOffset!=-1)
         {
-            QByteArray baData=pBinary->read_array(nOffset,15); // TODO CONST
+            QByteArray baData=pBinary->read_array(nOffset,N_OPCODE_SIZE);
 
             uint8_t *pData=(uint8_t *)baData.data();
             size_t nDataSize=(size_t)baData.size();
@@ -252,22 +252,29 @@ void XDisasm::_adjust()
     //    QSet<qint64> stDataLabels;
 
         // TODO Strings
-        QMapIterator<qint64,XDisasm::OPCODE> iVB(pDisasmStats->mapOpcodes);
-        while(iVB.hasNext())
+        QMapIterator<qint64,XDisasm::OPCODE> iOpcodes(pDisasmStats->mapOpcodes);
+        while(iOpcodes.hasNext())
         {
-            iVB.next();
+            iOpcodes.next();
 
-            qint64 nAddress=iVB.key();
+            qint64 nAddress=iOpcodes.key();
 
             VIEW_BLOCK record;
-            record.nOffset=iVB.value().nOffset;
-            record.nSize=iVB.value().nSize;
+            record.nOffset=iOpcodes.value().nOffset;
+            record.nSize=iOpcodes.value().nSize;
             record.type=VBT_OPCODE;
 
             if(!pDisasmStats->mapVB.contains(nAddress))
             {
                 pDisasmStats->mapVB.insert(nAddress,record);
             }
+        }
+
+        int nMMCount=pDisasmStats->listMM.count(); // TODO
+
+        for(int i=0;i<nMMCount;i++)
+        {
+
         }
 
 //        QMapIterator<qint64,qint64> iDS(stats.mmapDataLabels);
