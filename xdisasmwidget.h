@@ -23,6 +23,7 @@ public:
 
 private slots:
     void on_pushButtonLabels_clicked();
+    void on_tableViewDisasm_customContextMenuRequested(const QPoint &pos);
 
 private:
     Ui::XDisasmWidget *ui;

@@ -50,3 +50,8 @@ void XDisasmWidget::on_pushButtonLabels_clicked()
         dialogDisasmLabels.exec();
     }
 }
+
+void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &pos)
+{
+    qDebug("void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &pos)");
+}

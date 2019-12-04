@@ -22,7 +22,10 @@
 
 XDisasm::XDisasm(QObject *parent) : QObject(parent)
 {
-    pBinary=nullptr;
+    pDevice=nullptr;
+    mode=MODE_UNKNOWN;
+    nImageBase=0;
+    nStartAddress=0;
     disasm_handle=0;
     bStop=false;
 }
@@ -36,10 +39,12 @@ XDisasm::~XDisasm()
     }
 }
 
-bool XDisasm::setData(XBinary *pBinary, XDisasm::MODE mode, qint64 nStartAddress, STATS *pDisasmStats)
+bool XDisasm::setData(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qint64 nStartAddress, STATS *pDisasmStats,qint64 nImageBase)
 {
-    this->pBinary=pBinary;
+    this->pDevice=pDevice;
+    this->bIsImage=bIsImage;
     this->mode=mode;
+    this->nImageBase=nImageBase;
     this->nStartAddress=nStartAddress;
     this->pDisasmStats=pDisasmStats;
 
@@ -60,10 +65,10 @@ void XDisasm::_process(qint64 nInitAddress, qint64 nAddress)
 
         bool bStopBranch=false;
         int nDelta=0;
-        qint64 nOffset=pBinary->addressToOffset(&(pDisasmStats->listMM),nAddress);
+        qint64 nOffset=XBinary::addressToOffset(&(pDisasmStats->listMM),nAddress);
         if(nOffset!=-1)
         {
-            QByteArray baData=pBinary->read_array(nOffset,N_OPCODE_SIZE);
+            QByteArray baData=XBinary::read_array(pDevice,nOffset,N_X64_OPCODE_SIZE);
 
             uint8_t *pData=(uint8_t *)baData.data();
             size_t nDataSize=(size_t)baData.size();
@@ -151,40 +156,52 @@ void XDisasm::process()
     cs_arch arch=CS_ARCH_X86;
     cs_mode _mode=CS_MODE_16;
 
-    pDisasmStats->listMM=pBinary->getMemoryMapList();
-
-    pDisasmStats->nEntryPointAddress=nStartAddress;
-
     if(mode==MODE_UNKNOWN)
     {
-        pDisasmStats->nImageBase=pBinary->getLowestAddress(&(pDisasmStats->listMM));
-        pDisasmStats->nImageSize=pBinary->getTotalVirtualSize(&(pDisasmStats->listMM));
-        pDisasmStats->nEntryPointAddress=pBinary->getEntryPointAddress();
+        QSet<XBinary::FT> stFt=XBinary::getFileTypes(pDevice);
 
-        XBinary::MODE modeBinary=pBinary->getMode();
-        XBinary::ARCH archBinary=pBinary->getArch();
+        if(stFt.contains(XBinary::FT_PE))
+        {
+            XPE pe(pDevice,bIsImage,nImageBase);
 
-        if(archBinary==XBinary::ARCH_X86) arch=CS_ARCH_X86;
+            pDisasmStats->listMM=pe.getMemoryMapList();
+            pDisasmStats->nEntryPointAddress=pe.getEntryPointAddress();
 
-        if      (modeBinary==XBinary::MODE_16) _mode=CS_MODE_16;
-        else if (modeBinary==XBinary::MODE_32) _mode=CS_MODE_32;
-        else if (modeBinary==XBinary::MODE_64) _mode=CS_MODE_64;
+            XBinary::MODE modeBinary=pe.getMode();
+            XBinary::ARCH archBinary=pe.getArch();
+
+            if(archBinary==XBinary::ARCH_X86) arch=CS_ARCH_X86;
+
+            if      (modeBinary==XBinary::MODE_32) _mode=CS_MODE_32;
+            else if (modeBinary==XBinary::MODE_64) _mode=CS_MODE_64;
+        }
     }
-    else if(mode==MODE_X86_16)
+    else
     {
-        arch=CS_ARCH_X86;
-        _mode=CS_MODE_16;
+        if(mode==MODE_X86_16)
+        {
+            arch=CS_ARCH_X86;
+            _mode=CS_MODE_16;
+        }
+        else if(mode==MODE_X86_32)
+        {
+            arch=CS_ARCH_X86;
+            _mode=CS_MODE_32;
+        }
+        else if(mode==MODE_X86_64)
+        {
+            arch=CS_ARCH_X86;
+            _mode=CS_MODE_64;
+        }
+
+        XBinary binary(pDevice,bIsImage,nImageBase);
+
+        pDisasmStats->listMM=binary.getMemoryMapList();
+        pDisasmStats->nEntryPointAddress=nStartAddress;
     }
-    else if(mode==MODE_X86_32)
-    {
-        arch=CS_ARCH_X86;
-        _mode=CS_MODE_32;
-    }
-    else if(mode==MODE_X86_64)
-    {
-        arch=CS_ARCH_X86;
-        _mode=CS_MODE_64;
-    }
+
+    pDisasmStats->nImageBase=XBinary::getLowestAddress(&(pDisasmStats->listMM));
+    pDisasmStats->nImageSize=XBinary::getTotalVirtualSize(&(pDisasmStats->listMM));
 
     cs_err err=cs_open(arch,_mode,&disasm_handle);
     if(!err)
@@ -192,16 +209,22 @@ void XDisasm::process()
         cs_option(disasm_handle,CS_OPT_DETAIL,CS_OPT_ON);
     }
 
-    if(pBinary->metaObject()->className()==QString("XPE"))
-    {
-        XPE *pPE=(XPE *)pBinary;
-        if(pPE->isValid())
-        {
-            // TODO
-        }
-    }
+//    if(pBinary->metaObject()->className()==QString("XPE"))
+//    {
+//        XPE *pPE=(XPE *)pBinary;
+//        if(pPE->isValid())
+//        {
+//            // TODO
+//        }
+//    }
 
     _process(0,pDisasmStats->nEntryPointAddress);
+
+    if(nStartAddress!=pDisasmStats->nEntryPointAddress)
+    {
+        _process(0,nStartAddress);
+    }
+
     _adjust();
     _updatePositions();
 

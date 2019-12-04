@@ -101,7 +101,7 @@ public:
 
     explicit XDisasm(QObject *parent=nullptr);
     ~XDisasm();
-    bool setData(XBinary *pBinary, XDisasm::MODE mode,qint64 nStartAddress,XDisasm::STATS *pDisasmStats);
+    bool setData(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qint64 nStartAddress, XDisasm::STATS *pDisasmStats, qint64 nImageBase=-1);
     void stop();
     STATS *getStats();
     static qint64 getVBSize(QMap<qint64,VIEW_BLOCK> *pMapVB);
@@ -110,7 +110,7 @@ public slots:
     void process();
 
 private:
-    const int N_OPCODE_SIZE=15;
+    const int N_X64_OPCODE_SIZE=15;
 
     void clear();
     bool isEndBranchOpcode(uint nOpcodeID);
@@ -124,8 +124,10 @@ signals:
     void processFinished();
 
 private:
-    XBinary *pBinary;
+    QIODevice *pDevice;
+    bool bIsImage;
     XDisasm::MODE mode;
+    qint64 nImageBase;
     qint64 nStartAddress;
     csh disasm_handle;
     bool bStop;
