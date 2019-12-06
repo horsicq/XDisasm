@@ -101,7 +101,8 @@ public:
 
     explicit XDisasm(QObject *parent=nullptr);
     ~XDisasm();
-    bool setData(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qint64 nStartAddress, XDisasm::STATS *pDisasmStats, qint64 nImageBase=-1);
+    void setData(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qint64 nStartAddress, XDisasm::STATS *pDisasmStats, qint64 nImageBase=-1);
+    static void process(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qint64 nStartAddress, XDisasm::STATS *pDisasmStats, qint64 nImageBase=-1);
     void stop();
     STATS *getStats();
     static qint64 getVBSize(QMap<qint64,VIEW_BLOCK> *pMapVB);

@@ -64,17 +64,19 @@ int XDisasmModel::rowCount(const QModelIndex &parent) const
 
 int XDisasmModel::columnCount(const QModelIndex &parent) const
 {
+    int nResult=5; // TODO Def
+
     if(parent.isValid())
     {
-        return 0;
+        nResult=0;
     }
 
-    return 5; // TODO Def
+    return nResult;
 }
 
 QVariant XDisasmModel::data(const QModelIndex &index, int role) const
 {
-    if(!index.isValid())
+    if(!index.isValid()) // TODO optimize
     {
         return QVariant();
     }

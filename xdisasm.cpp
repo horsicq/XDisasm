@@ -39,7 +39,7 @@ XDisasm::~XDisasm()
     }
 }
 
-bool XDisasm::setData(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qint64 nStartAddress, STATS *pDisasmStats,qint64 nImageBase)
+void XDisasm::setData(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qint64 nStartAddress, STATS *pDisasmStats,qint64 nImageBase)
 {
     this->pDevice=pDevice;
     this->bIsImage=bIsImage;
@@ -47,8 +47,13 @@ bool XDisasm::setData(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qin
     this->nImageBase=nImageBase;
     this->nStartAddress=nStartAddress;
     this->pDisasmStats=pDisasmStats;
+}
 
-    return true;
+void XDisasm::process(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qint64 nStartAddress, XDisasm::STATS *pDisasmStats, qint64 nImageBase)
+{
+    XDisasm disasm;
+    disasm.setData(pDevice,bIsImage,mode,nStartAddress,pDisasmStats,nImageBase);
+    disasm.process();
 }
 
 void XDisasm::_process(qint64 nInitAddress, qint64 nAddress)
