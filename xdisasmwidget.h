@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QScrollBar>
+#include <QThread>
 #include "xdisasmmodel.h"
 #include "dialogdisasmlabels.h"
 
@@ -19,6 +20,7 @@ public:
     void setData(QIODevice *pDevice,XDisasm::STATS *pStats,XDisasmModel::SHOWOPTIONS *pOptions);
     void goToAddress(qint64 nAddress);
     void clear();
+    void waitTillModelLoaded(qint64 nAddress);
     ~XDisasmWidget();
 
 private slots:

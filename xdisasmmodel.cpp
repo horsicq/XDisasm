@@ -262,6 +262,11 @@ qint64 XDisasmModel::addressToPosition(qint64 nAddress)
         }
     }
 
+    if(nResult<0) // TODO Check
+    {
+        nResult=0;
+    }
+
     return nResult;
 }
 

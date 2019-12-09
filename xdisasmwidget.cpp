@@ -15,7 +15,7 @@ XDisasmWidget::XDisasmWidget(QWidget *parent) :
 }
 
 void XDisasmWidget::setData(QIODevice *pDevice, XDisasm::STATS *pStats, XDisasmModel::SHOWOPTIONS *pOptions)
-{
+{    
     pModel=new XDisasmModel(pDevice,pStats,pOptions,this);
     ui->tableViewDisasm->setModel(pModel);
     //    ui->tableViewDisasm->setColumnHidden(1, true);
@@ -28,12 +28,34 @@ void XDisasmWidget::goToAddress(qint64 nAddress)
     qDebug("position: %x",nPosition);
 //    ui->tableViewDisasm->scrollTo(pModel->index(nPosition,0));
 
+    int nMaximum=ui->tableViewDisasm->verticalScrollBar()->maximum();
+
     ui->tableViewDisasm->verticalScrollBar()->setValue(nPosition);
 }
 
 void XDisasmWidget::clear()
 {
     ui->tableViewDisasm->setModel(0);
+}
+
+void XDisasmWidget::waitTillModelLoaded(qint64 nAddress)
+{
+    do
+    {
+        QThread::msleep(100);
+    }
+    while(pModel==0);
+
+    qint64 nPosition=pModel->addressToPosition(nAddress);
+    int nMaximum=0;
+
+    do
+    {
+        QThread::msleep(100);
+
+        nMaximum=ui->tableViewDisasm->verticalScrollBar()->maximum();
+    }
+    while(nPosition>nMaximum);
 }
 
 XDisasmWidget::~XDisasmWidget()

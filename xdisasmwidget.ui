@@ -70,6 +70,9 @@
      <attribute name="verticalHeaderDefaultSectionSize">
       <number>20</number>
      </attribute>
+     <attribute name="verticalHeaderStretchLastSection">
+      <bool>true</bool>
+     </attribute>
     </widget>
    </item>
   </layout>

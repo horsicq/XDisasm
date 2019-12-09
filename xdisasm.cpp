@@ -225,9 +225,12 @@ void XDisasm::process()
 
     _process(0,pDisasmStats->nEntryPointAddress);
 
-    if(nStartAddress!=pDisasmStats->nEntryPointAddress)
+    if(nStartAddress!=-1)
     {
-        _process(0,nStartAddress);
+        if(nStartAddress!=pDisasmStats->nEntryPointAddress)
+        {
+            _process(0,nStartAddress);
+        }
     }
 
     _adjust();
