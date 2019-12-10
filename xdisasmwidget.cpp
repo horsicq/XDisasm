@@ -40,22 +40,20 @@ void XDisasmWidget::clear()
 
 void XDisasmWidget::waitTillModelLoaded(qint64 nAddress)
 {
-    do
-    {
-        QThread::msleep(100);
-    }
-    while(pModel==0);
-
     qint64 nPosition=pModel->addressToPosition(nAddress);
     int nMaximum=0;
 
-    do
+    while(true)
     {
-        QThread::msleep(100);
-
         nMaximum=ui->tableViewDisasm->verticalScrollBar()->maximum();
+
+        if(nPosition<=nMaximum)
+        {
+            break;
+        }
+
+        QThread::msleep(100);
     }
-    while(nPosition>nMaximum);
 }
 
 XDisasmWidget::~XDisasmWidget()

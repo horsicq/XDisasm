@@ -83,40 +83,41 @@ QVariant XDisasmModel::data(const QModelIndex &index, int role) const
 
     QVariant result;
 
-    XDisasmModel* _this=const_cast<XDisasmModel *>(this);
-
     if(role==Qt::DisplayRole)
     {
-        int nRow=index.row();
-        int nColumn=index.column();
+        XDisasmModel* _this=const_cast<XDisasmModel *>(this);
 
-        if(_this->nCurrentPosition!=nRow)
+        VEIW_RECORD vrRecord={};
+
+        int nRow=index.row();
+
+        if(_this->quRecords.contains(nRow))
         {
-            _this->vrCurrent=_this->getViewRecord(nRow);
-            _this->nCurrentPosition=nRow;
+            vrRecord=_this->mapRecords.value(nRow);
         }
+        else
+        {
+            vrRecord=_this->getViewRecord(nRow);
+
+            _this->quRecords.enqueue(nRow);
+            _this->mapRecords.insert(nRow,vrRecord);
+
+            if(_this->quRecords.count()>1000) // TODO const
+            {
+                qint64 _nPos=_this->quRecords.dequeue();
+                _this->mapRecords.remove(_nPos);
+            }
+        }
+
+        int nColumn=index.column();
 
         switch(nColumn)
         {
-        case DMCOLUMN_ADDRESS:
-            result=_this->vrCurrent.sAddress;
-            break;
-
-        case DMCOLUMN_OFFSET:
-            result=_this->vrCurrent.sOffset;
-            break;
-
-        case DMCOLUMN_LABEL:
-            result=_this->vrCurrent.sLabel;
-            break;
-
-        case DMCOLUMN_BYTES:
-            result=_this->vrCurrent.sBytes;
-            break;
-
-        case DMCOLUMN_OPCODE:
-            result=_this->vrCurrent.sOpcode;
-            break;
+            case DMCOLUMN_ADDRESS:      result=vrRecord.sAddress;       break;
+            case DMCOLUMN_OFFSET:       result=vrRecord.sOffset;        break;
+            case DMCOLUMN_LABEL:        result=vrRecord.sLabel;         break;
+            case DMCOLUMN_BYTES:        result=vrRecord.sBytes;         break;
+            case DMCOLUMN_OPCODE:       result=vrRecord.sOpcode;        break;
         }
     }
 

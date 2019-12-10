@@ -22,6 +22,7 @@
 #define XDISASMMODEL_H
 
 #include <QAbstractTableModel>
+#include <QQueue>
 #include "xdisasm.h"
 
 class XDisasmModel : public QAbstractTableModel
@@ -70,8 +71,9 @@ private:
     QIODevice *pDevice;
     XDisasm::STATS *pStats;
     SHOWOPTIONS *pShowOptions;
-    int nCurrentPosition;
-    VEIW_RECORD vrCurrent;
+
+    QQueue<qint64> quRecords;
+    QMap<qint64,VEIW_RECORD> mapRecords;
 };
 
 #endif // XDISASMMODEL_H
