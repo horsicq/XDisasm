@@ -133,6 +133,7 @@ private:
     csh disasm_handle;
     bool bStop;
     STATS *pDisasmStats;
+    char *pMap;
 };
 
 #endif // XDISASM_H

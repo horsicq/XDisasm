@@ -28,6 +28,7 @@ XDisasm::XDisasm(QObject *parent) : QObject(parent)
     nStartAddress=0;
     disasm_handle=0;
     bStop=false;
+    pMap=0;
 }
 
 XDisasm::~XDisasm()
@@ -70,7 +71,7 @@ void XDisasm::_process(qint64 nInitAddress, qint64 nAddress)
 
         bool bStopBranch=false;
         int nDelta=0;
-        qint64 nOffset=XBinary::addressToOffset(&(pDisasmStats->listMM),nAddress);
+        qint64 nOffset=XBinary::addressToOffset(&(pDisasmStats->listMM),nAddress); // TODO optimize if image
         if(nOffset!=-1)
         {
             QByteArray baData=XBinary::read_array(pDevice,nOffset,N_X64_OPCODE_SIZE);
@@ -170,7 +171,7 @@ void XDisasm::process()
             XPE pe(pDevice,bIsImage,nImageBase);
 
             pDisasmStats->listMM=pe.getMemoryMapList();
-            pDisasmStats->nEntryPointAddress=pe.getEntryPointAddress();
+            pDisasmStats->nEntryPointAddress=pe.getEntryPointAddress(&pDisasmStats->listMM);
 
             XBinary::MODE modeBinary=pe.getMode();
             XBinary::ARCH archBinary=pe.getArch();
