@@ -233,39 +233,42 @@ qint64 XDisasmModel::addressToPosition(qint64 nAddress)
 {
     qint64 nResult=0;
 
-    if(pStats->mapPositions.count())
+    if(pStats)
     {
-        nResult=pStats->mapAddresses.value(nAddress,-1);
-
-        if(nResult==-1)
+        if(pStats->mapPositions.count())
         {
-            QMap<qint64,qint64>::const_iterator iter=pStats->mapAddresses.lowerBound(nAddress);
+            nResult=pStats->mapAddresses.value(nAddress,-1);
 
-            if(iter!=pStats->mapAddresses.end())
+            if(nResult==-1)
             {
-                qint64 nDelta=iter.key()-nAddress;
+                QMap<qint64,qint64>::const_iterator iter=pStats->mapAddresses.lowerBound(nAddress);
 
-                nResult=iter.value()-nDelta;
-            }
-            else
-            {
-                qint64 nLastAddress=pStats->mapAddresses.lastKey();
-                nResult=pStats->mapAddresses.value(nLastAddress);
-                nResult++;
-
-                qint64 nDelta=nAddress-(nLastAddress+pStats->mapVB.value(nLastAddress).nSize);
-
-                if(nDelta>0)
+                if(iter!=pStats->mapAddresses.end())
                 {
-                    nResult+=(nDelta);
+                    qint64 nDelta=iter.key()-nAddress;
+
+                    nResult=iter.value()-nDelta;
+                }
+                else
+                {
+                    qint64 nLastAddress=pStats->mapAddresses.lastKey();
+                    nResult=pStats->mapAddresses.value(nLastAddress);
+                    nResult++;
+
+                    qint64 nDelta=nAddress-(nLastAddress+pStats->mapVB.value(nLastAddress).nSize);
+
+                    if(nDelta>0)
+                    {
+                        nResult+=(nDelta);
+                    }
                 }
             }
         }
-    }
 
-    if(nResult<0) // TODO Check
-    {
-        nResult=0;
+        if(nResult<0) // TODO Check
+        {
+            nResult=0;
+        }
     }
 
     return nResult;

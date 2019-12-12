@@ -23,14 +23,12 @@ void XDisasmWidget::setData(QIODevice *pDevice, XDisasm::STATS *pStats, XDisasmM
 
 void XDisasmWidget::goToAddress(qint64 nAddress)
 {
-    qint64 nPosition=pModel->addressToPosition(nAddress);
-    qDebug("goToAddress: %x",nAddress);
-    qDebug("position: %x",nPosition);
-//    ui->tableViewDisasm->scrollTo(pModel->index(nPosition,0));
+    if(pModel)
+    {
+        qint64 nPosition=pModel->addressToPosition(nAddress);
 
-    int nMaximum=ui->tableViewDisasm->verticalScrollBar()->maximum();
-
-    ui->tableViewDisasm->verticalScrollBar()->setValue(nPosition);
+        ui->tableViewDisasm->verticalScrollBar()->setValue(nPosition);
+    }
 }
 
 void XDisasmWidget::clear()
@@ -40,19 +38,22 @@ void XDisasmWidget::clear()
 
 void XDisasmWidget::waitTillModelLoaded(qint64 nAddress)
 {
-    qint64 nPosition=pModel->addressToPosition(nAddress);
-    int nMaximum=0;
-
-    while(true)
+    if(pModel)
     {
-        nMaximum=ui->tableViewDisasm->verticalScrollBar()->maximum();
+        qint64 nPosition=pModel->addressToPosition(nAddress);
+        int nMaximum=0;
 
-        if(nPosition<=nMaximum)
+        while(true)
         {
-            break;
-        }
+            nMaximum=ui->tableViewDisasm->verticalScrollBar()->maximum();
 
-        QThread::msleep(100);
+            if(nPosition<=nMaximum)
+            {
+                break;
+            }
+
+            QThread::msleep(100);
+        }
     }
 }
 
