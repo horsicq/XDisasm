@@ -71,7 +71,7 @@ void XDisasm::_process(qint64 nInitAddress, qint64 nAddress)
 
         bool bStopBranch=false;
         int nDelta=0;
-        qint64 nOffset=XBinary::addressToOffset(&(pDisasmStats->listMM),nAddress); // TODO optimize if image
+        qint64 nOffset=XBinary::addressToOffset(&(pDisasmStats->memoryMap),nAddress); // TODO optimize if image
         if(nOffset!=-1)
         {
             QByteArray baData=XBinary::read_array(pDevice,nOffset,N_X64_OPCODE_SIZE);
@@ -170,8 +170,8 @@ void XDisasm::process()
         {
             XPE pe(pDevice,bIsImage,nImageBase);
 
-            pDisasmStats->listMM=pe.getMemoryMapList();
-            pDisasmStats->nEntryPointAddress=pe.getEntryPointAddress(&pDisasmStats->listMM);
+            pDisasmStats->memoryMap=pe.getMemoryMap();
+            pDisasmStats->nEntryPointAddress=pe.getEntryPointAddress(&pDisasmStats->memoryMap);
 
             XBinary::MODE modeBinary=pe.getMode();
             XBinary::ARCH archBinary=pe.getArch();
@@ -202,12 +202,12 @@ void XDisasm::process()
 
         XBinary binary(pDevice,bIsImage,nImageBase);
 
-        pDisasmStats->listMM=binary.getMemoryMapList();
+        pDisasmStats->memoryMap=binary.getMemoryMap();
         pDisasmStats->nEntryPointAddress=nStartAddress;
     }
 
-    pDisasmStats->nImageBase=XBinary::getLowestAddress(&(pDisasmStats->listMM));
-    pDisasmStats->nImageSize=XBinary::getTotalVirtualSize(&(pDisasmStats->listMM));
+    pDisasmStats->nImageBase=pDisasmStats->memoryMap.nBaseAddress;
+    pDisasmStats->nImageSize=XBinary::getTotalVirtualSize(&(pDisasmStats->memoryMap));
 
     cs_err err=cs_open(arch,_mode,&disasm_handle);
     if(!err)
@@ -302,7 +302,7 @@ void XDisasm::_adjust()
             }
         }
 
-        int nMMCount=pDisasmStats->listMM.count(); // TODO
+        int nMMCount=pDisasmStats->memoryMap.listRecords.count(); // TODO
 
         for(int i=0;i<nMMCount;i++)
         {

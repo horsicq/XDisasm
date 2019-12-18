@@ -82,7 +82,7 @@ public:
 
     struct STATS
     {
-        QList<XBinary::MEMORY_MAP> listMM;
+        XBinary::_MEMORY_MAP memoryMap;
         qint64 nImageBase;
         qint64 nImageSize;
         qint64 nEntryPointAddress;

@@ -130,7 +130,7 @@ XDisasmModel::VEIW_RECORD XDisasmModel::getViewRecord(int nRow)
 
     qint64 nAddress=positionToAddress(nRow);
 
-    qint64 nOffset=XBinary::addressToOffset(&(pStats->listMM),nAddress);
+    qint64 nOffset=XBinary::addressToOffset(&(pStats->memoryMap),nAddress);
 
     qint64 nSize=1;
 
