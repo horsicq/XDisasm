@@ -1,4 +1,4 @@
-// copyright (c) 2019 hors<horsicq@gmail.com>
+// copyright (c) 2019-2020 hors<horsicq@gmail.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -180,6 +180,10 @@ XDisasmModel::VEIW_RECORD XDisasmModel::getViewRecord(int nRow)
             QByteArray baData=pDevice->read(nSize);
             result.sBytes=baData.toHex();
         }
+    }
+    else
+    {
+        result.sBytes=QString("byte 0x%1 dup(?)").arg(nSize,0,16);
     }
 
     result.sLabel=pStats->mapLabelStrings.value(nAddress);

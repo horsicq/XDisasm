@@ -1,4 +1,4 @@
-// copyright (c) 2019 hors<horsicq@gmail.com>
+// copyright (c) 2019-2020 hors<horsicq@gmail.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -174,9 +174,9 @@ void XDisasm::process()
             pDisasmStats->nEntryPointAddress=pe.getEntryPointAddress(&pDisasmStats->memoryMap);
 
             XBinary::MODE modeBinary=pe.getMode();
-            XBinary::ARCH archBinary=pe.getArch();
+            QString sArch=pe.getArch();
 
-            if(archBinary==XBinary::ARCH_X86) arch=CS_ARCH_X86;
+            if(sArch=="I386") arch=CS_ARCH_X86; // TODO more defs
 
             if      (modeBinary==XBinary::MODE_32) _mode=CS_MODE_32;
             else if (modeBinary==XBinary::MODE_64) _mode=CS_MODE_64;
@@ -292,6 +292,7 @@ void XDisasm::_adjust()
             qint64 nAddress=iOpcodes.key();
 
             VIEW_BLOCK record;
+            record.nAddress=nAddress;
             record.nOffset=iOpcodes.value().nOffset;
             record.nSize=iOpcodes.value().nSize;
             record.type=VBT_OPCODE;
@@ -306,7 +307,79 @@ void XDisasm::_adjust()
 
         for(int i=0;i<nMMCount;i++)
         {
+            qint64 nRegionAddress=pDisasmStats->memoryMap.listRecords.at(i).nAddress;
+            qint64 nRegionOffset=pDisasmStats->memoryMap.listRecords.at(i).nOffset;
+            qint64 nRegionSize=pDisasmStats->memoryMap.listRecords.at(i).nSize;
 
+            for(qint64 nCurrentAddress=nRegionAddress,nCurrentOffset=nRegionOffset;nCurrentAddress<(nRegionAddress+nRegionSize);)
+            {
+
+                QMap<qint64,VIEW_BLOCK>::iterator iter=pDisasmStats->mapVB.lowerBound(nCurrentAddress);
+
+                qint64 nBlockAddress=0;
+                qint64 nBlockOffset=0;
+                qint64 nBlockSize=0;
+
+                if(iter!=pDisasmStats->mapVB.end())
+                {
+                    VIEW_BLOCK block=*iter;
+                    nBlockAddress=block.nAddress;
+                    nBlockOffset=block.nOffset;
+                    nBlockSize=block.nSize;
+                }
+                else
+                {
+                    nBlockAddress=nRegionAddress+nRegionSize;
+
+                    if(nRegionOffset!=-1)
+                    {
+                        nBlockOffset=nRegionOffset+nRegionSize;
+                    }
+                }
+
+                qint64 _nAddress=qMin(nBlockAddress,nRegionAddress+nRegionSize);
+                qint64 _nSize=_nAddress-nCurrentAddress;
+
+                if(nCurrentOffset!=-1)
+                {
+                    while(_nSize>=16)
+                    {
+                        VIEW_BLOCK record;
+                        record.nAddress=nCurrentAddress;
+                        record.nOffset=nCurrentOffset;
+                        record.nSize=16;
+                        record.type=VBT_DATABLOCK;
+
+                        if(!pDisasmStats->mapVB.contains(nCurrentAddress))
+                        {
+                            pDisasmStats->mapVB.insert(nCurrentAddress,record);
+                        }
+
+                        _nSize-=16;
+                        nCurrentAddress+=16;
+                        nCurrentOffset+=16;
+                    }
+                }
+                else
+                {
+                    VIEW_BLOCK record;
+                    record.nAddress=nCurrentAddress;
+                    record.nOffset=-1;
+                    record.nSize=_nSize;
+                    record.type=VBT_DATABLOCK;
+
+                    if(!pDisasmStats->mapVB.contains(nCurrentAddress))
+                    {
+                        pDisasmStats->mapVB.insert(nCurrentAddress,record);
+                    }
+                }
+
+                nCurrentAddress=nBlockAddress+nBlockSize;
+                if(nBlockOffset!=-1)
+                {
+                    nCurrentOffset=nBlockOffset+nBlockSize;
+                }
+            }
         }
 
 //        QMapIterator<qint64,qint64> iDS(stats.mmapDataLabels);
