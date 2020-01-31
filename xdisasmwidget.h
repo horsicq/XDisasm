@@ -4,8 +4,11 @@
 #include <QWidget>
 #include <QScrollBar>
 #include <QThread>
+#include <QMenu>
 #include "xdisasmmodel.h"
 #include "dialogdisasmlabels.h"
+#include "xshortcuts.h"
+#include "dialoggotoaddress.h"
 
 namespace Ui {
 class XDisasmWidget;
@@ -26,6 +29,7 @@ public:
 private slots:
     void on_pushButtonLabels_clicked();
     void on_tableViewDisasm_customContextMenuRequested(const QPoint &pos);
+    void _goToAddress();
 
 private:
     Ui::XDisasmWidget *ui;

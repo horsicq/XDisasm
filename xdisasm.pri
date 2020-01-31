@@ -20,5 +20,27 @@ FORMS += \
     $$PWD/dialogdisasmprocess.ui \
     $$PWD/xdisasmwidget.ui
 
-include(../XCapstone/xcapstone.pri)
-include(../Formats/xpe.pri)
+!contains(XCONFIG, xcapstone) {
+    XCONFIG += xcapstone
+    include(../XCapstone/xcapstone.pri)
+}
+
+!contains(XCONFIG, dialoggotoaddress) {
+    XCONFIG += dialoggotoaddress
+    include(../FormatDialogs/dialoggotoaddress.pri)
+}
+
+!contains(XCONFIG, xlineedithex) {
+    XCONFIG += xlineedithex
+    include(../Controls/xlineedithex.pri)
+}
+
+!contains(XCONFIG, xpe) {
+    XCONFIG += xpe
+    include(../Formats/xpe.pri)
+}
+
+!contains(XCONFIG, dialoggotoaddress) {
+    XCONFIG += dialoggotoaddress
+    include(../FormatDialogs/dialoggotoaddress.pri)
+}

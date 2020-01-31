@@ -11,6 +11,8 @@ XDisasmWidget::XDisasmWidget(QWidget *parent) :
     font.setFamily("Courier");
     ui->tableViewDisasm->setFont(font);
 
+    new QShortcut(QKeySequence(XShortcuts::GOTOADDRESS),this,SLOT(_goToAddress()));
+
     pModel=0;
 }
 
@@ -74,5 +76,26 @@ void XDisasmWidget::on_pushButtonLabels_clicked()
 
 void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &pos)
 {
-    qDebug("void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &pos)");
+    if(pModel)
+    {
+        QMenu contextMenu(this);
+
+        QAction actionGoToAddress(tr("Go to Address"),this);
+        actionGoToAddress.setShortcut(QKeySequence(XShortcuts::GOTOADDRESS));
+        contextMenu.addAction(&actionGoToAddress);
+
+        contextMenu.exec(ui->tableViewDisasm->viewport()->mapToGlobal(pos));
+    }
+}
+
+void XDisasmWidget::_goToAddress()
+{
+    if(pModel)
+    {
+        DialogGoToAddress da(this,&(pModel->getStats()->memoryMap));
+        if(da.exec()==QDialog::Accepted)
+        {
+            goToAddress(da.getAddress());
+        }
+    }
 }
