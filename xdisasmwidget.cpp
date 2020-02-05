@@ -82,6 +82,7 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
 
         QAction actionGoToAddress(tr("Go to Address"),this);
         actionGoToAddress.setShortcut(QKeySequence(XShortcuts::GOTOADDRESS));
+        connect(&actionGoToAddress,SIGNAL(triggered()),this,SLOT(_goToAddress()));
         contextMenu.addAction(&actionGoToAddress);
 
         contextMenu.exec(ui->tableViewDisasm->viewport()->mapToGlobal(pos));
