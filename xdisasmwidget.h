@@ -30,6 +30,7 @@ private slots:
     void on_pushButtonLabels_clicked();
     void on_tableViewDisasm_customContextMenuRequested(const QPoint &pos);
     void _goToAddress();
+    void _dumpToFile();
 
 private:
     Ui::XDisasmWidget *ui;

@@ -85,6 +85,11 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
         connect(&actionGoToAddress,SIGNAL(triggered()),this,SLOT(_goToAddress()));
         contextMenu.addAction(&actionGoToAddress);
 
+        QAction actionDump(tr("Dump to File"),this);
+        actionDump.setShortcut(QKeySequence(XShortcuts::DUMPTOFILE));
+        connect(&actionDump,SIGNAL(triggered()),this,SLOT(_dumpToFile()));
+        contextMenu.addAction(&actionDump);
+
         contextMenu.exec(ui->tableViewDisasm->viewport()->mapToGlobal(pos));
     }
 }
@@ -99,4 +104,10 @@ void XDisasmWidget::_goToAddress()
             goToAddress(da.getAddress());
         }
     }
+}
+
+void XDisasmWidget::_dumpToFile()
+{
+    // TODO
+    qDebug("Dump to file");
 }

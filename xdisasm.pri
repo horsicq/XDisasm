@@ -44,3 +44,8 @@ FORMS += \
     XCONFIG += dialoggotoaddress
     include(../FormatDialogs/dialoggotoaddress.pri)
 }
+
+!contains(XCONFIG, dialogdump) {
+    XCONFIG += dialogdump
+    include(../FormatDialogs/dialogdump.pri)
+}
