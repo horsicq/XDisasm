@@ -120,6 +120,27 @@ QVariant XDisasmModel::data(const QModelIndex &index, int role) const
             case DMCOLUMN_OPCODE:       result=vrRecord.sOpcode;        break;
         }
     }
+    else if(role==Qt::UserRole+UD_ADDRESS)
+    {
+        XDisasmModel* _this=const_cast<XDisasmModel *>(this);
+
+        int nRow=index.row();
+
+        result=_this->positionToAddress(nRow);
+    }
+    else if(role==Qt::UserRole+UD_SIZE)
+    {
+        XDisasmModel* _this=const_cast<XDisasmModel *>(this);
+
+        int nRow=index.row();
+
+        qint64 nAddress=_this->positionToAddress(nRow);
+
+        if(pStats->mapVB.contains(nAddress))
+        {
+            result=pStats->mapVB.value(nAddress).nSize;
+        }
+    }
 
     return result;
 }

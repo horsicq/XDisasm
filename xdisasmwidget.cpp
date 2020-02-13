@@ -108,6 +108,31 @@ void XDisasmWidget::_goToAddress()
 
 void XDisasmWidget::_dumpToFile()
 {
-    // TODO
-    qDebug("Dump to file");
+    if(pModel)
+    {
+        XBinary::ADDRESSSIZE addressSize=getSelectedAddressSize();
+
+        if(addressSize.nSize)
+        {
+            // TODO
+            qDebug("_dumpToFile");
+        }
+    }
+}
+
+XBinary::ADDRESSSIZE XDisasmWidget::getSelectedAddressSize()
+{
+    XBinary::ADDRESSSIZE result={};
+
+    QModelIndexList il=ui->tableViewDisasm->selectionModel()->selectedRows();
+
+    int nCount=il.count();
+
+    if(nCount)
+    {
+        result.nAddress=il.at(0).data(Qt::UserRole+XDisasmModel::UD_ADDRESS).toLongLong();
+        result.nSize=(il.at(nCount-1).data(Qt::UserRole+XDisasmModel::UD_ADDRESS).toLongLong()+il.at(nCount-1).data(Qt::UserRole+XDisasmModel::UD_SIZE).toLongLong())-result.nAddress;
+    }
+
+    return result;
 }

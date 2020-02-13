@@ -30,6 +30,11 @@ class XDisasmModel : public QAbstractTableModel
     Q_OBJECT
 
 public:
+    enum UD
+    {
+        UD_ADDRESS=0,
+        UD_SIZE
+    };
 
     enum DMCOLUMN
     {

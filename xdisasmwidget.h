@@ -31,6 +31,7 @@ private slots:
     void on_tableViewDisasm_customContextMenuRequested(const QPoint &pos);
     void _goToAddress();
     void _dumpToFile();
+    XBinary::ADDRESSSIZE getSelectedAddressSize();
 
 private:
     Ui::XDisasmWidget *ui;
