@@ -91,6 +91,10 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
         contextMenu.addAction(&actionDump);
 
         contextMenu.exec(ui->tableViewDisasm->viewport()->mapToGlobal(pos));
+
+        // TODO Disasm
+        // TODO code -> data
+        // TODO data -> group
     }
 }
 
