@@ -49,8 +49,8 @@ public:
     {
         qint64 nOffset;
         qint64 nSize;
-        QString sString;
-        qint64 nArg1;
+//        QString sString;
+//        qint64 nArg1;
         // TODO enum with types
     };
 

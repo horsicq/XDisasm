@@ -84,14 +84,14 @@ void XDisasm::_process(qint64 nInitAddress, qint64 nAddress)
 
             if(count>0)
             {
-                QString sMnemonic=insn->mnemonic;
-                QString sArgs=insn->op_str;
+//                QString sMnemonic=insn->mnemonic;
+//                QString sArgs=insn->op_str;
 
-                QString sOpcode=sMnemonic;
-                if(sArgs!="")
-                {
-                    sOpcode+=" "+sArgs;
-                }
+//                QString sOpcode=sMnemonic;
+//                if(sArgs!="")
+//                {
+//                    sOpcode+=" "+sArgs;
+//                }
 
                 for(int i=0; i<insn->detail->x86.op_count; i++)
                 {
@@ -118,7 +118,7 @@ void XDisasm::_process(qint64 nInitAddress, qint64 nAddress)
                 OPCODE opcode={};
                 opcode.nOffset=nOffset;
                 opcode.nSize=insn->size;
-                opcode.sString=sOpcode;
+//                opcode.sString=sOpcode;
 
                 pDisasmStats->mapOpcodes.insert(nAddress,opcode);
 

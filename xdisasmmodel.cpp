@@ -174,9 +174,25 @@ XDisasmModel::VEIW_RECORD XDisasmModel::getViewRecord(int nRow)
         nSize=pStats->mapVB.value(nAddress).nSize;
     }
 
+    QByteArray baData;
+
+    if(nOffset!=-1)
+    {
+        if(pDevice->seek(nOffset))
+        {
+            baData=pDevice->read(nSize);
+            result.sBytes=baData.toHex();
+        }
+    }
+    else
+    {
+        result.sBytes=QString("byte 0x%1 dup(?)").arg(nSize,0,16);
+    }
+
     if(pStats->mapVB.value(nAddress).type==XDisasm::VBT_OPCODE)
     {
-        result.sOpcode=pStats->mapOpcodes.value(nAddress).sString;
+//        result.sOpcode=pStats->mapOpcodes.value(nAddress).sString;
+        result.sOpcode="TODO"; // TODO
 
         if(pShowOptions->bShowLabels)
         {
@@ -192,19 +208,6 @@ XDisasmModel::VEIW_RECORD XDisasmModel::getViewRecord(int nRow)
                 }
             }
         }
-    }
-
-    if(nOffset!=-1)
-    {
-        if(pDevice->seek(nOffset))
-        {
-            QByteArray baData=pDevice->read(nSize);
-            result.sBytes=baData.toHex();
-        }
-    }
-    else
-    {
-        result.sBytes=QString("byte 0x%1 dup(?)").arg(nSize,0,16);
     }
 
     result.sLabel=pStats->mapLabelStrings.value(nAddress);
