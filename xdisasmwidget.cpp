@@ -17,7 +17,12 @@ XDisasmWidget::XDisasmWidget(QWidget *parent) :
 }
 
 void XDisasmWidget::setData(QIODevice *pDevice, XDisasm::STATS *pStats, XDisasmModel::SHOWOPTIONS *pOptions)
-{    
+{
+    if(pModel)
+    {
+        delete pModel;
+    }
+
     pModel=new XDisasmModel(pDevice,pStats,pOptions,this);
     ui->tableViewDisasm->setModel(pModel);
     //    ui->tableViewDisasm->setColumnHidden(1, true);
@@ -60,7 +65,7 @@ void XDisasmWidget::waitTillModelLoaded(qint64 nAddress)
 }
 
 XDisasmWidget::~XDisasmWidget()
-{
+{    
     delete ui;
 }
 

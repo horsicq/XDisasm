@@ -162,7 +162,9 @@ void XDisasm::process()
     cs_arch arch=CS_ARCH_X86;
     cs_mode _mode=CS_MODE_16;
 
-    if(mode==MODE_UNKNOWN)
+    pDisasmStats->mode=mode;
+
+    if(pDisasmStats->mode==MODE_UNKNOWN)
     {
         QSet<XBinary::FT> stFt=XBinary::getFileTypes(pDevice);
 
@@ -178,23 +180,31 @@ void XDisasm::process()
 
             if(sArch=="I386") arch=CS_ARCH_X86; // TODO more defs
 
-            if      (modeBinary==XBinary::MODE_32) _mode=CS_MODE_32;
-            else if (modeBinary==XBinary::MODE_64) _mode=CS_MODE_64;
+            if(modeBinary==XBinary::MODE_32)
+            {
+                _mode=CS_MODE_32;
+                pDisasmStats->mode=MODE_X86_32;
+            }
+            else if(modeBinary==XBinary::MODE_64)
+            {
+                _mode=CS_MODE_64;
+                pDisasmStats->mode=MODE_X86_64;
+            }
         }
     }
     else
     {
-        if(mode==MODE_X86_16)
+        if(pDisasmStats->mode==MODE_X86_16)
         {
             arch=CS_ARCH_X86;
             _mode=CS_MODE_16;
         }
-        else if(mode==MODE_X86_32)
+        else if(pDisasmStats->mode==MODE_X86_32)
         {
             arch=CS_ARCH_X86;
             _mode=CS_MODE_32;
         }
-        else if(mode==MODE_X86_64)
+        else if(pDisasmStats->mode==MODE_X86_64)
         {
             arch=CS_ARCH_X86;
             _mode=CS_MODE_64;
@@ -212,7 +222,7 @@ void XDisasm::process()
     cs_err err=cs_open(arch,_mode,&disasm_handle);
     if(!err)
     {
-        cs_option(disasm_handle,CS_OPT_DETAIL,CS_OPT_ON);
+        cs_option(disasm_handle,CS_OPT_DETAIL,CS_OPT_ON); // TODO Check
     }
 
 //    if(pBinary->metaObject()->className()==QString("XPE"))
@@ -457,6 +467,30 @@ qint64 XDisasm::getVBSize(QMap<qint64, XDisasm::VIEW_BLOCK> *pMapVB)
     }
 
     return nResult;
+}
+
+QString XDisasm::getDisasmString(csh disasm_handle, qint64 nAddress, char *pData, qint32 nDataSize)
+{
+    QString sResult;
+
+    cs_insn *insn;
+    size_t count=cs_disasm(disasm_handle,(uint8_t *)pData,nDataSize,nAddress,1,&insn);
+
+    if(count>0)
+    {
+        QString sMnemonic=insn->mnemonic;
+        QString sArgs=insn->op_str;
+
+        sResult=sMnemonic;
+        if(sArgs!="")
+        {
+            sResult+=" "+sArgs;
+        }
+
+        cs_free(insn,count);
+    }
+
+    return sResult;
 }
 
 void XDisasm::clear()

@@ -60,6 +60,7 @@ public:
     };
 
     explicit XDisasmModel(QIODevice *pDevice, XDisasm::STATS *pStats,SHOWOPTIONS *pShowOptions,QObject *parent);
+    ~XDisasmModel();
     // Header:
     QVariant headerData(int section, Qt::Orientation orientation, int role=Qt::DisplayRole) const override;
     // Basic functionality:
@@ -79,6 +80,7 @@ private:
 
     QQueue<qint64> quRecords;
     QMap<qint64,VEIW_RECORD> mapRecords;
+    csh disasm_handle;
 };
 
 #endif // XDISASMMODEL_H

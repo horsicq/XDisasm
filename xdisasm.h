@@ -84,6 +84,7 @@ public:
     struct STATS
     {
         XBinary::_MEMORY_MAP memoryMap;
+        MODE mode;
         qint64 nImageBase;
         qint64 nImageSize;
         qint64 nEntryPointAddress;
@@ -107,6 +108,7 @@ public:
     void stop();
     STATS *getStats();
     static qint64 getVBSize(QMap<qint64,VIEW_BLOCK> *pMapVB);
+    static QString getDisasmString(csh disasm_handle, qint64 nAddress, char *pData, qint32 nDataSize);
 
 public slots:
     void process();

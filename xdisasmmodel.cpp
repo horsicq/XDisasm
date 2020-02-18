@@ -26,6 +26,36 @@ XDisasmModel::XDisasmModel(QIODevice *pDevice, XDisasm::STATS *pStats,SHOWOPTION
     this->pDevice=pDevice;
     this->pStats=pStats;
     this->pShowOptions=pShowOptions;
+
+    cs_arch arch=CS_ARCH_X86;
+    cs_mode _mode=CS_MODE_16;
+
+    if(pStats->mode==XDisasm::MODE_X86_16)
+    {
+        arch=CS_ARCH_X86;
+        _mode=CS_MODE_16;
+    }
+    else if(pStats->mode==XDisasm::MODE_X86_32)
+    {
+        arch=CS_ARCH_X86;
+        _mode=CS_MODE_32;
+    }
+    else if(pStats->mode==XDisasm::MODE_X86_64)
+    {
+        arch=CS_ARCH_X86;
+        _mode=CS_MODE_64;
+    }
+
+    cs_err err=cs_open(arch,_mode,&disasm_handle);
+    if(!err)
+    {
+        cs_option(disasm_handle,CS_OPT_DETAIL,CS_OPT_ON); // TODO Check
+    }
+}
+
+XDisasmModel::~XDisasmModel()
+{
+    cs_close(&disasm_handle);
 }
 
 QVariant XDisasmModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -192,7 +222,7 @@ XDisasmModel::VEIW_RECORD XDisasmModel::getViewRecord(int nRow)
     if(pStats->mapVB.value(nAddress).type==XDisasm::VBT_OPCODE)
     {
 //        result.sOpcode=pStats->mapOpcodes.value(nAddress).sString;
-        result.sOpcode="TODO"; // TODO
+        result.sOpcode=XDisasm::getDisasmString(disasm_handle,nAddress,baData.data(),baData.size());
 
         if(pShowOptions->bShowLabels)
         {
