@@ -72,6 +72,7 @@ public:
     qint64 positionToAddress(qint64 nPosition);
     qint64 addressToPosition(qint64 nAddress);
     XDisasm::STATS *getStats();
+    void reload();
 
 private:
     QIODevice *pDevice;

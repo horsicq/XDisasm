@@ -57,14 +57,14 @@ void XDisasm::process(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qin
     disasm.process();
 }
 
-void XDisasm::_process(qint64 nInitAddress, qint64 nAddress)
+void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
 {
     pDisasmStats->mmapRefFrom.insert(nAddress,nInitAddress);
     pDisasmStats->mmapRefTo.insert(nInitAddress,nAddress);
 
     while(!bStop)
     {
-        if(pDisasmStats->mapOpcodes.contains(nAddress))
+        if(pDisasmStats->mapRecords.contains(nAddress))
         {
             break;
         }
@@ -110,17 +110,17 @@ void XDisasm::_process(qint64 nInitAddress, qint64 nAddress)
                                 pDisasmStats->stJumps.insert(nImm);
                             }
 
-                            _process(nAddress,nImm);
+                            _disasm(nAddress,nImm);
                         }
                     }
                 }
 
-                OPCODE opcode={};
+                RECORD opcode={};
                 opcode.nOffset=nOffset;
                 opcode.nSize=insn->size;
-//                opcode.sString=sOpcode;
+                opcode.type=RECORD_TYPE_OPCODE;
 
-                pDisasmStats->mapOpcodes.insert(nAddress,opcode);
+                pDisasmStats->mapRecords.insert(nAddress,opcode);
 
                 nDelta=insn->size;
 
@@ -153,7 +153,7 @@ void XDisasm::_process(qint64 nInitAddress, qint64 nAddress)
     }
 }
 
-void XDisasm::process()
+void XDisasm::process() // TODO rename
 {
     bStop=false;
 
@@ -234,18 +234,20 @@ void XDisasm::process()
 //        }
 //    }
 
-    _process(0,pDisasmStats->nEntryPointAddress);
+    _disasm(0,pDisasmStats->nEntryPointAddress);
 
     if(nStartAddress!=-1)
     {
         if(nStartAddress!=pDisasmStats->nEntryPointAddress)
         {
-            _process(0,nStartAddress);
+            _disasm(0,nStartAddress);
         }
     }
 
     _adjust();
     _updatePositions();
+
+    pDisasmStats->bInit=true;
 
     emit processFinished();
 }
@@ -262,6 +264,9 @@ XDisasm::STATS *XDisasm::getStats()
 
 void XDisasm::_adjust()
 {
+    pDisasmStats->mapLabelStrings.clear();
+    pDisasmStats->mapVB.clear();
+
     if(!bStop)
     {
         pDisasmStats->mapLabelStrings.insert(pDisasmStats->nEntryPointAddress,"entry_point");
@@ -294,18 +299,26 @@ void XDisasm::_adjust()
     //    QSet<qint64> stDataLabels;
 
         // TODO Strings
-        QMapIterator<qint64,XDisasm::OPCODE> iOpcodes(pDisasmStats->mapOpcodes);
-        while(iOpcodes.hasNext())
+        QMapIterator<qint64,XDisasm::RECORD> iRecords(pDisasmStats->mapRecords);
+        while(iRecords.hasNext())
         {
-            iOpcodes.next();
+            iRecords.next();
 
-            qint64 nAddress=iOpcodes.key();
+            qint64 nAddress=iRecords.key();
 
             VIEW_BLOCK record;
             record.nAddress=nAddress;
-            record.nOffset=iOpcodes.value().nOffset;
-            record.nSize=iOpcodes.value().nSize;
-            record.type=VBT_OPCODE;
+            record.nOffset=iRecords.value().nOffset;
+            record.nSize=iRecords.value().nSize;
+
+            if(iRecords.value().type==RECORD_TYPE_OPCODE)
+            {
+                record.type=VBT_OPCODE;
+            }
+            else if(iRecords.value().type==RECORD_TYPE_DATA)
+            {
+                record.type=VBT_DATA;
+            }
 
             if(!pDisasmStats->mapVB.contains(nAddress))
             {
@@ -323,7 +336,6 @@ void XDisasm::_adjust()
 
             for(qint64 nCurrentAddress=nRegionAddress,nCurrentOffset=nRegionOffset;nCurrentAddress<(nRegionAddress+nRegionSize);)
             {
-
                 QMap<qint64,VIEW_BLOCK>::iterator iter=pDisasmStats->mapVB.lowerBound(nCurrentAddress);
 
                 qint64 nBlockAddress=0;

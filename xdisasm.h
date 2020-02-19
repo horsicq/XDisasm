@@ -39,19 +39,26 @@ public:
         MODE_X86_64
     };
 
+    enum VBT
+    {
+        VBT_UNKNOWN=0,
+        VBT_OPCODE,
+        VBT_DATA,
+        VBT_DATABLOCK
+    };
+
     enum RECORD_TYPE
     {
         RECORD_TYPE_UNKNOWN=0,
-        RECORD_TYPE_OPCODE
+        RECORD_TYPE_OPCODE,
+        RECORD_TYPE_DATA,
     };
 
-    struct OPCODE
+    struct RECORD
     {
         qint64 nOffset;
         qint64 nSize;
-//        QString sString;
-//        qint64 nArg1;
-        // TODO enum with types
+        RECORD_TYPE type;
     };
 
 //    enum LABEL_TYPE
@@ -65,14 +72,6 @@ public:
         qint64 nName;
     };
 
-    enum VBT
-    {
-        VBT_UNKNOWN=0,
-        VBT_OPCODE,
-        VBT_DATA,
-        VBT_DATABLOCK
-    };
-
     struct VIEW_BLOCK
     {
         qint64 nAddress;
@@ -83,17 +82,18 @@ public:
 
     struct STATS
     {
+        bool bInit;
         XBinary::_MEMORY_MAP memoryMap;
         MODE mode;
         qint64 nImageBase;
         qint64 nImageSize;
         qint64 nEntryPointAddress;
-        QMap<qint64,OPCODE> mapOpcodes;
+        QMap<qint64,RECORD> mapRecords;
         QMultiMap<qint64,qint64> mmapRefTo;
         QMultiMap<qint64,qint64> mmapRefFrom;
         QSet<qint64> stCalls;
         QSet<qint64> stJumps;
-        QMultiMap<qint64,qint64> mmapDataLabels;
+        QMultiMap<qint64,qint64> mmapDataLabels; // TODO Check
         QMap<qint64,VIEW_BLOCK> mapVB;
         QMap<qint64,QString> mapLabelStrings;
         qint64 nPositions;
@@ -120,7 +120,7 @@ private:
     bool isEndBranchOpcode(uint nOpcodeID);
     bool isJmpOpcode(uint nOpcodeID);
     bool isCallOpcode(uint nOpcodeID);
-    void _process(qint64 nInitAddress, qint64 nAddress);
+    void _disasm(qint64 nInitAddress, qint64 nAddress);
     void _adjust();
     void _updatePositions();
 

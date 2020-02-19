@@ -13,19 +13,22 @@ XDisasmWidget::XDisasmWidget(QWidget *parent) :
 
     new QShortcut(QKeySequence(XShortcuts::GOTOADDRESS),this,SLOT(_goToAddress()));
 
+    disasmStats={};
     pModel=0;
 }
 
-void XDisasmWidget::setData(QIODevice *pDevice, XDisasm::STATS *pStats, XDisasmModel::SHOWOPTIONS *pOptions)
+void XDisasmWidget::setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pOptions)
 {
+    this->pDevice=pDevice;
+    this->pOptions=pOptions;
+
     if(pModel)
     {
         delete pModel;
     }
 
-    pModel=new XDisasmModel(pDevice,pStats,pOptions,this);
+    pModel=new XDisasmModel(pDevice,&disasmStats,pOptions,this);
     ui->tableViewDisasm->setModel(pModel);
-    //    ui->tableViewDisasm->setColumnHidden(1, true);
 }
 
 void XDisasmWidget::goToAddress(qint64 nAddress)
@@ -36,6 +39,22 @@ void XDisasmWidget::goToAddress(qint64 nAddress)
 
         ui->tableViewDisasm->verticalScrollBar()->setValue(nPosition);
     }
+}
+
+void XDisasmWidget::goToDisasmAddress(qint64 nAddress)
+{
+    // TODO
+    goToAddress(nAddress);
+}
+
+void XDisasmWidget::goToEntryPoint()
+{
+    if(!disasmStats.bInit)
+    {
+        process();
+    }
+
+    goToDisasmAddress(disasmStats.nEntryPointAddress); // TODO in thread
 }
 
 void XDisasmWidget::clear()
@@ -69,6 +88,24 @@ XDisasmWidget::~XDisasmWidget()
     delete ui;
 }
 
+void XDisasmWidget::process()
+{
+    DialogDisasmProcess ddp(this);
+
+    ddp.setData(pDevice,false,XDisasm::MODE_UNKNOWN,0,&disasmStats);
+    ddp.exec();
+
+    pModel->reload();
+//    ui->tableViewDisasm->viewport()->update();
+}
+
+void XDisasmWidget::test() // TODO remove
+{
+    int max=ui->tableViewDisasm->verticalScrollBar()->maximum();
+    int z=0;
+    z++;
+}
+
 void XDisasmWidget::on_pushButtonLabels_clicked()
 {
     if(pModel)
@@ -90,7 +127,7 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
         connect(&actionGoToAddress,SIGNAL(triggered()),this,SLOT(_goToAddress()));
         contextMenu.addAction(&actionGoToAddress);
 
-        QAction actionDump(tr("Dump to File"),this);
+        QAction actionDump(tr("Dump to File"),this); // TODO if selected
         actionDump.setShortcut(QKeySequence(XShortcuts::DUMPTOFILE));
         connect(&actionDump,SIGNAL(triggered()),this,SLOT(_dumpToFile()));
         contextMenu.addAction(&actionDump);
@@ -119,9 +156,9 @@ void XDisasmWidget::_dumpToFile()
 {
     if(pModel)
     {
-        XBinary::ADDRESSSIZE addressSize=getSelectedAddressSize();
+        SELECTION_STAT selectionStat=getSelectionStat();
 
-        if(addressSize.nSize)
+        if(selectionStat.nSize)
         {
             // TODO
             qDebug("_dumpToFile");
@@ -129,18 +166,19 @@ void XDisasmWidget::_dumpToFile()
     }
 }
 
-XBinary::ADDRESSSIZE XDisasmWidget::getSelectedAddressSize()
+XDisasmWidget::SELECTION_STAT XDisasmWidget::getSelectionStat()
 {
-    XBinary::ADDRESSSIZE result={};
+    SELECTION_STAT result={};
+    result.nAddress=-1;
 
     QModelIndexList il=ui->tableViewDisasm->selectionModel()->selectedRows();
 
-    int nCount=il.count();
+    result.nCount=il.count();
 
-    if(nCount)
+    if(result.nCount)
     {
         result.nAddress=il.at(0).data(Qt::UserRole+XDisasmModel::UD_ADDRESS).toLongLong();
-        result.nSize=(il.at(nCount-1).data(Qt::UserRole+XDisasmModel::UD_ADDRESS).toLongLong()+il.at(nCount-1).data(Qt::UserRole+XDisasmModel::UD_SIZE).toLongLong())-result.nAddress;
+        result.nSize=(il.at(result.nCount-1).data(Qt::UserRole+XDisasmModel::UD_ADDRESS).toLongLong()+il.at(result.nCount-1).data(Qt::UserRole+XDisasmModel::UD_SIZE).toLongLong())-result.nAddress;
     }
 
     return result;

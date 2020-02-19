@@ -71,7 +71,7 @@ void DialogDisasmProcess::on_pushButtonCancel_clicked()
 void DialogDisasmProcess::timerSlot()
 {
     // TODO more info
-    ui->labelOpcodes->setText(QString("%1").arg(pDisasm->getStats()->mapOpcodes.count()));
+    ui->labelOpcodes->setText(QString("%1").arg(pDisasm->getStats()->mapRecords.count()));
     ui->labelCalls->setText(QString("%1").arg(pDisasm->getStats()->stCalls.count()));
     ui->labelJumps->setText(QString("%1").arg(pDisasm->getStats()->stJumps.count()));
     ui->labelRefFrom->setText(QString("%1").arg(pDisasm->getStats()->mmapRefFrom.count()));
