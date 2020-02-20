@@ -35,8 +35,7 @@ public:
     void clear();
     void waitTillModelLoaded(qint64 nAddress);
     ~XDisasmWidget();
-    void process();
-    void test();
+    void process(qint64 nAddress);
 
 private slots:
     void on_pushButtonLabels_clicked();

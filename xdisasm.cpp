@@ -50,11 +50,11 @@ void XDisasm::setData(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qin
     this->pDisasmStats=pDisasmStats;
 }
 
-void XDisasm::process(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qint64 nStartAddress, XDisasm::STATS *pDisasmStats, qint64 nImageBase)
+void XDisasm::processDisasmInit(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qint64 nStartAddress, XDisasm::STATS *pDisasmStats, qint64 nImageBase)
 {
     XDisasm disasm;
     disasm.setData(pDevice,bIsImage,mode,nStartAddress,pDisasmStats,nImageBase);
-    disasm.process();
+    disasm.processDisasmInit();
 }
 
 void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
@@ -153,7 +153,7 @@ void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
     }
 }
 
-void XDisasm::process() // TODO rename
+void XDisasm::processDisasmInit() // TODO rename
 {
     bStop=false;
 
@@ -248,6 +248,23 @@ void XDisasm::process() // TODO rename
     _updatePositions();
 
     pDisasmStats->bInit=true;
+
+    emit processFinished();
+}
+
+void XDisasm::processDisasm()
+{
+    if(!pDisasmStats->bInit)
+    {
+        processDisasmInit();
+    }
+    else
+    {
+        _disasm(0,nStartAddress);
+
+        _adjust();
+        _updatePositions();
+    }
 
     emit processFinished();
 }

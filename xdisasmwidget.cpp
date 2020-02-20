@@ -22,13 +22,11 @@ void XDisasmWidget::setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pOpti
     this->pDevice=pDevice;
     this->pOptions=pOptions;
 
-    if(pModel)
-    {
-        delete pModel;
-    }
-
     pModel=new XDisasmModel(pDevice,&disasmStats,pOptions,this);
+
+    QItemSelectionModel *modelOld=ui->tableViewDisasm->selectionModel();
     ui->tableViewDisasm->setModel(pModel);
+    delete modelOld;
 }
 
 void XDisasmWidget::goToAddress(qint64 nAddress)
@@ -36,6 +34,11 @@ void XDisasmWidget::goToAddress(qint64 nAddress)
     if(pModel)
     {
         qint64 nPosition=pModel->addressToPosition(nAddress);
+
+        if(ui->tableViewDisasm->verticalScrollBar()->maximum()==0)
+        {
+            ui->tableViewDisasm->verticalScrollBar()->setMaximum(nPosition); // Hack
+        }
 
         ui->tableViewDisasm->verticalScrollBar()->setValue(nPosition);
     }
@@ -49,10 +52,7 @@ void XDisasmWidget::goToDisasmAddress(qint64 nAddress)
 
 void XDisasmWidget::goToEntryPoint()
 {
-    if(!disasmStats.bInit)
-    {
-        process();
-    }
+    process(-1);
 
     goToDisasmAddress(disasmStats.nEntryPointAddress); // TODO in thread
 }
@@ -88,22 +88,16 @@ XDisasmWidget::~XDisasmWidget()
     delete ui;
 }
 
-void XDisasmWidget::process()
+void XDisasmWidget::process(qint64 nAddress)
 {
+    pModel->_beginResetModel();
+
     DialogDisasmProcess ddp(this);
 
-    ddp.setData(pDevice,false,XDisasm::MODE_UNKNOWN,0,&disasmStats);
+    ddp.setData(pDevice,false,XDisasm::MODE_UNKNOWN,nAddress,&disasmStats);
     ddp.exec();
 
-    pModel->reload();
-//    ui->tableViewDisasm->viewport()->update();
-}
-
-void XDisasmWidget::test() // TODO remove
-{
-    int max=ui->tableViewDisasm->verticalScrollBar()->maximum();
-    int z=0;
-    z++;
+    pModel->_endResetModel();
 }
 
 void XDisasmWidget::on_pushButtonLabels_clicked()

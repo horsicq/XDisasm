@@ -33,7 +33,7 @@ DialogDisasmProcess::DialogDisasmProcess(QWidget *parent) :
     pDisasm->moveToThread(pThread);
 
     connect(pDisasm, SIGNAL(processFinished()), this, SLOT(close()));
-    connect(pThread, SIGNAL(started()), pDisasm, SLOT(process()));
+    connect(pThread, SIGNAL(started()), pDisasm, SLOT(processDisasm()));
 
     pTimer=new QTimer(this);
     connect(pTimer,SIGNAL(timeout()),this,SLOT(timerSlot()));

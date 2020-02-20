@@ -104,14 +104,15 @@ public:
     explicit XDisasm(QObject *parent=nullptr);
     ~XDisasm();
     void setData(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qint64 nStartAddress, XDisasm::STATS *pDisasmStats, qint64 nImageBase=-1);
-    static void process(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qint64 nStartAddress, XDisasm::STATS *pDisasmStats, qint64 nImageBase=-1);
+    static void processDisasmInit(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qint64 nStartAddress, XDisasm::STATS *pDisasmStats, qint64 nImageBase=-1);
     void stop();
     STATS *getStats();
     static qint64 getVBSize(QMap<qint64,VIEW_BLOCK> *pMapVB);
     static QString getDisasmString(csh disasm_handle, qint64 nAddress, char *pData, qint32 nDataSize);
 
 public slots:
-    void process();
+    void processDisasmInit();
+    void processDisasm();
 
 private:
     const int N_X64_OPCODE_SIZE=15;

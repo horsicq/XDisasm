@@ -337,8 +337,12 @@ XDisasm::STATS *XDisasmModel::getStats()
     return pStats;
 }
 
-void XDisasmModel::reload()
+void XDisasmModel::_beginResetModel()
 {
     beginResetModel();
+}
+
+void XDisasmModel::_endResetModel()
+{
     endResetModel();
 }
