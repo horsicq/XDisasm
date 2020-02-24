@@ -33,7 +33,6 @@ public:
     void goToDisasmAddress(qint64 nAddress);
     void goToEntryPoint();
     void clear();
-    void waitTillModelLoaded(qint64 nAddress);
     ~XDisasmWidget();
     void process(qint64 nAddress);
 

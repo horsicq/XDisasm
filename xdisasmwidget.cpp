@@ -46,41 +46,27 @@ void XDisasmWidget::goToAddress(qint64 nAddress)
 
 void XDisasmWidget::goToDisasmAddress(qint64 nAddress)
 {
-    // TODO
+    if(!disasmStats.bInit)
+    {
+        process(nAddress);
+    }
+
     goToAddress(nAddress);
 }
 
 void XDisasmWidget::goToEntryPoint()
 {
-    process(-1);
+    if(!disasmStats.bInit)
+    {
+        process(-1);
+    }
 
-    goToDisasmAddress(disasmStats.nEntryPointAddress); // TODO in thread
+    goToAddress(disasmStats.nEntryPointAddress);
 }
 
 void XDisasmWidget::clear()
 {
     ui->tableViewDisasm->setModel(0);
-}
-
-void XDisasmWidget::waitTillModelLoaded(qint64 nAddress)
-{
-    if(pModel)
-    {
-        qint64 nPosition=pModel->addressToPosition(nAddress);
-        int nMaximum=0;
-
-        while(true)
-        {
-            nMaximum=ui->tableViewDisasm->verticalScrollBar()->maximum();
-
-            if(nPosition<=nMaximum)
-            {
-                break;
-            }
-
-            QThread::msleep(100);
-        }
-    }
 }
 
 XDisasmWidget::~XDisasmWidget()
@@ -90,14 +76,17 @@ XDisasmWidget::~XDisasmWidget()
 
 void XDisasmWidget::process(qint64 nAddress)
 {
-    pModel->_beginResetModel();
+    if(pModel)
+    {
+        pModel->_beginResetModel();
 
-    DialogDisasmProcess ddp(this);
+        DialogDisasmProcess ddp(this);
 
-    ddp.setData(pDevice,false,XDisasm::MODE_UNKNOWN,nAddress,&disasmStats);
-    ddp.exec();
+        ddp.setData(pDevice,false,XDisasm::MODE_UNKNOWN,nAddress,&disasmStats);
+        ddp.exec();
 
-    pModel->_endResetModel();
+        pModel->_endResetModel();
+    }
 }
 
 void XDisasmWidget::on_pushButtonLabels_clicked()
