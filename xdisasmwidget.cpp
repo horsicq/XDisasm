@@ -115,6 +115,16 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
         connect(&actionDump,SIGNAL(triggered()),this,SLOT(_dumpToFile()));
         contextMenu.addAction(&actionDump);
 
+        QAction actionDisasm(tr("Disasm"),this); // TODO if 1 row selected
+        actionDisasm.setShortcut(QKeySequence(XShortcuts::DISASM));
+        connect(&actionDisasm,SIGNAL(triggered()),this,SLOT(_disasm()));
+        contextMenu.addAction(&actionDisasm);
+
+        QAction actionToData(tr("To Data"),this); // TODO if 1 row selected
+        actionToData.setShortcut(QKeySequence(XShortcuts::TODATA));
+        connect(&actionToData,SIGNAL(triggered()),this,SLOT(_toData()));
+        contextMenu.addAction(&actionToData);
+
         contextMenu.exec(ui->tableViewDisasm->viewport()->mapToGlobal(pos));
 
         // TODO Disasm
@@ -145,6 +155,34 @@ void XDisasmWidget::_dumpToFile()
         {
             // TODO
             qDebug("_dumpToFile");
+        }
+    }
+}
+
+void XDisasmWidget::_disasm()
+{
+    if(pModel)
+    {
+        SELECTION_STAT selectionStat=getSelectionStat();
+
+        if(selectionStat.nSize)
+        {
+            // TODO
+            qDebug("_disasm");
+        }
+    }
+}
+
+void XDisasmWidget::_toData()
+{
+    if(pModel)
+    {
+        SELECTION_STAT selectionStat=getSelectionStat();
+
+        if(selectionStat.nSize)
+        {
+            // TODO
+            qDebug("_toData");
         }
     }
 }

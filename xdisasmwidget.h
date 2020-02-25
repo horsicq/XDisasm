@@ -41,6 +41,8 @@ private slots:
     void on_tableViewDisasm_customContextMenuRequested(const QPoint &pos);
     void _goToAddress();
     void _dumpToFile();
+    void _disasm();
+    void _toData();
     SELECTION_STAT getSelectionStat();
 
 private:
