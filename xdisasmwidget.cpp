@@ -64,6 +64,11 @@ void XDisasmWidget::goToEntryPoint()
     goToAddress(disasmStats.nEntryPointAddress);
 }
 
+void XDisasmWidget::disasm(qint64 nAddress)
+{
+    process(nAddress);
+}
+
 void XDisasmWidget::clear()
 {
     ui->tableViewDisasm->setModel(0);
@@ -127,8 +132,6 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
 
         contextMenu.exec(ui->tableViewDisasm->viewport()->mapToGlobal(pos));
 
-        // TODO Disasm
-        // TODO code -> data
         // TODO data -> group
     }
 }
@@ -169,6 +172,7 @@ void XDisasmWidget::_disasm()
         {
             // TODO
             qDebug("_disasm");
+            disasm(selectionStat.nAddress);
         }
     }
 }
@@ -199,7 +203,11 @@ XDisasmWidget::SELECTION_STAT XDisasmWidget::getSelectionStat()
     if(result.nCount)
     {
         result.nAddress=il.at(0).data(Qt::UserRole+XDisasmModel::UD_ADDRESS).toLongLong();
-        result.nSize=(il.at(result.nCount-1).data(Qt::UserRole+XDisasmModel::UD_ADDRESS).toLongLong()+il.at(result.nCount-1).data(Qt::UserRole+XDisasmModel::UD_SIZE).toLongLong())-result.nAddress;
+
+        qint64 nLastElementAddress=il.at(result.nCount-1).data(Qt::UserRole+XDisasmModel::UD_ADDRESS).toLongLong();
+        qint64 nLastElementSize=il.at(result.nCount-1).data(Qt::UserRole+XDisasmModel::UD_SIZE).toLongLong();
+
+        result.nSize=(nLastElementAddress+nLastElementSize)-result.nAddress;
     }
 
     return result;

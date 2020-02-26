@@ -160,6 +160,8 @@ QVariant XDisasmModel::data(const QModelIndex &index, int role) const
     }
     else if(role==Qt::UserRole+UD_SIZE)
     {
+        result=1;
+
         XDisasmModel* _this=const_cast<XDisasmModel *>(this);
 
         int nRow=index.row();

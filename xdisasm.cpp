@@ -157,10 +157,8 @@ void XDisasm::processDisasmInit() // TODO rename
 {
     bStop=false;
 
-    clear();
-
-    cs_arch arch=CS_ARCH_X86;
-    cs_mode _mode=CS_MODE_16;
+    pDisasmStats->csarch=CS_ARCH_X86;
+    pDisasmStats->csmode=CS_MODE_16;
 
     pDisasmStats->mode=mode;
 
@@ -178,16 +176,16 @@ void XDisasm::processDisasmInit() // TODO rename
             XBinary::MODE modeBinary=pe.getMode();
             QString sArch=pe.getArch();
 
-            if(sArch=="I386") arch=CS_ARCH_X86; // TODO more defs
+            if(sArch=="I386") pDisasmStats->csarch=CS_ARCH_X86; // TODO more defs
 
             if(modeBinary==XBinary::MODE_32)
             {
-                _mode=CS_MODE_32;
+                pDisasmStats->csmode=CS_MODE_32;
                 pDisasmStats->mode=MODE_X86_32;
             }
             else if(modeBinary==XBinary::MODE_64)
             {
-                _mode=CS_MODE_64;
+                pDisasmStats->csmode=CS_MODE_64;
                 pDisasmStats->mode=MODE_X86_64;
             }
         }
@@ -196,18 +194,18 @@ void XDisasm::processDisasmInit() // TODO rename
     {
         if(pDisasmStats->mode==MODE_X86_16)
         {
-            arch=CS_ARCH_X86;
-            _mode=CS_MODE_16;
+            pDisasmStats->csarch=CS_ARCH_X86;
+            pDisasmStats->csmode=CS_MODE_16;
         }
         else if(pDisasmStats->mode==MODE_X86_32)
         {
-            arch=CS_ARCH_X86;
-            _mode=CS_MODE_32;
+            pDisasmStats->csarch=CS_ARCH_X86;
+            pDisasmStats->csmode=CS_MODE_32;
         }
         else if(pDisasmStats->mode==MODE_X86_64)
         {
-            arch=CS_ARCH_X86;
-            _mode=CS_MODE_64;
+            pDisasmStats->csarch=CS_ARCH_X86;
+            pDisasmStats->csmode=CS_MODE_64;
         }
 
         XBinary binary(pDevice,bIsImage,nImageBase);
@@ -219,7 +217,7 @@ void XDisasm::processDisasmInit() // TODO rename
     pDisasmStats->nImageBase=pDisasmStats->memoryMap.nBaseAddress;
     pDisasmStats->nImageSize=XBinary::getTotalVirtualSize(&(pDisasmStats->memoryMap));
 
-    cs_err err=cs_open(arch,_mode,&disasm_handle);
+    cs_err err=cs_open(pDisasmStats->csarch,pDisasmStats->csmode,&disasm_handle);
     if(!err)
     {
         cs_option(disasm_handle,CS_OPT_DETAIL,CS_OPT_ON); // TODO Check
@@ -249,6 +247,12 @@ void XDisasm::processDisasmInit() // TODO rename
 
     pDisasmStats->bInit=true;
 
+    if(disasm_handle)
+    {
+        cs_close(&disasm_handle);
+        disasm_handle=0;
+    }
+
     emit processFinished();
 }
 
@@ -260,10 +264,25 @@ void XDisasm::processDisasm()
     }
     else
     {
+        if(disasm_handle==0)
+        {
+            cs_err err=cs_open(pDisasmStats->csarch,pDisasmStats->csmode,&disasm_handle);
+            if(!err)
+            {
+                cs_option(disasm_handle,CS_OPT_DETAIL,CS_OPT_ON); // TODO Check
+            }
+        }
+
         _disasm(0,nStartAddress);
 
         _adjust();
         _updatePositions();
+
+        if(disasm_handle)
+        {
+            cs_close(&disasm_handle);
+            disasm_handle=0;
+        }
     }
 
     emit processFinished();
@@ -317,7 +336,7 @@ void XDisasm::_adjust()
 
         // TODO Strings
         QMapIterator<qint64,XDisasm::RECORD> iRecords(pDisasmStats->mapRecords);
-        while(iRecords.hasNext())
+        while(iRecords.hasNext()&&(!bStop))
         {
             iRecords.next();
 
@@ -345,7 +364,7 @@ void XDisasm::_adjust()
 
         int nMMCount=pDisasmStats->memoryMap.listRecords.count(); // TODO
 
-        for(int i=0;i<nMMCount;i++)
+        for(int i=0;(i<nMMCount)&&(!bStop);i++)
         {
             qint64 nRegionAddress=pDisasmStats->memoryMap.listRecords.at(i).nAddress;
             qint64 nRegionOffset=pDisasmStats->memoryMap.listRecords.at(i).nOffset;
@@ -520,15 +539,6 @@ QString XDisasm::getDisasmString(csh disasm_handle, qint64 nAddress, char *pData
     }
 
     return sResult;
-}
-
-void XDisasm::clear()
-{
-    if(disasm_handle)
-    {
-        cs_close(&disasm_handle);
-        disasm_handle=0;
-    }
 }
 
 bool XDisasm::isEndBranchOpcode(uint nOpcodeID)

@@ -32,6 +32,7 @@ public:
     void goToAddress(qint64 nAddress);
     void goToDisasmAddress(qint64 nAddress);
     void goToEntryPoint();
+    void disasm(qint64 nAddress);
     void clear();
     ~XDisasmWidget();
     void process(qint64 nAddress);

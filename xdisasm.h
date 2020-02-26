@@ -85,6 +85,8 @@ public:
         bool bInit;
         XBinary::_MEMORY_MAP memoryMap;
         MODE mode;
+        cs_arch csarch;
+        cs_mode csmode;
         qint64 nImageBase;
         qint64 nImageSize;
         qint64 nEntryPointAddress;
@@ -117,7 +119,6 @@ public slots:
 private:
     const int N_X64_OPCODE_SIZE=15;
 
-    void clear();
     bool isEndBranchOpcode(uint nOpcodeID);
     bool isJmpOpcode(uint nOpcodeID);
     bool isCallOpcode(uint nOpcodeID);
