@@ -74,6 +74,7 @@ public:
     XDisasm::STATS *getStats();
     void _beginResetModel();
     void _endResetModel();
+    void resetCache();
 
 private:
     QIODevice *pDevice;

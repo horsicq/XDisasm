@@ -346,5 +346,12 @@ void XDisasmModel::_beginResetModel()
 
 void XDisasmModel::_endResetModel()
 {
+    resetCache();
     endResetModel();
+}
+
+void XDisasmModel::resetCache()
+{
+    mapRecords.clear();
+    quRecords.clear();
 }
