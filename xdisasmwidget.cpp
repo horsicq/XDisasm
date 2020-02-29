@@ -69,6 +69,11 @@ void XDisasmWidget::disasm(qint64 nAddress)
     process(nAddress);
 }
 
+void XDisasmWidget::toData(qint64 nAddress, qint64 nSize)
+{
+    qDebug("void XDisasmWidget::toData(qint64 nAddress, qint64 nSize)");
+}
+
 void XDisasmWidget::clear()
 {
     ui->tableViewDisasm->setModel(0);
@@ -170,8 +175,6 @@ void XDisasmWidget::_disasm()
 
         if(selectionStat.nSize)
         {
-            // TODO
-            qDebug("_disasm");
             disasm(selectionStat.nAddress);
         }
     }
@@ -185,8 +188,7 @@ void XDisasmWidget::_toData()
 
         if(selectionStat.nSize)
         {
-            // TODO
-            qDebug("_toData");
+            toData(selectionStat.nAddress,selectionStat.nSize);
         }
     }
 }
