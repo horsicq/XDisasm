@@ -11,18 +11,22 @@ XDisasmWidget::XDisasmWidget(QWidget *parent) :
     font.setFamily("Courier");
     ui->tableViewDisasm->setFont(font);
 
-    new QShortcut(QKeySequence(XShortcuts::GOTOADDRESS),this,SLOT(_goToAddress()));
+    new QShortcut(QKeySequence(XShortcuts::GOTOADDRESS),    this,SLOT(_goToAddress()));
+    new QShortcut(QKeySequence(XShortcuts::DUMPTOFILE),     this,SLOT(_dumpToFile()));
+    new QShortcut(QKeySequence(XShortcuts::DISASM),         this,SLOT(_disasm()));
+    new QShortcut(QKeySequence(XShortcuts::TODATA),         this,SLOT(_toData()));
 
-    disasmStats={};
+    pDisasmStats=0;
     pModel=0;
 }
 
-void XDisasmWidget::setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pOptions)
+void XDisasmWidget::setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pOptions, XDisasm::STATS *pDisasmStats)
 {
     this->pDevice=pDevice;
     this->pOptions=pOptions;
+    this->pDisasmStats=pDisasmStats;
 
-    pModel=new XDisasmModel(pDevice,&disasmStats,pOptions,this);
+    pModel=new XDisasmModel(pDevice,pDisasmStats,pOptions,this);
 
     QItemSelectionModel *modelOld=ui->tableViewDisasm->selectionModel();
     ui->tableViewDisasm->setModel(pModel);
@@ -46,7 +50,7 @@ void XDisasmWidget::goToAddress(qint64 nAddress)
 
 void XDisasmWidget::goToDisasmAddress(qint64 nAddress)
 {
-    if(!disasmStats.bInit)
+    if(!pDisasmStats->bInit)
     {
         process(nAddress);
     }
@@ -56,12 +60,12 @@ void XDisasmWidget::goToDisasmAddress(qint64 nAddress)
 
 void XDisasmWidget::goToEntryPoint()
 {
-    if(!disasmStats.bInit)
+    if(!pDisasmStats->bInit)
     {
         process(-1);
     }
 
-    goToAddress(disasmStats.nEntryPointAddress);
+    goToAddress(pDisasmStats->nEntryPointAddress);
 }
 
 void XDisasmWidget::disasm(qint64 nAddress)
@@ -92,11 +96,16 @@ void XDisasmWidget::process(qint64 nAddress)
 
         DialogDisasmProcess ddp(this);
 
-        ddp.setData(pDevice,false,XDisasm::MODE_UNKNOWN,nAddress,&disasmStats);
+        ddp.setData(pDevice,false,XDisasm::MODE_UNKNOWN,nAddress,pDisasmStats);
         ddp.exec();
 
         pModel->_endResetModel();
     }
+}
+
+XDisasm::STATS *XDisasmWidget::getDisasmStats()
+{
+    return pDisasmStats;
 }
 
 void XDisasmWidget::on_pushButtonLabels_clicked()

@@ -28,7 +28,7 @@ class XDisasmWidget : public QWidget
 
 public:
     explicit XDisasmWidget(QWidget *parent = nullptr);
-    void setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pOptions);
+    void setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pOptions,XDisasm::STATS *pDisasmStats);
     void goToAddress(qint64 nAddress);
     void goToDisasmAddress(qint64 nAddress);
     void goToEntryPoint();
@@ -37,6 +37,7 @@ public:
     void clear();
     ~XDisasmWidget();
     void process(qint64 nAddress);
+    XDisasm::STATS *getDisasmStats();
 
 private slots:
     void on_pushButtonLabels_clicked();
@@ -52,7 +53,7 @@ private:
     QIODevice *pDevice;
     XDisasmModel::SHOWOPTIONS *pOptions;
     XDisasmModel *pModel;
-    XDisasm::STATS disasmStats;
+    XDisasm::STATS *pDisasmStats;
 };
 
 #endif // FORMDISASM_H

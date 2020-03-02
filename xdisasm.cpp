@@ -264,6 +264,7 @@ void XDisasm::processDisasm()
     }
     else
     {
+        // TODO move to function
         if(disasm_handle==0)
         {
             cs_err err=cs_open(pDisasmStats->csarch,pDisasmStats->csmode,&disasm_handle);
