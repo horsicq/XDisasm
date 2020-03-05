@@ -8,7 +8,7 @@ XDisasmWidget::XDisasmWidget(QWidget *parent) :
     ui->setupUi(this);
 
     QFont font=ui->tableViewDisasm->font();
-    font.setFamily("Courier");
+    font.setFamily("Courier"); // TODO
     ui->tableViewDisasm->setFont(font);
 
     new QShortcut(QKeySequence(XShortcuts::GOTOADDRESS),    this,SLOT(_goToAddress()));
