@@ -33,7 +33,7 @@ DialogDisasmProcess::DialogDisasmProcess(QWidget *parent) :
     pDisasm->moveToThread(pThread);
 
     connect(pDisasm, SIGNAL(processFinished()), this, SLOT(close()));
-    connect(pThread, SIGNAL(started()), pDisasm, SLOT(processDisasm()));
+    connect(pThread, SIGNAL(started()), pDisasm, SLOT(process()));
 
     pTimer=new QTimer(this);
     connect(pTimer,SIGNAL(timeout()),this,SLOT(timerSlot()));
@@ -55,9 +55,9 @@ DialogDisasmProcess::~DialogDisasmProcess()
     delete pDisasm;
 }
 
-void DialogDisasmProcess::setData(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qint64 nStartAddress, XDisasm::STATS *pDisasmStats)
+void DialogDisasmProcess::setData(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qint64 nStartAddress, XDisasm::STATS *pDisasmStats, XDisasm::DM dm)
 {
-    pDisasm->setData(pDevice,bIsImage,mode,nStartAddress,pDisasmStats);
+    pDisasm->setData(pDevice,bIsImage,mode,nStartAddress,pDisasmStats,-1,dm);
 
     pThread->start();
     pTimer->start(1000);

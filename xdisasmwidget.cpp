@@ -52,7 +52,7 @@ void XDisasmWidget::goToDisasmAddress(qint64 nAddress)
 {
     if(!pDisasmStats->bInit)
     {
-        process(nAddress);
+        process(nAddress,XDisasm::DM_DISASM);
     }
 
     goToAddress(nAddress);
@@ -62,7 +62,7 @@ void XDisasmWidget::goToEntryPoint()
 {
     if(!pDisasmStats->bInit)
     {
-        process(-1);
+        process(-1,XDisasm::DM_DISASM);
     }
 
     goToAddress(pDisasmStats->nEntryPointAddress);
@@ -70,12 +70,12 @@ void XDisasmWidget::goToEntryPoint()
 
 void XDisasmWidget::disasm(qint64 nAddress)
 {
-    process(nAddress);
+    process(nAddress,XDisasm::DM_DISASM);
 }
 
 void XDisasmWidget::toData(qint64 nAddress, qint64 nSize)
 {
-    qDebug("void XDisasmWidget::toData(qint64 nAddress, qint64 nSize)");
+    process(nAddress,XDisasm::DM_TODATA);
 }
 
 void XDisasmWidget::clear()
@@ -88,7 +88,7 @@ XDisasmWidget::~XDisasmWidget()
     delete ui;
 }
 
-void XDisasmWidget::process(qint64 nAddress)
+void XDisasmWidget::process(qint64 nAddress,XDisasm::DM dm)
 {
     if(pModel)
     {
@@ -96,7 +96,7 @@ void XDisasmWidget::process(qint64 nAddress)
 
         DialogDisasmProcess ddp(this);
 
-        ddp.setData(pDevice,false,XDisasm::MODE_UNKNOWN,nAddress,pDisasmStats);
+        ddp.setData(pDevice,false,XDisasm::MODE_UNKNOWN,nAddress,pDisasmStats,dm);
         ddp.exec();
 
         pModel->_endResetModel();

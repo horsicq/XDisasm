@@ -36,7 +36,7 @@ public:
     void toData(qint64 nAddress,qint64 nSize);
     void clear();
     ~XDisasmWidget();
-    void process(qint64 nAddress);
+    void process(qint64 nAddress, XDisasm::DM dm);
     XDisasm::STATS *getDisasmStats();
 
 private slots:

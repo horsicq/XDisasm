@@ -40,21 +40,15 @@ XDisasm::~XDisasm()
     }
 }
 
-void XDisasm::setData(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qint64 nStartAddress, STATS *pDisasmStats,qint64 nImageBase)
+void XDisasm::setData(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qint64 nStartAddress, STATS *pDisasmStats, qint64 nImageBase, DM dm)
 {
     this->pDevice=pDevice;
     this->bIsImage=bIsImage;
     this->mode=mode;
     this->nImageBase=nImageBase;
+    this->dm=dm;
     this->nStartAddress=nStartAddress;
     this->pDisasmStats=pDisasmStats;
-}
-
-void XDisasm::processDisasmInit(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qint64 nStartAddress, XDisasm::STATS *pDisasmStats, qint64 nImageBase)
-{
-    XDisasm disasm;
-    disasm.setData(pDevice,bIsImage,mode,nStartAddress,pDisasmStats,nImageBase);
-    disasm.processDisasmInit();
 }
 
 void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
@@ -153,114 +147,107 @@ void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
     }
 }
 
-void XDisasm::processDisasmInit() // TODO rename
+void XDisasm::processDisasm()
 {
     bStop=false;
 
-    pDisasmStats->csarch=CS_ARCH_X86;
-    pDisasmStats->csmode=CS_MODE_16;
-
-    pDisasmStats->mode=mode;
-
-    if(pDisasmStats->mode==MODE_UNKNOWN)
-    {
-        QSet<XBinary::FT> stFt=XBinary::getFileTypes(pDevice);
-
-        if(stFt.contains(XBinary::FT_PE))
-        {
-            XPE pe(pDevice,bIsImage,nImageBase);
-
-            pDisasmStats->memoryMap=pe.getMemoryMap();
-            pDisasmStats->nEntryPointAddress=pe.getEntryPointAddress(&pDisasmStats->memoryMap);
-
-            XBinary::MODE modeBinary=pe.getMode();
-            QString sArch=pe.getArch();
-
-            if(sArch=="I386") pDisasmStats->csarch=CS_ARCH_X86; // TODO more defs
-
-            if(modeBinary==XBinary::MODE_32)
-            {
-                pDisasmStats->csmode=CS_MODE_32;
-                pDisasmStats->mode=MODE_X86_32;
-            }
-            else if(modeBinary==XBinary::MODE_64)
-            {
-                pDisasmStats->csmode=CS_MODE_64;
-                pDisasmStats->mode=MODE_X86_64;
-            }
-        }
-    }
-    else
-    {
-        if(pDisasmStats->mode==MODE_X86_16)
-        {
-            pDisasmStats->csarch=CS_ARCH_X86;
-            pDisasmStats->csmode=CS_MODE_16;
-        }
-        else if(pDisasmStats->mode==MODE_X86_32)
-        {
-            pDisasmStats->csarch=CS_ARCH_X86;
-            pDisasmStats->csmode=CS_MODE_32;
-        }
-        else if(pDisasmStats->mode==MODE_X86_64)
-        {
-            pDisasmStats->csarch=CS_ARCH_X86;
-            pDisasmStats->csmode=CS_MODE_64;
-        }
-
-        XBinary binary(pDevice,bIsImage,nImageBase);
-
-        pDisasmStats->memoryMap=binary.getMemoryMap();
-        pDisasmStats->nEntryPointAddress=nStartAddress;
-    }
-
-    pDisasmStats->nImageBase=pDisasmStats->memoryMap.nBaseAddress;
-    pDisasmStats->nImageSize=XBinary::getTotalVirtualSize(&(pDisasmStats->memoryMap));
-
-    cs_err err=cs_open(pDisasmStats->csarch,pDisasmStats->csmode,&disasm_handle);
-    if(!err)
-    {
-        cs_option(disasm_handle,CS_OPT_DETAIL,CS_OPT_ON); // TODO Check
-    }
-
-//    if(pBinary->metaObject()->className()==QString("XPE"))
-//    {
-//        XPE *pPE=(XPE *)pBinary;
-//        if(pPE->isValid())
-//        {
-//            // TODO
-//        }
-//    }
-
-    _disasm(0,pDisasmStats->nEntryPointAddress);
-
-    if(nStartAddress!=-1)
-    {
-        if(nStartAddress!=pDisasmStats->nEntryPointAddress)
-        {
-            _disasm(0,nStartAddress);
-        }
-    }
-
-    _adjust();
-    _updatePositions();
-
-    pDisasmStats->bInit=true;
-
-    if(disasm_handle)
-    {
-        cs_close(&disasm_handle);
-        disasm_handle=0;
-    }
-
-    emit processFinished();
-}
-
-void XDisasm::processDisasm()
-{
     if(!pDisasmStats->bInit)
     {
-        processDisasmInit();
+        pDisasmStats->csarch=CS_ARCH_X86;
+        pDisasmStats->csmode=CS_MODE_16;
+
+        pDisasmStats->mode=mode;
+
+        if(pDisasmStats->mode==MODE_UNKNOWN)
+        {
+            QSet<XBinary::FT> stFt=XBinary::getFileTypes(pDevice);
+
+            if(stFt.contains(XBinary::FT_PE))
+            {
+                XPE pe(pDevice,bIsImage,nImageBase);
+
+                pDisasmStats->memoryMap=pe.getMemoryMap();
+                pDisasmStats->nEntryPointAddress=pe.getEntryPointAddress(&pDisasmStats->memoryMap);
+
+                XBinary::MODE modeBinary=pe.getMode();
+                QString sArch=pe.getArch();
+
+                if(sArch=="I386") pDisasmStats->csarch=CS_ARCH_X86; // TODO more defs
+
+                if(modeBinary==XBinary::MODE_32)
+                {
+                    pDisasmStats->csmode=CS_MODE_32;
+                    pDisasmStats->mode=MODE_X86_32;
+                }
+                else if(modeBinary==XBinary::MODE_64)
+                {
+                    pDisasmStats->csmode=CS_MODE_64;
+                    pDisasmStats->mode=MODE_X86_64;
+                }
+            }
+        }
+        else
+        {
+            if(pDisasmStats->mode==MODE_X86_16)
+            {
+                pDisasmStats->csarch=CS_ARCH_X86;
+                pDisasmStats->csmode=CS_MODE_16;
+            }
+            else if(pDisasmStats->mode==MODE_X86_32)
+            {
+                pDisasmStats->csarch=CS_ARCH_X86;
+                pDisasmStats->csmode=CS_MODE_32;
+            }
+            else if(pDisasmStats->mode==MODE_X86_64)
+            {
+                pDisasmStats->csarch=CS_ARCH_X86;
+                pDisasmStats->csmode=CS_MODE_64;
+            }
+
+            XBinary binary(pDevice,bIsImage,nImageBase);
+
+            pDisasmStats->memoryMap=binary.getMemoryMap();
+            pDisasmStats->nEntryPointAddress=nStartAddress;
+        }
+
+        pDisasmStats->nImageBase=pDisasmStats->memoryMap.nBaseAddress;
+        pDisasmStats->nImageSize=XBinary::getTotalVirtualSize(&(pDisasmStats->memoryMap));
+
+        cs_err err=cs_open(pDisasmStats->csarch,pDisasmStats->csmode,&disasm_handle);
+        if(!err)
+        {
+            cs_option(disasm_handle,CS_OPT_DETAIL,CS_OPT_ON); // TODO Check
+        }
+
+    //    if(pBinary->metaObject()->className()==QString("XPE"))
+    //    {
+    //        XPE *pPE=(XPE *)pBinary;
+    //        if(pPE->isValid())
+    //        {
+    //            // TODO
+    //        }
+    //    }
+
+        _disasm(0,pDisasmStats->nEntryPointAddress);
+
+        if(nStartAddress!=-1)
+        {
+            if(nStartAddress!=pDisasmStats->nEntryPointAddress)
+            {
+                _disasm(0,nStartAddress);
+            }
+        }
+
+        _adjust();
+        _updatePositions();
+
+        pDisasmStats->bInit=true;
+
+        if(disasm_handle)
+        {
+            cs_close(&disasm_handle);
+            disasm_handle=0;
+        }
     }
     else
     {
@@ -287,6 +274,15 @@ void XDisasm::processDisasm()
     }
 
     emit processFinished();
+}
+
+void XDisasm::process()
+{
+    if(dm==DM_DISASM)
+    {
+        processDisasm();
+    }
+    // TODO to Data
 }
 
 void XDisasm::stop()

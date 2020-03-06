@@ -31,6 +31,14 @@ class XDisasm : public QObject
     Q_OBJECT
 
 public:
+    enum DM
+    {
+        DM_UNKNOWN=0,
+        DM_DISASM,
+        DM_TODATA
+    };
+
+
     enum MODE
     {
         MODE_UNKNOWN=0,
@@ -105,16 +113,15 @@ public:
 
     explicit XDisasm(QObject *parent=nullptr);
     ~XDisasm();
-    void setData(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qint64 nStartAddress, XDisasm::STATS *pDisasmStats, qint64 nImageBase=-1);
-    static void processDisasmInit(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qint64 nStartAddress, XDisasm::STATS *pDisasmStats, qint64 nImageBase=-1);
+    void setData(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qint64 nStartAddress, XDisasm::STATS *pDisasmStats, qint64 nImageBase,DM dm);
     void stop();
     STATS *getStats();
     static qint64 getVBSize(QMap<qint64,VIEW_BLOCK> *pMapVB);
     static QString getDisasmString(csh disasm_handle, qint64 nAddress, char *pData, qint32 nDataSize);
 
 public slots:
-    void processDisasmInit();
     void processDisasm();
+    void process();
 
 private:
     const int N_X64_OPCODE_SIZE=15;
@@ -134,6 +141,7 @@ private:
     bool bIsImage;
     XDisasm::MODE mode;
     qint64 nImageBase;
+    DM dm;
     qint64 nStartAddress;
     csh disasm_handle;
     bool bStop;
