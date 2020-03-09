@@ -276,13 +276,26 @@ void XDisasm::processDisasm()
     emit processFinished();
 }
 
+void XDisasm::processToData()
+{
+    pDisasmStats->mapRecords.remove(this->nStartAddress);
+
+    _adjust();
+    _updatePositions();
+
+    emit processFinished();
+}
+
 void XDisasm::process()
 {
     if(dm==DM_DISASM)
     {
         processDisasm();
     }
-    // TODO to Data
+    else if(dm==DM_TODATA)
+    {
+        processToData();
+    }
 }
 
 void XDisasm::stop()

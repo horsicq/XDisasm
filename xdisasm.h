@@ -121,6 +121,7 @@ public:
 
 public slots:
     void processDisasm();
+    void processToData();
     void process();
 
 private:
