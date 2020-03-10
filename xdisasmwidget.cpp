@@ -122,27 +122,38 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
 {
     if(pModel)
     {
+        SELECTION_STAT selectionStat=getSelectionStat();
+
         QMenu contextMenu(this);
 
         QAction actionGoToAddress(tr("Go to Address"),this);
         actionGoToAddress.setShortcut(QKeySequence(XShortcuts::GOTOADDRESS));
         connect(&actionGoToAddress,SIGNAL(triggered()),this,SLOT(_goToAddress()));
-        contextMenu.addAction(&actionGoToAddress);
 
-        QAction actionDump(tr("Dump to File"),this); // TODO if selected
+        QAction actionDump(tr("Dump to File"),this);
         actionDump.setShortcut(QKeySequence(XShortcuts::DUMPTOFILE));
         connect(&actionDump,SIGNAL(triggered()),this,SLOT(_dumpToFile()));
-        contextMenu.addAction(&actionDump);
 
-        QAction actionDisasm(tr("Disasm"),this); // TODO if 1 row selected
+        QAction actionDisasm(tr("Disasm"),this);
         actionDisasm.setShortcut(QKeySequence(XShortcuts::DISASM));
         connect(&actionDisasm,SIGNAL(triggered()),this,SLOT(_disasm()));
-        contextMenu.addAction(&actionDisasm);
 
-        QAction actionToData(tr("To Data"),this); // TODO if 1 row selected
+        QAction actionToData(tr("To Data"),this);
         actionToData.setShortcut(QKeySequence(XShortcuts::TODATA));
         connect(&actionToData,SIGNAL(triggered()),this,SLOT(_toData()));
-        contextMenu.addAction(&actionToData);
+
+        contextMenu.addAction(&actionGoToAddress);
+
+        if(selectionStat.nSize)
+        {
+            contextMenu.addAction(&actionDump);
+        }
+
+        if(selectionStat.nCount==1)
+        {
+            contextMenu.addAction(&actionDisasm);
+            contextMenu.addAction(&actionToData);
+        }
 
         contextMenu.exec(ui->tableViewDisasm->viewport()->mapToGlobal(pos));
 
