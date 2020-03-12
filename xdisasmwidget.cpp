@@ -181,8 +181,17 @@ void XDisasmWidget::_dumpToFile()
 
         if(selectionStat.nSize)
         {
-            // TODO
-            qDebug("_dumpToFile");
+            QString sFilter;
+            sFilter+=QString("%1 (*.bin)").arg(tr("Raw data"));
+            QString sSaveFileName="Result"; // TODO default directory
+            QString sFileName=QFileDialog::getSaveFileName(this,tr("Save dump"),sSaveFileName,sFilter);
+
+            if(!sFileName.isEmpty())
+            {
+                DialogDumpProcess dd(this,pDevice,selectionStat.nAddress,selectionStat.nSize,sFileName,DumpProcess::DT_ADDRESS);
+
+                dd.exec();
+            }
         }
     }
 }

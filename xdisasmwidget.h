@@ -10,6 +10,7 @@
 #include "xshortcuts.h"
 #include "dialoggotoaddress.h"
 #include "dialogdisasmprocess.h"
+#include "dialogdumpprocess.h"
 
 namespace Ui {
 class XDisasmWidget;
