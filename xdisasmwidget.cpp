@@ -144,7 +144,7 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
 
         contextMenu.addAction(&actionGoToAddress);
 
-        if(selectionStat.nSize)
+        if((selectionStat.nSize)&&XBinary::isSolidAddressRange(&(pModel->getStats()->memoryMap),selectionStat.nAddress,selectionStat.nSize))
         {
             contextMenu.addAction(&actionDump);
         }
@@ -186,9 +186,11 @@ void XDisasmWidget::_dumpToFile()
             QString sSaveFileName="Result"; // TODO default directory
             QString sFileName=QFileDialog::getSaveFileName(this,tr("Save dump"),sSaveFileName,sFilter);
 
+            qint64 nOffset=XBinary::addressToOffset(&(pModel->getStats()->memoryMap),selectionStat.nAddress);
+
             if(!sFileName.isEmpty())
             {
-                DialogDumpProcess dd(this,pDevice,selectionStat.nAddress,selectionStat.nSize,sFileName,DumpProcess::DT_ADDRESS);
+                DialogDumpProcess dd(this,pDevice,nOffset,selectionStat.nSize,sFileName,DumpProcess::DT_OFFSET);
 
                 dd.exec();
             }
