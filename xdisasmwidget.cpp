@@ -88,7 +88,7 @@ XDisasmWidget::~XDisasmWidget()
     delete ui;
 }
 
-void XDisasmWidget::process(qint64 nAddress,XDisasm::DM dm)
+void XDisasmWidget::process(qint64 nAddress, XDisasm::DM dm, qint64 nBaseAddress)
 {
     if(pModel)
     {
@@ -96,7 +96,7 @@ void XDisasmWidget::process(qint64 nAddress,XDisasm::DM dm)
 
         DialogDisasmProcess ddp(this);
 
-        ddp.setData(pDevice,false,XDisasm::MODE_UNKNOWN,nAddress,pDisasmStats,dm);
+        ddp.setData(pDevice,false,XDisasm::MODE_UNKNOWN,nAddress,pDisasmStats,nBaseAddress,dm);
         ddp.exec();
 
         pModel->_endResetModel();

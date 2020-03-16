@@ -185,6 +185,17 @@ void XDisasm::processDisasm()
                     pDisasmStats->mode=MODE_X86_64;
                 }
             }
+            else
+            {
+                XBinary binary(pDevice,true,nImageBase);
+
+                pDisasmStats->memoryMap=binary.getMemoryMap();
+                pDisasmStats->nEntryPointAddress=nStartAddress;
+
+                pDisasmStats->csarch=CS_ARCH_X86; // TODO
+                pDisasmStats->csmode=CS_MODE_32;
+                pDisasmStats->mode=MODE_X86_32;
+            }
         }
         else
         {
@@ -204,7 +215,7 @@ void XDisasm::processDisasm()
                 pDisasmStats->csmode=CS_MODE_64;
             }
 
-            XBinary binary(pDevice,bIsImage,nImageBase);
+            XBinary binary(pDevice,bIsImage,nImageBase); // TODO Check bIsImage
 
             pDisasmStats->memoryMap=binary.getMemoryMap();
             pDisasmStats->nEntryPointAddress=nStartAddress;
