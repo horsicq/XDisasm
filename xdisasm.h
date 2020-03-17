@@ -38,7 +38,6 @@ public:
         DM_TODATA
     };
 
-
     enum MODE
     {
         MODE_UNKNOWN=0,
@@ -111,9 +110,18 @@ public:
         QMap<qint64,qint64> mapAddresses;
     };
 
+    struct OPTIONS
+    {
+        QIODevice *pDevice;
+        bool bIsImage;
+        qint64 nImageBase;
+        XDisasm::MODE mode;
+        XDisasm::STATS stats;
+    };
+
     explicit XDisasm(QObject *parent=nullptr);
     ~XDisasm();
-    void setData(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qint64 nStartAddress, XDisasm::STATS *pDisasmStats, qint64 nImageBase,DM dm);
+    void setData(OPTIONS *pOptions, qint64 nStartAddress,DM dm);
     void stop();
     STATS *getStats();
     static qint64 getVBSize(QMap<qint64,VIEW_BLOCK> *pMapVB);
@@ -138,16 +146,11 @@ signals:
     void processFinished();
 
 private:
-    QIODevice *pDevice;
-    bool bIsImage;
-    XDisasm::MODE mode;
-    qint64 nImageBase;
     DM dm;
-    qint64 nStartAddress;
     csh disasm_handle;
     bool bStop;
-    STATS *pDisasmStats;
-    char *pMap;
+    OPTIONS *pOptions;
+    qint64 nStartAddress;
 };
 
 #endif // XDISASM_H

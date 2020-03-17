@@ -22,13 +22,10 @@
 
 XDisasm::XDisasm(QObject *parent) : QObject(parent)
 {
-    pDevice=nullptr;
-    mode=MODE_UNKNOWN;
-    nImageBase=0;
+    pOptions=0;
     nStartAddress=0;
     disasm_handle=0;
     bStop=false;
-    pMap=0;
 }
 
 XDisasm::~XDisasm()
@@ -40,35 +37,31 @@ XDisasm::~XDisasm()
     }
 }
 
-void XDisasm::setData(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qint64 nStartAddress, STATS *pDisasmStats, qint64 nImageBase, DM dm)
+void XDisasm::setData(XDisasm::OPTIONS *pOptions, qint64 nStartAddress, XDisasm::DM dm)
 {
-    this->pDevice=pDevice;
-    this->bIsImage=bIsImage;
-    this->mode=mode;
-    this->nImageBase=nImageBase;
-    this->dm=dm;
+    this->pOptions=pOptions;
     this->nStartAddress=nStartAddress;
-    this->pDisasmStats=pDisasmStats;
+    this->dm=dm;
 }
 
 void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
 {
-    pDisasmStats->mmapRefFrom.insert(nAddress,nInitAddress);
-    pDisasmStats->mmapRefTo.insert(nInitAddress,nAddress);
+    pOptions->stats.mmapRefFrom.insert(nAddress,nInitAddress);
+    pOptions->stats.mmapRefTo.insert(nInitAddress,nAddress);
 
     while(!bStop)
     {
-        if(pDisasmStats->mapRecords.contains(nAddress))
+        if(pOptions->stats.mapRecords.contains(nAddress))
         {
             break;
         }
 
         bool bStopBranch=false;
         int nDelta=0;
-        qint64 nOffset=XBinary::addressToOffset(&(pDisasmStats->memoryMap),nAddress); // TODO optimize if image
+        qint64 nOffset=XBinary::addressToOffset(&(pOptions->stats.memoryMap),nAddress); // TODO optimize if image
         if(nOffset!=-1)
         {
-            QByteArray baData=XBinary::read_array(pDevice,nOffset,N_X64_OPCODE_SIZE);
+            QByteArray baData=XBinary::read_array(pOptions->pDevice,nOffset,N_X64_OPCODE_SIZE);
 
             uint8_t *pData=(uint8_t *)baData.data();
             size_t nDataSize=(size_t)baData.size();
@@ -97,11 +90,11 @@ void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
                         {
                             if(isCallOpcode(insn->id))
                             {
-                                pDisasmStats->stCalls.insert(nImm);
+                                pOptions->stats.stCalls.insert(nImm);
                             }
                             else
                             {
-                                pDisasmStats->stJumps.insert(nImm);
+                                pOptions->stats.stJumps.insert(nImm);
                             }
 
                             _disasm(nAddress,nImm);
@@ -114,7 +107,7 @@ void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
                 opcode.nSize=insn->size;
                 opcode.type=RECORD_TYPE_OPCODE;
 
-                pDisasmStats->mapRecords.insert(nAddress,opcode);
+                pOptions->stats.mapRecords.insert(nAddress,opcode);
 
                 nDelta=insn->size;
 
@@ -151,80 +144,80 @@ void XDisasm::processDisasm()
 {
     bStop=false;
 
-    if(!pDisasmStats->bInit)
+    if(!pOptions->stats.bInit)
     {
-        pDisasmStats->csarch=CS_ARCH_X86;
-        pDisasmStats->csmode=CS_MODE_16;
+        pOptions->stats.csarch=CS_ARCH_X86;
+        pOptions->stats.csmode=CS_MODE_16;
 
-        pDisasmStats->mode=mode;
+        pOptions->stats.mode=pOptions->mode;
 
-        if(pDisasmStats->mode==MODE_UNKNOWN)
+        if(pOptions->stats.mode==MODE_UNKNOWN)
         {
-            QSet<XBinary::FT> stFt=XBinary::getFileTypes(pDevice);
+            QSet<XBinary::FT> stFt=XBinary::getFileTypes(pOptions->pDevice);
 
             if(stFt.contains(XBinary::FT_PE))
             {
-                XPE pe(pDevice,bIsImage,nImageBase);
+                XPE pe(pOptions->pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
-                pDisasmStats->memoryMap=pe.getMemoryMap();
-                pDisasmStats->nEntryPointAddress=pe.getEntryPointAddress(&pDisasmStats->memoryMap);
+                pOptions->stats.memoryMap=pe.getMemoryMap();
+                pOptions->stats.nEntryPointAddress=pe.getEntryPointAddress(&pOptions->stats.memoryMap);
 
                 XBinary::MODE modeBinary=pe.getMode();
                 QString sArch=pe.getArch();
 
-                if(sArch=="I386") pDisasmStats->csarch=CS_ARCH_X86; // TODO more defs
+                if(sArch=="I386") pOptions->stats.csarch=CS_ARCH_X86; // TODO more defs
 
                 if(modeBinary==XBinary::MODE_32)
                 {
-                    pDisasmStats->csmode=CS_MODE_32;
-                    pDisasmStats->mode=MODE_X86_32;
+                    pOptions->stats.csmode=CS_MODE_32;
+                    pOptions->stats.mode=MODE_X86_32;
                 }
                 else if(modeBinary==XBinary::MODE_64)
                 {
-                    pDisasmStats->csmode=CS_MODE_64;
-                    pDisasmStats->mode=MODE_X86_64;
+                    pOptions->stats.csmode=CS_MODE_64;
+                    pOptions->stats.mode=MODE_X86_64;
                 }
             }
             else
             {
-                XBinary binary(pDevice,true,nImageBase);
+                XBinary binary(pOptions->pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
-                pDisasmStats->memoryMap=binary.getMemoryMap();
-                pDisasmStats->nEntryPointAddress=nStartAddress;
+                pOptions->stats.memoryMap=binary.getMemoryMap();
+                pOptions->stats.nEntryPointAddress=nStartAddress;
 
-                pDisasmStats->csarch=CS_ARCH_X86; // TODO
-                pDisasmStats->csmode=CS_MODE_32;
-                pDisasmStats->mode=MODE_X86_32;
+                pOptions->stats.csarch=CS_ARCH_X86; // TODO
+                pOptions->stats.csmode=CS_MODE_32;
+                pOptions->stats.mode=MODE_X86_32;
             }
         }
         else
         {
-            if(pDisasmStats->mode==MODE_X86_16)
+            if(pOptions->stats.mode==MODE_X86_16)
             {
-                pDisasmStats->csarch=CS_ARCH_X86;
-                pDisasmStats->csmode=CS_MODE_16;
+                pOptions->stats.csarch=CS_ARCH_X86;
+                pOptions->stats.csmode=CS_MODE_16;
             }
-            else if(pDisasmStats->mode==MODE_X86_32)
+            else if(pOptions->stats.mode==MODE_X86_32)
             {
-                pDisasmStats->csarch=CS_ARCH_X86;
-                pDisasmStats->csmode=CS_MODE_32;
+                pOptions->stats.csarch=CS_ARCH_X86;
+                pOptions->stats.csmode=CS_MODE_32;
             }
-            else if(pDisasmStats->mode==MODE_X86_64)
+            else if(pOptions->stats.mode==MODE_X86_64)
             {
-                pDisasmStats->csarch=CS_ARCH_X86;
-                pDisasmStats->csmode=CS_MODE_64;
+                pOptions->stats.csarch=CS_ARCH_X86;
+                pOptions->stats.csmode=CS_MODE_64;
             }
 
-            XBinary binary(pDevice,bIsImage,nImageBase); // TODO Check bIsImage
+            XBinary binary(pOptions->pDevice,pOptions->bIsImage,pOptions->nImageBase); // TODO Check bIsImage
 
-            pDisasmStats->memoryMap=binary.getMemoryMap();
-            pDisasmStats->nEntryPointAddress=nStartAddress;
+            pOptions->stats.memoryMap=binary.getMemoryMap();
+            pOptions->stats.nEntryPointAddress=nStartAddress;
         }
 
-        pDisasmStats->nImageBase=pDisasmStats->memoryMap.nBaseAddress;
-        pDisasmStats->nImageSize=XBinary::getTotalVirtualSize(&(pDisasmStats->memoryMap));
+        pOptions->stats.nImageBase=pOptions->stats.memoryMap.nBaseAddress;
+        pOptions->stats.nImageSize=XBinary::getTotalVirtualSize(&(pOptions->stats.memoryMap));
 
-        cs_err err=cs_open(pDisasmStats->csarch,pDisasmStats->csmode,&disasm_handle);
+        cs_err err=cs_open(pOptions->stats.csarch,pOptions->stats.csmode,&disasm_handle);
         if(!err)
         {
             cs_option(disasm_handle,CS_OPT_DETAIL,CS_OPT_ON); // TODO Check
@@ -239,11 +232,11 @@ void XDisasm::processDisasm()
     //        }
     //    }
 
-        _disasm(0,pDisasmStats->nEntryPointAddress);
+        _disasm(0,pOptions->stats.nEntryPointAddress);
 
         if(nStartAddress!=-1)
         {
-            if(nStartAddress!=pDisasmStats->nEntryPointAddress)
+            if(nStartAddress!=pOptions->stats.nEntryPointAddress)
             {
                 _disasm(0,nStartAddress);
             }
@@ -252,7 +245,7 @@ void XDisasm::processDisasm()
         _adjust();
         _updatePositions();
 
-        pDisasmStats->bInit=true;
+        pOptions->stats.bInit=true;
 
         if(disasm_handle)
         {
@@ -265,7 +258,7 @@ void XDisasm::processDisasm()
         // TODO move to function
         if(disasm_handle==0)
         {
-            cs_err err=cs_open(pDisasmStats->csarch,pDisasmStats->csmode,&disasm_handle);
+            cs_err err=cs_open(pOptions->stats.csarch,pOptions->stats.csmode,&disasm_handle);
             if(!err)
             {
                 cs_option(disasm_handle,CS_OPT_DETAIL,CS_OPT_ON); // TODO Check
@@ -289,7 +282,7 @@ void XDisasm::processDisasm()
 
 void XDisasm::processToData()
 {
-    pDisasmStats->mapRecords.remove(this->nStartAddress);
+    pOptions->stats.mapRecords.remove(this->nStartAddress);
 
     _adjust();
     _updatePositions();
@@ -316,37 +309,37 @@ void XDisasm::stop()
 
 XDisasm::STATS *XDisasm::getStats()
 {
-    return pDisasmStats;
+    return &(pOptions->stats);
 }
 
 void XDisasm::_adjust()
 {
-    pDisasmStats->mapLabelStrings.clear();
-    pDisasmStats->mapVB.clear();
+    pOptions->stats.mapLabelStrings.clear();
+    pOptions->stats.mapVB.clear();
 
     if(!bStop)
     {
-        pDisasmStats->mapLabelStrings.insert(pDisasmStats->nEntryPointAddress,"entry_point");
+        pOptions->stats.mapLabelStrings.insert(pOptions->stats.nEntryPointAddress,"entry_point");
 
-        QSetIterator<qint64> iFL(pDisasmStats->stCalls);
+        QSetIterator<qint64> iFL(pOptions->stats.stCalls);
         while(iFL.hasNext()&&(!bStop))
         {
             qint64 nAddress=iFL.next();
 
-            if(!pDisasmStats->mapLabelStrings.contains(nAddress))
+            if(!pOptions->stats.mapLabelStrings.contains(nAddress))
             {
-                pDisasmStats->mapLabelStrings.insert(nAddress,QString("func_%1").arg(nAddress,0,16));
+                pOptions->stats.mapLabelStrings.insert(nAddress,QString("func_%1").arg(nAddress,0,16));
             }
         }
 
-        QSetIterator<qint64> iJL(pDisasmStats->stJumps);
+        QSetIterator<qint64> iJL(pOptions->stats.stJumps);
         while(iJL.hasNext()&&(!bStop))
         {
             qint64 nAddress=iJL.next();
 
-            if(!pDisasmStats->mapLabelStrings.contains(nAddress))
+            if(!pOptions->stats.mapLabelStrings.contains(nAddress))
             {
-                pDisasmStats->mapLabelStrings.insert(nAddress,QString("lab_%1").arg(nAddress,0,16));
+                pOptions->stats.mapLabelStrings.insert(nAddress,QString("lab_%1").arg(nAddress,0,16));
             }
         }
 
@@ -356,7 +349,7 @@ void XDisasm::_adjust()
     //    QSet<qint64> stDataLabels;
 
         // TODO Strings
-        QMapIterator<qint64,XDisasm::RECORD> iRecords(pDisasmStats->mapRecords);
+        QMapIterator<qint64,XDisasm::RECORD> iRecords(pOptions->stats.mapRecords);
         while(iRecords.hasNext()&&(!bStop))
         {
             iRecords.next();
@@ -377,29 +370,29 @@ void XDisasm::_adjust()
                 record.type=VBT_DATA;
             }
 
-            if(!pDisasmStats->mapVB.contains(nAddress))
+            if(!pOptions->stats.mapVB.contains(nAddress))
             {
-                pDisasmStats->mapVB.insert(nAddress,record);
+                pOptions->stats.mapVB.insert(nAddress,record);
             }
         }
 
-        int nMMCount=pDisasmStats->memoryMap.listRecords.count(); // TODO
+        int nMMCount=pOptions->stats.memoryMap.listRecords.count(); // TODO
 
         for(int i=0;(i<nMMCount)&&(!bStop);i++)
         {
-            qint64 nRegionAddress=pDisasmStats->memoryMap.listRecords.at(i).nAddress;
-            qint64 nRegionOffset=pDisasmStats->memoryMap.listRecords.at(i).nOffset;
-            qint64 nRegionSize=pDisasmStats->memoryMap.listRecords.at(i).nSize;
+            qint64 nRegionAddress=pOptions->stats.memoryMap.listRecords.at(i).nAddress;
+            qint64 nRegionOffset=pOptions->stats.memoryMap.listRecords.at(i).nOffset;
+            qint64 nRegionSize=pOptions->stats.memoryMap.listRecords.at(i).nSize;
 
             for(qint64 nCurrentAddress=nRegionAddress,nCurrentOffset=nRegionOffset;nCurrentAddress<(nRegionAddress+nRegionSize);)
             {
-                QMap<qint64,VIEW_BLOCK>::iterator iter=pDisasmStats->mapVB.lowerBound(nCurrentAddress);
+                QMap<qint64,VIEW_BLOCK>::iterator iter=pOptions->stats.mapVB.lowerBound(nCurrentAddress);
 
                 qint64 nBlockAddress=0;
                 qint64 nBlockOffset=0;
                 qint64 nBlockSize=0;
 
-                if(iter!=pDisasmStats->mapVB.end())
+                if(iter!=pOptions->stats.mapVB.end())
                 {
                     VIEW_BLOCK block=*iter;
                     nBlockAddress=block.nAddress;
@@ -429,9 +422,9 @@ void XDisasm::_adjust()
                         record.nSize=16;
                         record.type=VBT_DATABLOCK;
 
-                        if(!pDisasmStats->mapVB.contains(nCurrentAddress))
+                        if(!pOptions->stats.mapVB.contains(nCurrentAddress))
                         {
-                            pDisasmStats->mapVB.insert(nCurrentAddress,record);
+                            pOptions->stats.mapVB.insert(nCurrentAddress,record);
                         }
 
                         _nSize-=16;
@@ -447,9 +440,9 @@ void XDisasm::_adjust()
                     record.nSize=_nSize;
                     record.type=VBT_DATABLOCK;
 
-                    if(!pDisasmStats->mapVB.contains(nCurrentAddress))
+                    if(!pOptions->stats.mapVB.contains(nCurrentAddress))
                     {
-                        pDisasmStats->mapVB.insert(nCurrentAddress,record);
+                        pOptions->stats.mapVB.insert(nCurrentAddress,record);
                     }
                 }
 
@@ -501,22 +494,22 @@ void XDisasm::_adjust()
 
 void XDisasm::_updatePositions()
 {
-    pDisasmStats->nPositions=pDisasmStats->nImageSize+pDisasmStats->mapVB.count()-getVBSize(&(pDisasmStats->mapVB)); // TODO
+    pOptions->stats.nPositions=pOptions->stats.nImageSize+pOptions->stats.mapVB.count()-getVBSize(&(pOptions->stats.mapVB)); // TODO
 
-    pDisasmStats->mapPositions.clear();
+    pOptions->stats.mapPositions.clear();
     // TODO cache
-    qint64 nCurrentAddress=pDisasmStats->nImageBase; // TODO
+    qint64 nCurrentAddress=pOptions->stats.nImageBase; // TODO
 
-    for(qint64 i=0;i<pDisasmStats->nPositions;i++)
+    for(qint64 i=0;i<pOptions->stats.nPositions;i++)
     {
-        bool bIsVBPresent=pDisasmStats->mapVB.contains(nCurrentAddress);
+        bool bIsVBPresent=pOptions->stats.mapVB.contains(nCurrentAddress);
 
         if(bIsVBPresent)
         {
-            pDisasmStats->mapPositions.insert(i,nCurrentAddress);
-            pDisasmStats->mapAddresses.insert(nCurrentAddress,i);
+            pOptions->stats.mapPositions.insert(i,nCurrentAddress);
+            pOptions->stats.mapAddresses.insert(nCurrentAddress,i);
 
-            nCurrentAddress+=pDisasmStats->mapVB.value(nCurrentAddress).nSize-1;
+            nCurrentAddress+=pOptions->stats.mapVB.value(nCurrentAddress).nSize-1;
         }
 
         nCurrentAddress++;

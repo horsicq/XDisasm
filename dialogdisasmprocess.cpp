@@ -55,9 +55,9 @@ DialogDisasmProcess::~DialogDisasmProcess()
     delete pDisasm;
 }
 
-void DialogDisasmProcess::setData(QIODevice *pDevice, bool bIsImage, XDisasm::MODE mode, qint64 nStartAddress, XDisasm::STATS *pDisasmStats,qint64 nImageBase, XDisasm::DM dm)
+void DialogDisasmProcess::setData(XDisasm::OPTIONS *pOptions, qint64 nStartAddress, XDisasm::DM dm)
 {
-    pDisasm->setData(pDevice,bIsImage,mode,nStartAddress,pDisasmStats,nImageBase,dm);
+    pDisasm->setData(pOptions,nStartAddress,dm);
 
     pThread->start();
     pTimer->start(1000);
