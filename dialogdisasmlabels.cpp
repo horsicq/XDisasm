@@ -31,8 +31,9 @@ DialogDisasmLabels::DialogDisasmLabels(QWidget *parent, XDisasm::STATS *pDisasmS
 
     int nNumberOfLabels=pDisasmStats->mapLabelStrings.count();
 
-    ui->tableWidgetLabels->setColumnCount(3);
-    ui->tableWidgetLabels->setRowCount(nNumberOfLabels);
+    // TODO Model
+//    ui->tableWidgetLabels->setColumnCount(3);
+//    ui->tableWidgetLabels->setRowCount(nNumberOfLabels);
 }
 
 DialogDisasmLabels::~DialogDisasmLabels()
@@ -47,5 +48,5 @@ void DialogDisasmLabels::on_pushButtonClose_clicked()
 
 void DialogDisasmLabels::on_pushButtonGoTo_clicked()
 {
-
+    // TODO
 }
