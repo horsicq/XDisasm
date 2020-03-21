@@ -158,6 +158,9 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
         contextMenu.exec(ui->tableViewDisasm->viewport()->mapToGlobal(pos));
 
         // TODO data -> group
+        // TODO add Label
+        // TODO rename label
+        // TODO remove label mb TODO custom label and Disasm label
     }
 }
 
