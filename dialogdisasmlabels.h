@@ -22,6 +22,7 @@
 #define DIALOGDISASMLABELS_H
 
 #include <QDialog>
+#include <QStandardItemModel>
 #include "xdisasm.h"
 
 namespace Ui {

@@ -32,8 +32,22 @@ DialogDisasmLabels::DialogDisasmLabels(QWidget *parent, XDisasm::STATS *pDisasmS
     int nNumberOfLabels=pDisasmStats->mapLabelStrings.count();
 
     // TODO Model
-//    ui->tableWidgetLabels->setColumnCount(3);
-//    ui->tableWidgetLabels->setRowCount(nNumberOfLabels);
+    QStandardItemModel *pModel=new QStandardItemModel(nNumberOfLabels,2,this);
+
+    pModel->setHeaderData(0,Qt::Horizontal,tr("Name"));
+    pModel->setHeaderData(1,Qt::Horizontal,tr("Address"));
+
+    for(int i = 0; i<nNumberOfLabels; i++)
+    {
+        QStandardItem *itemID = new QStandardItem;
+        itemID->setTextAlignment(Qt::AlignRight);
+        pModel->setItem(i,0,itemID);
+
+        QStandardItem *itemSymbol = new QStandardItem;
+        pModel->setItem(i,1,itemSymbol);
+    }
+
+    ui->tableViewLabels->setModel(pModel);
 }
 
 DialogDisasmLabels::~DialogDisasmLabels()
