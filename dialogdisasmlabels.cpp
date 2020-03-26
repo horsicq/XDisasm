@@ -39,12 +39,12 @@ DialogDisasmLabels::DialogDisasmLabels(QWidget *parent, XDisasm::STATS *pDisasmS
 
     for(int i = 0; i<nNumberOfLabels; i++)
     {
-        QStandardItem *itemID = new QStandardItem;
-        itemID->setTextAlignment(Qt::AlignRight);
-        pModel->setItem(i,0,itemID);
+        QStandardItem *itemName=new QStandardItem;
+        itemName->setText(""); // TODO
+        pModel->setItem(i,0,itemName);
 
-        QStandardItem *itemSymbol = new QStandardItem;
-        pModel->setItem(i,1,itemSymbol);
+        QStandardItem *itemAddress=new QStandardItem;
+        pModel->setItem(i,1,itemAddress);
     }
 
     ui->tableViewLabels->setModel(pModel);
