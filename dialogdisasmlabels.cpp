@@ -57,10 +57,11 @@ DialogDisasmLabels::~DialogDisasmLabels()
 
 void DialogDisasmLabels::on_pushButtonClose_clicked()
 {
-    this->close();
+    done(QDialog::Rejected);
 }
 
 void DialogDisasmLabels::on_pushButtonGoTo_clicked()
 {
     // TODO
+    done(QDialog::Accepted);
 }
