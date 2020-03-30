@@ -37,14 +37,24 @@ DialogDisasmLabels::DialogDisasmLabels(QWidget *parent, XDisasm::STATS *pDisasmS
     pModel->setHeaderData(0,Qt::Horizontal,tr("Name"));
     pModel->setHeaderData(1,Qt::Horizontal,tr("Address"));
 
-    for(int i = 0; i<nNumberOfLabels; i++)
+    int i=0;
+    QMapIterator<qint64,QString> iMap(pDisasmStats->mapLabelStrings);
+    while(iMap.hasNext())
     {
+        iMap.next();
+
+        QString sName=iMap.value();
+        qint64 nAddress=iMap.key();
+
         QStandardItem *itemName=new QStandardItem;
-        itemName->setText(""); // TODO
+        itemName->setText(sName);
         pModel->setItem(i,0,itemName);
 
         QStandardItem *itemAddress=new QStandardItem;
+        itemAddress->setText(QString("0x%1").arg(nAddress,8,16,QChar('0'))); // TODO function in Binary
         pModel->setItem(i,1,itemAddress);
+
+        i++;
     }
 
     ui->tableViewLabels->setModel(pModel);
