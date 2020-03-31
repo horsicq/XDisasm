@@ -48,6 +48,7 @@ DialogDisasmLabels::DialogDisasmLabels(QWidget *parent, XDisasm::STATS *pDisasmS
 
         QStandardItem *itemName=new QStandardItem;
         itemName->setText(sName);
+        itemName->setData(nAddress);
         pModel->setItem(i,0,itemName);
 
         QStandardItem *itemAddress=new QStandardItem;
@@ -58,6 +59,9 @@ DialogDisasmLabels::DialogDisasmLabels(QWidget *parent, XDisasm::STATS *pDisasmS
     }
 
     ui->tableViewLabels->setModel(pModel);
+
+    ui->tableViewLabels->horizontalHeader()->setSectionResizeMode(0,QHeaderView::Stretch);
+    ui->tableViewLabels->horizontalHeader()->setSectionResizeMode(1,QHeaderView::Interactive);
 }
 
 DialogDisasmLabels::~DialogDisasmLabels()
@@ -72,6 +76,14 @@ void DialogDisasmLabels::on_pushButtonClose_clicked()
 
 void DialogDisasmLabels::on_pushButtonGoTo_clicked()
 {
-    // TODO
+    qint64 nAddress=0;
+
+    QItemSelectionModel *pSelectionModel=ui->tableViewLabels->selectionModel();
+
+    if(pSelectionModel)
+    {
+        // TODO
+    }
+
     done(QDialog::Accepted);
 }
