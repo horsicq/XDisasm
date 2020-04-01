@@ -63,6 +63,13 @@ DialogDisasmLabels::DialogDisasmLabels(QWidget *parent, XDisasm::STATS *pDisasmS
 
     ui->tableViewLabels->horizontalHeader()->setSectionResizeMode(0,QHeaderView::Stretch);
     ui->tableViewLabels->horizontalHeader()->setSectionResizeMode(1,QHeaderView::Interactive);
+
+    ui->pushButtonGoTo->setEnabled(nNumberOfLabels);
+
+    if(nNumberOfLabels)
+    {
+        ui->tableViewLabels->setCurrentIndex(pModel->index(0,0));
+    }
 }
 
 DialogDisasmLabels::~DialogDisasmLabels()
