@@ -34,8 +34,9 @@ class DialogDisasmLabels : public QDialog
     Q_OBJECT
 
 public:
-    explicit DialogDisasmLabels(QWidget *parent,XDisasm::STATS *pDisasmStats);
+    explicit DialogDisasmLabels(QWidget *parent, XDisasm::STATS *pDisasmStats);
     ~DialogDisasmLabels();
+    qint64 getAddress();
 
 private slots:
     void on_pushButtonClose_clicked();
@@ -44,6 +45,7 @@ private slots:
 private:
     Ui::DialogDisasmLabels *ui;
     XDisasm::STATS *pDisasmStats;
+    qint64 __nAddress;
 };
 
 #endif // DIALOGDISASMLABELS_H

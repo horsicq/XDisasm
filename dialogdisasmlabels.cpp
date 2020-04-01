@@ -28,6 +28,7 @@ DialogDisasmLabels::DialogDisasmLabels(QWidget *parent, XDisasm::STATS *pDisasmS
     ui->setupUi(this);
 
     this->pDisasmStats=pDisasmStats;
+    __nAddress=0;
 
     int nNumberOfLabels=pDisasmStats->mapLabelStrings.count();
 
@@ -69,6 +70,11 @@ DialogDisasmLabels::~DialogDisasmLabels()
     delete ui;
 }
 
+qint64 DialogDisasmLabels::getAddress()
+{
+    return __nAddress;
+}
+
 void DialogDisasmLabels::on_pushButtonClose_clicked()
 {
     done(QDialog::Rejected);
@@ -76,14 +82,17 @@ void DialogDisasmLabels::on_pushButtonClose_clicked()
 
 void DialogDisasmLabels::on_pushButtonGoTo_clicked()
 {
-    qint64 nAddress=0;
-
     QItemSelectionModel *pSelectionModel=ui->tableViewLabels->selectionModel();
 
     if(pSelectionModel)
     {
-        // TODO
-    }
+        QModelIndexList listIndexes=pSelectionModel->selectedRows(0);
 
-    done(QDialog::Accepted);
+        if(listIndexes.count())
+        {
+            __nAddress=listIndexes.at(0).data(Qt::UserRole+1).toLongLong();
+
+            done(QDialog::Accepted);
+        }
+    }
 }

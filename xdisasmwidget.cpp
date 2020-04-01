@@ -114,7 +114,10 @@ void XDisasmWidget::on_pushButtonLabels_clicked()
     {
         DialogDisasmLabels dialogDisasmLabels(this,pModel->getStats());
 
-        dialogDisasmLabels.exec();
+        if(dialogDisasmLabels.exec()==QDialog::Accepted)
+        {
+            goToAddress(dialogDisasmLabels.getAddress());
+        }
     }
 }
 
