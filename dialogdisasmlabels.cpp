@@ -32,7 +32,6 @@ DialogDisasmLabels::DialogDisasmLabels(QWidget *parent, XDisasm::STATS *pDisasmS
 
     int nNumberOfLabels=pDisasmStats->mapLabelStrings.count();
 
-    // TODO Model
     QStandardItemModel *pModel=new QStandardItemModel(nNumberOfLabels,2,this);
 
     pModel->setHeaderData(0,Qt::Horizontal,tr("Name"));
