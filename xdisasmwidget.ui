@@ -48,6 +48,13 @@
        </property>
       </spacer>
      </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonAnalize">
+       <property name="text">
+        <string>Analize</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>

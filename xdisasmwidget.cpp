@@ -1,3 +1,23 @@
+// copyright (c) 2019-2020 hors<horsicq@gmail.com>
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+//
 #include "xdisasmwidget.h"
 #include "ui_xdisasmwidget.h"
 
@@ -21,16 +41,30 @@ XDisasmWidget::XDisasmWidget(QWidget *parent) :
     pModel=0;
 }
 
-void XDisasmWidget::setData(XDisasmModel::SHOWOPTIONS *pShowOptions, XDisasm::OPTIONS *pDisasmOptions)
+void XDisasmWidget::setData(XDisasmModel::SHOWOPTIONS *pShowOptions, XDisasm::OPTIONS *pDisasmOptions, bool bAuto)
 {
     this->pShowOptions=pShowOptions;
     this->pDisasmOptions=pDisasmOptions;
 
-    pModel=new XDisasmModel(pDisasmOptions->pDevice,&(pDisasmOptions->stats),pShowOptions,this);
+    if(bAuto)
+    {
+        analize();
+    }
+}
 
-    QItemSelectionModel *modelOld=ui->tableViewDisasm->selectionModel();
-    ui->tableViewDisasm->setModel(pModel);
-    delete modelOld;
+void XDisasmWidget::analize()
+{
+    if(pDisasmOptions&&pShowOptions)
+    {
+        pDisasmOptions->stats={};
+        process(pDisasmOptions,-1,XDisasm::DM_DISASM);
+
+        pModel=new XDisasmModel(pDisasmOptions->pDevice,&(pDisasmOptions->stats),pShowOptions,this);
+
+        QItemSelectionModel *modelOld=ui->tableViewDisasm->selectionModel();
+        ui->tableViewDisasm->setModel(pModel);
+        delete modelOld;
+    }
 }
 
 void XDisasmWidget::goToAddress(qint64 nAddress)
@@ -250,4 +284,9 @@ XDisasmWidget::SELECTION_STAT XDisasmWidget::getSelectionStat()
     }
 
     return result;
+}
+
+void XDisasmWidget::on_pushButtonAnalize_clicked()
+{
+    analize();
 }
