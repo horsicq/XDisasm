@@ -37,7 +37,7 @@ class DialogDisasmProcess : public QDialog
 public:
     explicit DialogDisasmProcess(QWidget *parent=nullptr);
     ~DialogDisasmProcess();
-    void setData(XDisasm::OPTIONS *pOptions, qint64 nStartAddress, XDisasm::DM dm);
+    void setData(QIODevice *pDevice, XDisasm::OPTIONS *pOptions, qint64 nStartAddress, XDisasm::DM dm);
 
 private slots:
     void on_pushButtonCancel_clicked();

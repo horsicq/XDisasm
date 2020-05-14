@@ -39,12 +39,32 @@ XDisasmWidget::XDisasmWidget(QWidget *parent) :
     pShowOptions=0;
     pDisasmOptions=0;
     pModel=0;
+
+    __showOptions={};
+    __disasmOptions={};
 }
 
-void XDisasmWidget::setData(XDisasmModel::SHOWOPTIONS *pShowOptions, XDisasm::OPTIONS *pDisasmOptions, bool bAuto)
+void XDisasmWidget::setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShowOptions, XDisasm::OPTIONS *pDisasmOptions, bool bAuto)
 {
-    this->pShowOptions=pShowOptions;
-    this->pDisasmOptions=pDisasmOptions;
+    this->pDevice=pDevice;
+
+    if(pShowOptions)
+    {
+        this->pShowOptions=pShowOptions;
+    }
+    else
+    {
+        this->pShowOptions=&__showOptions;
+    }
+
+    if(pDisasmOptions)
+    {
+        this->pDisasmOptions=pDisasmOptions;
+    }
+    else
+    {
+        this->pDisasmOptions=&__disasmOptions;
+    }
 
     if(bAuto)
     {
@@ -57,9 +77,9 @@ void XDisasmWidget::analize()
     if(pDisasmOptions&&pShowOptions)
     {
         pDisasmOptions->stats={};
-        process(pDisasmOptions,-1,XDisasm::DM_DISASM);
+        process(pDevice,pDisasmOptions,-1,XDisasm::DM_DISASM);
 
-        pModel=new XDisasmModel(pDisasmOptions->pDevice,&(pDisasmOptions->stats),pShowOptions,this);
+        pModel=new XDisasmModel(pDevice,&(pDisasmOptions->stats),pShowOptions,this);
 
         QItemSelectionModel *modelOld=ui->tableViewDisasm->selectionModel();
         ui->tableViewDisasm->setModel(pModel);
@@ -86,7 +106,7 @@ void XDisasmWidget::goToDisasmAddress(qint64 nAddress)
 {
     if(!pDisasmOptions->stats.bInit)
     {
-        process(pDisasmOptions,nAddress,XDisasm::DM_DISASM);
+        process(pDevice,pDisasmOptions,nAddress,XDisasm::DM_DISASM);
     }
 
     goToAddress(nAddress);
@@ -96,7 +116,7 @@ void XDisasmWidget::goToEntryPoint()
 {
     if(!pDisasmOptions->stats.bInit)
     {
-        process(pDisasmOptions,-1,XDisasm::DM_DISASM);
+        process(pDevice,pDisasmOptions,-1,XDisasm::DM_DISASM);
     }
 
     goToAddress(pDisasmOptions->stats.nEntryPointAddress);
@@ -104,12 +124,12 @@ void XDisasmWidget::goToEntryPoint()
 
 void XDisasmWidget::disasm(qint64 nAddress)
 {
-    process(pDisasmOptions,nAddress,XDisasm::DM_DISASM);
+    process(pDevice,pDisasmOptions,nAddress,XDisasm::DM_DISASM);
 }
 
 void XDisasmWidget::toData(qint64 nAddress, qint64 nSize)
 {
-    process(pDisasmOptions,nAddress,XDisasm::DM_TODATA);
+    process(pDevice,pDisasmOptions,nAddress,XDisasm::DM_TODATA);
 }
 
 void XDisasmWidget::clear()
@@ -122,7 +142,7 @@ XDisasmWidget::~XDisasmWidget()
     delete ui;
 }
 
-void XDisasmWidget::process(XDisasm::OPTIONS *pOptions, qint64 nStartAddress, XDisasm::DM dm)
+void XDisasmWidget::process(QIODevice *pDevice,XDisasm::OPTIONS *pOptions, qint64 nStartAddress, XDisasm::DM dm)
 {
     if(pModel)
     {
@@ -130,7 +150,7 @@ void XDisasmWidget::process(XDisasm::OPTIONS *pOptions, qint64 nStartAddress, XD
 
         DialogDisasmProcess ddp(this);
 
-        ddp.setData(pOptions,nStartAddress,dm);
+        ddp.setData(pDevice,pOptions,nStartAddress,dm);
         ddp.exec();
 
         pModel->_endResetModel();
@@ -230,7 +250,7 @@ void XDisasmWidget::_dumpToFile()
 
             if(!sFileName.isEmpty())
             {
-                DialogDumpProcess dd(this,pDisasmOptions->pDevice,nOffset,selectionStat.nSize,sFileName,DumpProcess::DT_OFFSET);
+                DialogDumpProcess dd(this,pDevice,nOffset,selectionStat.nSize,sFileName,DumpProcess::DT_OFFSET);
 
                 dd.exec();
             }

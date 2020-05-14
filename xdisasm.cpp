@@ -37,8 +37,9 @@ XDisasm::~XDisasm()
     }
 }
 
-void XDisasm::setData(XDisasm::OPTIONS *pOptions, qint64 nStartAddress, XDisasm::DM dm)
+void XDisasm::setData(QIODevice *pDevice, XDisasm::OPTIONS *pOptions, qint64 nStartAddress, XDisasm::DM dm)
 {
+    this->pDevice=pDevice;
     this->pOptions=pOptions;
     this->nStartAddress=nStartAddress;
     this->dm=dm;
@@ -61,7 +62,7 @@ void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
         qint64 nOffset=XBinary::addressToOffset(&(pOptions->stats.memoryMap),nAddress); // TODO optimize if image
         if(nOffset!=-1)
         {
-            QByteArray baData=XBinary::read_array(pOptions->pDevice,nOffset,N_X64_OPCODE_SIZE);
+            QByteArray baData=XBinary::read_array(pDevice,nOffset,N_X64_OPCODE_SIZE);
 
             uint8_t *pData=(uint8_t *)baData.data();
             size_t nDataSize=(size_t)baData.size();
@@ -153,11 +154,11 @@ void XDisasm::processDisasm()
 
         if(pOptions->stats.mode==MODE_UNKNOWN)
         {
-            QSet<XBinary::FT> stFt=XBinary::getFileTypes(pOptions->pDevice);
+            QSet<XBinary::FT> stFt=XBinary::getFileTypes(pDevice);
 
             if(stFt.contains(XBinary::FT_PE))
             {
-                XPE pe(pOptions->pDevice,pOptions->bIsImage,pOptions->nImageBase);
+                XPE pe(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
                 pOptions->stats.memoryMap=pe.getMemoryMap();
                 pOptions->stats.nEntryPointAddress=pe.getEntryPointAddress(&pOptions->stats.memoryMap);
@@ -180,7 +181,7 @@ void XDisasm::processDisasm()
             }
             else
             {
-                XBinary binary(pOptions->pDevice,pOptions->bIsImage,pOptions->nImageBase);
+                XBinary binary(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
                 pOptions->stats.memoryMap=binary.getMemoryMap();
                 pOptions->stats.nEntryPointAddress=nStartAddress;
@@ -208,7 +209,7 @@ void XDisasm::processDisasm()
                 pOptions->stats.csmode=CS_MODE_64;
             }
 
-            XBinary binary(pOptions->pDevice,pOptions->bIsImage,pOptions->nImageBase); // TODO Check bIsImage
+            XBinary binary(pDevice,pOptions->bIsImage,pOptions->nImageBase); // TODO Check bIsImage
 
             pOptions->stats.memoryMap=binary.getMemoryMap();
             pOptions->stats.nEntryPointAddress=nStartAddress;

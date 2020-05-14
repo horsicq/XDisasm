@@ -112,7 +112,6 @@ public:
 
     struct OPTIONS
     {
-        QIODevice *pDevice;
         bool bIsImage;
         qint64 nImageBase;
         XDisasm::MODE mode;
@@ -121,7 +120,7 @@ public:
 
     explicit XDisasm(QObject *parent=nullptr);
     ~XDisasm();
-    void setData(OPTIONS *pOptions, qint64 nStartAddress,DM dm);
+    void setData(QIODevice *pDevice,OPTIONS *pOptions, qint64 nStartAddress,DM dm);
     void stop();
     STATS *getStats();
     static qint64 getVBSize(QMap<qint64,VIEW_BLOCK> *pMapVB);
@@ -149,6 +148,7 @@ private:
     DM dm;
     csh disasm_handle;
     bool bStop;
+    QIODevice *pDevice;
     OPTIONS *pOptions;
     qint64 nStartAddress;
 };

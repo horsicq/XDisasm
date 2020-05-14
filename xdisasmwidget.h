@@ -49,7 +49,7 @@ class XDisasmWidget : public QWidget
 
 public:
     explicit XDisasmWidget(QWidget *parent = nullptr);
-    void setData(XDisasmModel::SHOWOPTIONS *pShowOptions,XDisasm::OPTIONS *pDisasmOptions,bool bAuto=true);
+    void setData(QIODevice *pDevice,XDisasmModel::SHOWOPTIONS *pShowOptions,XDisasm::OPTIONS *pDisasmOptions,bool bAuto=true);
     void analize();
     void goToAddress(qint64 nAddress);
     void goToDisasmAddress(qint64 nAddress);
@@ -58,7 +58,7 @@ public:
     void toData(qint64 nAddress,qint64 nSize);
     void clear();
     ~XDisasmWidget();
-    void process(XDisasm::OPTIONS *pOptions, qint64 nStartAddress, XDisasm::DM dm);
+    void process(QIODevice *pDevice, XDisasm::OPTIONS *pOptions, qint64 nStartAddress, XDisasm::DM dm);
     XDisasm::STATS *getDisasmStats();
 
 private slots:
@@ -73,9 +73,12 @@ private slots:
 
 private:
     Ui::XDisasmWidget *ui;
+    QIODevice *pDevice;
     XDisasmModel::SHOWOPTIONS *pShowOptions;
     XDisasm::OPTIONS *pDisasmOptions;
     XDisasmModel *pModel;
+    XDisasmModel::SHOWOPTIONS __showOptions;
+    XDisasm::OPTIONS __disasmOptions;
 };
 
 #endif // FORMDISASM_H
