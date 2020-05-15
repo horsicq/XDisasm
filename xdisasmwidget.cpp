@@ -102,6 +102,21 @@ void XDisasmWidget::goToAddress(qint64 nAddress)
     }
 }
 
+void XDisasmWidget::goToOffset(qint64 nOffset)
+{
+    if(pModel)
+    {
+        qint64 nPosition=pModel->offsetToPosition(nOffset);
+
+        if(ui->tableViewDisasm->verticalScrollBar()->maximum()==0)
+        {
+            ui->tableViewDisasm->verticalScrollBar()->setMaximum(nPosition); // Hack
+        }
+
+        ui->tableViewDisasm->verticalScrollBar()->setValue(nPosition);
+    }
+}
+
 void XDisasmWidget::goToDisasmAddress(qint64 nAddress)
 {
     if(!pDisasmOptions->stats.bInit)
@@ -183,11 +198,15 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
 
         QMenu contextMenu(this);
 
-        QAction actionGoToAddress(tr("Go to Address"),this);
+        QAction actionGoToAddress(tr("Go to address"),this);
         actionGoToAddress.setShortcut(QKeySequence(XShortcuts::GOTOADDRESS));
         connect(&actionGoToAddress,SIGNAL(triggered()),this,SLOT(_goToAddress()));
 
-        QAction actionDump(tr("Dump to File"),this);
+        QAction actionGoToOffset(tr("Go to offset"),this);
+        actionGoToOffset.setShortcut(QKeySequence(XShortcuts::GOTOOFFSET));
+        connect(&actionGoToOffset,SIGNAL(triggered()),this,SLOT(_goToOffset()));
+
+        QAction actionDump(tr("Dump to file"),this);
         actionDump.setShortcut(QKeySequence(XShortcuts::DUMPTOFILE));
         connect(&actionDump,SIGNAL(triggered()),this,SLOT(_dumpToFile()));
 
@@ -195,7 +214,7 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
         actionDisasm.setShortcut(QKeySequence(XShortcuts::DISASM));
         connect(&actionDisasm,SIGNAL(triggered()),this,SLOT(_disasm()));
 
-        QAction actionToData(tr("To Data"),this);
+        QAction actionToData(tr("To data"),this);
         actionToData.setShortcut(QKeySequence(XShortcuts::TODATA));
         connect(&actionToData,SIGNAL(triggered()),this,SLOT(_toData()));
 
@@ -225,10 +244,22 @@ void XDisasmWidget::_goToAddress()
 {
     if(pModel)
     {
-        DialogGoToAddress da(this,&(pModel->getStats()->memoryMap));
+        DialogGoToAddress da(this,&(pModel->getStats()->memoryMap),DialogGoToAddress::TYPE_ADDRESS);
         if(da.exec()==QDialog::Accepted)
         {
-            goToAddress(da.getAddress());
+            goToAddress(da.getValue());
+        }
+    }
+}
+
+void XDisasmWidget::_goToOffset()
+{
+    if(pModel)
+    {
+        DialogGoToAddress da(this,&(pModel->getStats()->memoryMap),DialogGoToAddress::TYPE_OFFSET);
+        if(da.exec()==QDialog::Accepted)
+        {
+            goToOffset(da.getValue());
         }
     }
 }
@@ -309,4 +340,14 @@ XDisasmWidget::SELECTION_STAT XDisasmWidget::getSelectionStat()
 void XDisasmWidget::on_pushButtonAnalize_clicked()
 {
     analize();
+}
+
+void XDisasmWidget::on_pushButtonGoToAddress_clicked()
+{
+    _goToAddress();
+}
+
+void XDisasmWidget::on_pushButtonGoToOffset_clicked()
+{
+    _goToOffset();
 }

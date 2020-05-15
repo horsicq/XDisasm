@@ -71,6 +71,7 @@ public:
     qint64 getPositionCount() const;
     qint64 positionToAddress(qint64 nPosition);
     qint64 addressToPosition(qint64 nAddress);
+    qint64 offsetToPosition(qint64 nOffset);
     XDisasm::STATS *getStats();
     void _beginResetModel();
     void _endResetModel();

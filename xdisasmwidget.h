@@ -52,6 +52,7 @@ public:
     void setData(QIODevice *pDevice,XDisasmModel::SHOWOPTIONS *pShowOptions,XDisasm::OPTIONS *pDisasmOptions,bool bAuto=true);
     void analize();
     void goToAddress(qint64 nAddress);
+    void goToOffset(qint64 nOffset);
     void goToDisasmAddress(qint64 nAddress);
     void goToEntryPoint();
     void disasm(qint64 nAddress);
@@ -65,11 +66,14 @@ private slots:
     void on_pushButtonLabels_clicked();
     void on_tableViewDisasm_customContextMenuRequested(const QPoint &pos);
     void _goToAddress();
+    void _goToOffset();
     void _dumpToFile();
     void _disasm();
     void _toData();
     SELECTION_STAT getSelectionStat();
     void on_pushButtonAnalize_clicked();
+    void on_pushButtonGoToAddress_clicked();
+    void on_pushButtonGoToOffset_clicked();
 
 private:
     Ui::XDisasmWidget *ui;

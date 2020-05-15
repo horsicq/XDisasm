@@ -334,6 +334,20 @@ qint64 XDisasmModel::addressToPosition(qint64 nAddress)
     return nResult;
 }
 
+qint64 XDisasmModel::offsetToPosition(qint64 nOffset)
+{
+    qint64 nResult=0;
+
+    qint64 nAddress=XBinary::offsetToAddress(&(pStats->memoryMap),nOffset);
+
+    if(nAddress!=-1)
+    {
+        nResult=addressToPosition(nAddress);
+    }
+
+    return nResult;
+}
+
 XDisasm::STATS *XDisasmModel::getStats()
 {
     return pStats;
