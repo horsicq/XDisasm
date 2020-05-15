@@ -219,6 +219,7 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
         connect(&actionToData,SIGNAL(triggered()),this,SLOT(_toData()));
 
         contextMenu.addAction(&actionGoToAddress);
+        contextMenu.addAction(&actionGoToOffset);
 
         if((selectionStat.nSize)&&XBinary::isSolidAddressRange(&(pModel->getStats()->memoryMap),selectionStat.nAddress,selectionStat.nSize))
         {
