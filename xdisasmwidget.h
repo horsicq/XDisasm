@@ -31,6 +31,7 @@
 #include "dialoggotoaddress.h"
 #include "dialogdisasmprocess.h"
 #include "dialogdumpprocess.h"
+#include "xlineedithex.h"
 
 namespace Ui {
 class XDisasmWidget;

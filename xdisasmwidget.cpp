@@ -84,6 +84,20 @@ void XDisasmWidget::analize()
         QItemSelectionModel *modelOld=ui->tableViewDisasm->selectionModel();
         ui->tableViewDisasm->setModel(pModel);
         delete modelOld;
+
+        int nSymbolWidth=XLineEditHEX::getSymbolWidth(this);
+
+        ui->tableViewDisasm->setColumnWidth(0,nSymbolWidth*14);
+        ui->tableViewDisasm->setColumnWidth(1,nSymbolWidth*8);
+        ui->tableViewDisasm->setColumnWidth(2,nSymbolWidth*10);
+        ui->tableViewDisasm->setColumnWidth(3,nSymbolWidth*8);
+        ui->tableViewDisasm->setColumnWidth(4,nSymbolWidth*8);
+
+        ui->tableViewDisasm->horizontalHeader()->setSectionResizeMode(0,QHeaderView::Interactive);
+        ui->tableViewDisasm->horizontalHeader()->setSectionResizeMode(1,QHeaderView::Interactive);
+        ui->tableViewDisasm->horizontalHeader()->setSectionResizeMode(2,QHeaderView::Interactive);
+        ui->tableViewDisasm->horizontalHeader()->setSectionResizeMode(3,QHeaderView::Interactive);
+        ui->tableViewDisasm->horizontalHeader()->setSectionResizeMode(4,QHeaderView::Stretch);
     }
 }
 
