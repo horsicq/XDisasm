@@ -87,10 +87,11 @@ void XDisasmWidget::analize()
 
         int nSymbolWidth=XLineEditHEX::getSymbolWidth(this);
 
+        // TODO 16/32/64 width
         ui->tableViewDisasm->setColumnWidth(0,nSymbolWidth*14);
         ui->tableViewDisasm->setColumnWidth(1,nSymbolWidth*8);
-        ui->tableViewDisasm->setColumnWidth(2,nSymbolWidth*10);
-        ui->tableViewDisasm->setColumnWidth(3,nSymbolWidth*8);
+        ui->tableViewDisasm->setColumnWidth(2,nSymbolWidth*12);
+        ui->tableViewDisasm->setColumnWidth(3,nSymbolWidth*20);
         ui->tableViewDisasm->setColumnWidth(4,nSymbolWidth*8);
 
         ui->tableViewDisasm->horizontalHeader()->setSectionResizeMode(0,QHeaderView::Interactive);
