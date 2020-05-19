@@ -76,6 +76,7 @@ public:
     void _beginResetModel();
     void _endResetModel();
     void resetCache();
+    bool initDisasm();
 
 private:
     QIODevice *pDevice;
@@ -85,6 +86,7 @@ private:
     QQueue<qint64> quRecords;
     QMap<qint64,VEIW_RECORD> mapRecords;
     csh disasm_handle;
+    bool bDisasmInit;
 };
 
 #endif // XDISASMMODEL_H
