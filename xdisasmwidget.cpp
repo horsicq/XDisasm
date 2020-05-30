@@ -68,11 +68,11 @@ void XDisasmWidget::setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShow
 
     if(bAuto)
     {
-        analize();
+        analyze();
     }
 }
 
-void XDisasmWidget::analize()
+void XDisasmWidget::analyze()
 {
     if(pDisasmOptions&&pShowOptions)
     {
@@ -353,9 +353,9 @@ XDisasmWidget::SELECTION_STAT XDisasmWidget::getSelectionStat()
     return result;
 }
 
-void XDisasmWidget::on_pushButtonAnalize_clicked()
+void XDisasmWidget::on_pushButtonAnalyze_clicked()
 {
-    analize();
+    analyze();
 }
 
 void XDisasmWidget::on_pushButtonGoToAddress_clicked()

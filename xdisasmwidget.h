@@ -51,7 +51,7 @@ class XDisasmWidget : public QWidget
 public:
     explicit XDisasmWidget(QWidget *parent = nullptr);
     void setData(QIODevice *pDevice,XDisasmModel::SHOWOPTIONS *pShowOptions,XDisasm::OPTIONS *pDisasmOptions,bool bAuto=true);
-    void analize();
+    void analyze();
     void goToAddress(qint64 nAddress);
     void goToOffset(qint64 nOffset);
     void goToDisasmAddress(qint64 nAddress);
@@ -72,7 +72,7 @@ private slots:
     void _disasm();
     void _toData();
     SELECTION_STAT getSelectionStat();
-    void on_pushButtonAnalize_clicked();
+    void on_pushButtonAnalyze_clicked();
     void on_pushButtonGoToAddress_clicked();
     void on_pushButtonGoToOffset_clicked();
 
