@@ -367,3 +367,8 @@ void XDisasmWidget::on_pushButtonGoToOffset_clicked()
 {
     _goToOffset();
 }
+
+void XDisasmWidget::on_pushButtonSignature_clicked()
+{
+
+}

@@ -4,6 +4,7 @@ DEPENDPATH += $$PWD
 SOURCES += \
     $$PWD/dialogdisasmlabels.cpp \
     $$PWD/dialogdisasmprocess.cpp \
+    $$PWD/dialogsignature.cpp \
     $$PWD/xdisasm.cpp \
     $$PWD/xdisasmmodel.cpp \
     $$PWD/xdisasmwidget.cpp
@@ -11,6 +12,7 @@ SOURCES += \
 HEADERS += \
     $$PWD/dialogdisasmlabels.h \
     $$PWD/dialogdisasmprocess.h \
+    $$PWD/dialogsignature.h \
     $$PWD/xdisasm.h \
     $$PWD/xdisasmmodel.h \
     $$PWD/xdisasmwidget.h
@@ -18,6 +20,7 @@ HEADERS += \
 FORMS += \
     $$PWD/dialogdisasmlabels.ui \
     $$PWD/dialogdisasmprocess.ui \
+    $$PWD/dialogsignature.ui \
     $$PWD/xdisasmwidget.ui
 
 !contains(XCONFIG, xcapstone) {

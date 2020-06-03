@@ -76,6 +76,8 @@ private slots:
     void on_pushButtonGoToAddress_clicked();
     void on_pushButtonGoToOffset_clicked();
 
+    void on_pushButtonSignature_clicked();
+
 private:
     Ui::XDisasmWidget *ui;
     QIODevice *pDevice;
