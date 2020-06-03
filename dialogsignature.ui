@@ -2,22 +2,28 @@
 <ui version="4.0">
  <class>DialogSignature</class>
  <widget class="QDialog" name="DialogSignature">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>480</width>
-    <height>328</height>
+    <width>674</width>
+    <height>390</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Signature</string>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
   </property>
   <widget class="QPushButton" name="pushButtonOK">
    <property name="geometry">
     <rect>
-     <x>400</x>
-     <y>300</y>
+     <x>590</x>
+     <y>360</y>
      <width>75</width>
      <height>23</height>
     </rect>

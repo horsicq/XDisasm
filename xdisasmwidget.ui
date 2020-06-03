@@ -50,13 +50,6 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButtonSignature">
-       <property name="text">
-        <string>Signature</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>

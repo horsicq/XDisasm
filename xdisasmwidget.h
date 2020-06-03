@@ -32,6 +32,7 @@
 #include "dialogdisasmprocess.h"
 #include "dialogdumpprocess.h"
 #include "xlineedithex.h"
+#include "dialogsignature.h"
 
 namespace Ui {
 class XDisasmWidget;
@@ -58,6 +59,7 @@ public:
     void goToEntryPoint();
     void disasm(qint64 nAddress);
     void toData(qint64 nAddress,qint64 nSize);
+    void signature(qint64 nAddress);
     void clear();
     ~XDisasmWidget();
     void process(QIODevice *pDevice, XDisasm::OPTIONS *pOptions, qint64 nStartAddress, XDisasm::DM dm);
@@ -71,12 +73,11 @@ private slots:
     void _dumpToFile();
     void _disasm();
     void _toData();
+    void _signature();
     SELECTION_STAT getSelectionStat();
     void on_pushButtonAnalyze_clicked();
     void on_pushButtonGoToAddress_clicked();
     void on_pushButtonGoToOffset_clicked();
-
-    void on_pushButtonSignature_clicked();
 
 private:
     Ui::XDisasmWidget *ui;

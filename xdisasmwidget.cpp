@@ -35,6 +35,7 @@ XDisasmWidget::XDisasmWidget(QWidget *parent) :
     new QShortcut(QKeySequence(XShortcuts::DUMPTOFILE),     this,SLOT(_dumpToFile()));
     new QShortcut(QKeySequence(XShortcuts::DISASM),         this,SLOT(_disasm()));
     new QShortcut(QKeySequence(XShortcuts::TODATA),         this,SLOT(_toData()));
+    new QShortcut(QKeySequence(XShortcuts::SIGNATURE),      this,SLOT(_signature()));
 
     pShowOptions=0;
     pDisasmOptions=0;
@@ -162,6 +163,13 @@ void XDisasmWidget::toData(qint64 nAddress, qint64 nSize)
     process(pDevice,pDisasmOptions,nAddress,XDisasm::DM_TODATA);
 }
 
+void XDisasmWidget::signature(qint64 nAddress)
+{
+    DialogSignature ds(this);
+
+    ds.exec();
+}
+
 void XDisasmWidget::clear()
 {
     ui->tableViewDisasm->setModel(0);
@@ -233,8 +241,13 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
         actionToData.setShortcut(QKeySequence(XShortcuts::TODATA));
         connect(&actionToData,SIGNAL(triggered()),this,SLOT(_toData()));
 
+        QAction actionSignature(tr("Signature"),this);
+        actionSignature.setShortcut(QKeySequence(XShortcuts::SIGNATURE));
+        connect(&actionSignature,SIGNAL(triggered()),this,SLOT(_signature()));
+
         contextMenu.addAction(&actionGoToAddress);
         contextMenu.addAction(&actionGoToOffset);
+        contextMenu.addAction(&actionSignature);
 
         if((selectionStat.nSize)&&XBinary::isSolidAddressRange(&(pModel->getStats()->memoryMap),selectionStat.nAddress,selectionStat.nSize))
         {
@@ -331,6 +344,19 @@ void XDisasmWidget::_toData()
     }
 }
 
+void XDisasmWidget::_signature()
+{
+    if(pModel)
+    {
+        SELECTION_STAT selectionStat=getSelectionStat();
+
+        if(selectionStat.nSize)
+        {
+            signature(selectionStat.nAddress);
+        }
+    }
+}
+
 XDisasmWidget::SELECTION_STAT XDisasmWidget::getSelectionStat()
 {
     SELECTION_STAT result={};
@@ -366,9 +392,4 @@ void XDisasmWidget::on_pushButtonGoToAddress_clicked()
 void XDisasmWidget::on_pushButtonGoToOffset_clicked()
 {
     _goToOffset();
-}
-
-void XDisasmWidget::on_pushButtonSignature_clicked()
-{
-
 }
