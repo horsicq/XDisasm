@@ -286,12 +286,28 @@ qint64 XDisasmModel::addressToPosition(qint64 nAddress)
 
             if(nResult==-1)
             {
-                QMap<qint64,qint64>::const_iterator iter=pStats->mapAddresses.lowerBound(nAddress);
+                QMap<qint64,qint64>::const_iterator iterBegin=pStats->mapAddresses.upperBound(nAddress);
 
-                if(iter!=pStats->mapAddresses.end())
+                if(iterBegin!=pStats->mapAddresses.begin())
                 {
-                    qint64 nKeyAddress=iter.key();
-                    qint64 nValueAddress=iter.value();
+                    qint64 nKeyAddress=iterBegin.key();
+                    XDisasm::VIEW_BLOCK vb=pStats->mapVB.value(nKeyAddress);
+
+                    if((vb.nAddress>=nKeyAddress)&&(nAddress<(vb.nAddress+vb.nSize)))
+                    {
+                        nResult=nKeyAddress;
+                    }
+                }
+            }
+
+            if(nResult==-1)
+            {
+                QMap<qint64,qint64>::const_iterator iterEnd=pStats->mapAddresses.lowerBound(nAddress);
+
+                if(iterEnd!=pStats->mapAddresses.end())
+                {
+                    qint64 nKeyAddress=iterEnd.key();
+                    qint64 nValueAddress=iterEnd.value();
 
                     qint64 nDelta=nKeyAddress-nAddress;
 
