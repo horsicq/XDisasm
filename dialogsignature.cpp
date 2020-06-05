@@ -21,11 +21,14 @@
 #include "dialogsignature.h"
 #include "ui_dialogsignature.h"
 
-DialogSignature::DialogSignature(QWidget *parent) :
+DialogSignature::DialogSignature(QWidget *parent, XDisasmModel *pModel, qint64 nAddress) :
     QDialog(parent),
     ui(new Ui::DialogSignature)
 {
     ui->setupUi(this);
+
+    this->pModel=pModel;
+    this->nAddress=nAddress;
 }
 
 DialogSignature::~DialogSignature()

@@ -165,7 +165,7 @@ void XDisasmWidget::toData(qint64 nAddress, qint64 nSize)
 
 void XDisasmWidget::signature(qint64 nAddress)
 {
-    DialogSignature ds(this);
+    DialogSignature ds(this,pModel,nAddress);
 
     ds.exec();
 }

@@ -22,6 +22,7 @@
 #define DIALOGSIGNATURE_H
 
 #include <QDialog>
+#include "xdisasmmodel.h"
 
 namespace Ui {
 class DialogSignature;
@@ -32,7 +33,7 @@ class DialogSignature : public QDialog
     Q_OBJECT
 
 public:
-    explicit DialogSignature(QWidget *parent=nullptr);
+    explicit DialogSignature(QWidget *parent,XDisasmModel *pModel,qint64 nAddress);
     ~DialogSignature();
 
 private slots:
@@ -40,6 +41,8 @@ private slots:
 
 private:
     Ui::DialogSignature *ui;
+    XDisasmModel *pModel;
+    qint64 nAddress;
 };
 
 #endif // DIALOGSIGNATURE_H
