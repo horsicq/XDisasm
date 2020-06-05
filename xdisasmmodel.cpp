@@ -290,9 +290,12 @@ qint64 XDisasmModel::addressToPosition(qint64 nAddress)
 
                 if(iter!=pStats->mapAddresses.end())
                 {
-                    qint64 nDelta=iter.key()-nAddress;
+                    qint64 nKeyAddress=iter.key();
+                    qint64 nValueAddress=iter.value();
 
-                    nResult=iter.value()-nDelta;
+                    qint64 nDelta=nKeyAddress-nAddress;
+
+                    nResult=nValueAddress-nDelta;
                 }
                 else
                 {

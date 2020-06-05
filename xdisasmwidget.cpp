@@ -156,11 +156,15 @@ void XDisasmWidget::goToEntryPoint()
 void XDisasmWidget::disasm(qint64 nAddress)
 {
     process(pDevice,pDisasmOptions,nAddress,XDisasm::DM_DISASM);
+
+    goToAddress(nAddress);
 }
 
 void XDisasmWidget::toData(qint64 nAddress, qint64 nSize)
 {
     process(pDevice,pDisasmOptions,nAddress,XDisasm::DM_TODATA);
+
+    goToAddress(nAddress);
 }
 
 void XDisasmWidget::signature(qint64 nAddress)
