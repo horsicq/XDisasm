@@ -387,13 +387,3 @@ void XDisasmWidget::on_pushButtonAnalyze_clicked()
 {
     analyze();
 }
-
-void XDisasmWidget::on_pushButtonGoToAddress_clicked()
-{
-    _goToAddress();
-}
-
-void XDisasmWidget::on_pushButtonGoToOffset_clicked()
-{
-    _goToOffset();
-}

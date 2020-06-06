@@ -76,8 +76,6 @@ private slots:
     void _signature();
     SELECTION_STAT getSelectionStat();
     void on_pushButtonAnalyze_clicked();
-    void on_pushButtonGoToAddress_clicked();
-    void on_pushButtonGoToOffset_clicked();
 
 private:
     Ui::XDisasmWidget *ui;
