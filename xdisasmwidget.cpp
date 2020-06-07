@@ -32,6 +32,8 @@ XDisasmWidget::XDisasmWidget(QWidget *parent) :
     ui->tableViewDisasm->setFont(font);
 
     new QShortcut(QKeySequence(XShortcuts::GOTOADDRESS),    this,SLOT(_goToAddress()));
+    new QShortcut(QKeySequence(XShortcuts::GOTOOFFSET),     this,SLOT(_goToOffset()));
+    new QShortcut(QKeySequence(XShortcuts::GOTORELADDRESS), this,SLOT(_goToRelAddress()));
     new QShortcut(QKeySequence(XShortcuts::DUMPTOFILE),     this,SLOT(_dumpToFile()));
     new QShortcut(QKeySequence(XShortcuts::DISASM),         this,SLOT(_disasm()));
     new QShortcut(QKeySequence(XShortcuts::TODATA),         this,SLOT(_toData()));
@@ -109,12 +111,7 @@ void XDisasmWidget::goToAddress(qint64 nAddress)
     {
         qint64 nPosition=pModel->addressToPosition(nAddress);
 
-        if(ui->tableViewDisasm->verticalScrollBar()->maximum()==0)
-        {
-            ui->tableViewDisasm->verticalScrollBar()->setMaximum(nPosition); // Hack
-        }
-
-        ui->tableViewDisasm->verticalScrollBar()->setValue(nPosition);
+        _goToPosition(nPosition);
     }
 }
 
@@ -124,12 +121,17 @@ void XDisasmWidget::goToOffset(qint64 nOffset)
     {
         qint64 nPosition=pModel->offsetToPosition(nOffset);
 
-        if(ui->tableViewDisasm->verticalScrollBar()->maximum()==0)
-        {
-            ui->tableViewDisasm->verticalScrollBar()->setMaximum(nPosition); // Hack
-        }
+        _goToPosition(nPosition);
+    }
+}
 
-        ui->tableViewDisasm->verticalScrollBar()->setValue(nPosition);
+void XDisasmWidget::goToRelAddress(qint64 nRelAddress)
+{
+    if(pModel)
+    {
+        qint64 nPosition=pModel->relAddressToPosition(nRelAddress);
+
+        _goToPosition(nPosition);
     }
 }
 
@@ -225,13 +227,26 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
 
         QMenu contextMenu(this);
 
-        QAction actionGoToAddress(tr("Go to address"),this);
+        QMenu goToMenu(tr("Go to"),this);
+
+
+        QAction actionGoToAddress(tr("Virtual address"),this);
         actionGoToAddress.setShortcut(QKeySequence(XShortcuts::GOTOADDRESS));
         connect(&actionGoToAddress,SIGNAL(triggered()),this,SLOT(_goToAddress()));
 
-        QAction actionGoToOffset(tr("Go to offset"),this);
+        QAction actionGoToRelAddress(tr("Relative virtual address"),this);
+        actionGoToRelAddress.setShortcut(QKeySequence(XShortcuts::GOTORELADDRESS));
+        connect(&actionGoToRelAddress,SIGNAL(triggered()),this,SLOT(_goToRelAddress()));
+
+        QAction actionGoToOffset(tr("File offset"),this);
         actionGoToOffset.setShortcut(QKeySequence(XShortcuts::GOTOOFFSET));
         connect(&actionGoToOffset,SIGNAL(triggered()),this,SLOT(_goToOffset()));
+
+        goToMenu.addAction(&actionGoToAddress);
+        goToMenu.addAction(&actionGoToRelAddress);
+        goToMenu.addAction(&actionGoToOffset);
+
+        contextMenu.addMenu(&goToMenu);
 
         QAction actionDump(tr("Dump to file"),this);
         actionDump.setShortcut(QKeySequence(XShortcuts::DUMPTOFILE));
@@ -249,8 +264,6 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
         actionSignature.setShortcut(QKeySequence(XShortcuts::SIGNATURE));
         connect(&actionSignature,SIGNAL(triggered()),this,SLOT(_signature()));
 
-        contextMenu.addAction(&actionGoToAddress);
-        contextMenu.addAction(&actionGoToOffset);
         contextMenu.addAction(&actionSignature);
 
         if((selectionStat.nSize)&&XBinary::isSolidAddressRange(&(pModel->getStats()->memoryMap),selectionStat.nAddress,selectionStat.nSize))
@@ -281,6 +294,18 @@ void XDisasmWidget::_goToAddress()
         if(da.exec()==QDialog::Accepted)
         {
             goToAddress(da.getValue());
+        }
+    }
+}
+
+void XDisasmWidget::_goToRelAddress()
+{
+    if(pModel)
+    {
+        DialogGoToAddress da(this,&(pModel->getStats()->memoryMap),DialogGoToAddress::TYPE_REL_ADDRESS);
+        if(da.exec()==QDialog::Accepted)
+        {
+            goToRelAddress(da.getValue());
         }
     }
 }
@@ -386,4 +411,21 @@ XDisasmWidget::SELECTION_STAT XDisasmWidget::getSelectionStat()
 void XDisasmWidget::on_pushButtonAnalyze_clicked()
 {
     analyze();
+}
+
+void XDisasmWidget::_goToPosition(qint32 nPosition)
+{
+    if(ui->tableViewDisasm->verticalScrollBar()->maximum()==0)
+    {
+        ui->tableViewDisasm->verticalScrollBar()->setMaximum(nPosition); // Hack
+    }
+
+    ui->tableViewDisasm->verticalScrollBar()->setValue(nPosition);
+
+    ui->tableViewDisasm->setCurrentIndex(ui->tableViewDisasm->model()->index(nPosition,0));
+}
+
+void XDisasmWidget::on_pushButtonEntryPoint_clicked()
+{
+    goToEntryPoint();
 }

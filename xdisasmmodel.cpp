@@ -286,16 +286,23 @@ qint64 XDisasmModel::addressToPosition(qint64 nAddress)
 
             if(nResult==-1)
             {
-                QMap<qint64,qint64>::const_iterator iterBegin=pStats->mapAddresses.upperBound(nAddress);
+                QMap<qint64,qint64>::iterator iter=pStats->mapAddresses.lowerBound(nAddress);
 
-                if(iterBegin!=pStats->mapAddresses.begin())
+                if((iter!=pStats->mapAddresses.end())&&(iter!=pStats->mapAddresses.begin()))
                 {
-                    qint64 nKeyAddress=iterBegin.key();
+                    iter--;
+                    qint64 nPosition=iter.value();
+
+                    qint64 nKeyAddress=pStats->mapAddresses.key(nPosition);
+
                     XDisasm::VIEW_BLOCK vb=pStats->mapVB.value(nKeyAddress);
 
-                    if((vb.nAddress>=nKeyAddress)&&(nAddress<(vb.nAddress+vb.nSize)))
+                    if(vb.nSize)
                     {
-                        nResult=nKeyAddress;
+                        if((vb.nAddress<=nAddress)&&(nAddress<(vb.nAddress+vb.nSize)))
+                        {
+                            nResult=nPosition;
+                        }
                     }
                 }
             }
@@ -307,11 +314,11 @@ qint64 XDisasmModel::addressToPosition(qint64 nAddress)
                 if(iterEnd!=pStats->mapAddresses.end())
                 {
                     qint64 nKeyAddress=iterEnd.key();
-                    qint64 nValueAddress=iterEnd.value();
+                    qint64 nPosition=iterEnd.value();
 
                     qint64 nDelta=nKeyAddress-nAddress;
 
-                    nResult=nValueAddress-nDelta;
+                    nResult=nPosition-nDelta;
                 }
                 else
                 {
@@ -343,6 +350,20 @@ qint64 XDisasmModel::offsetToPosition(qint64 nOffset)
     qint64 nResult=0;
 
     qint64 nAddress=XBinary::offsetToAddress(&(pStats->memoryMap),nOffset);
+
+    if(nAddress!=-1)
+    {
+        nResult=addressToPosition(nAddress);
+    }
+
+    return nResult;
+}
+
+qint64 XDisasmModel::relAddressToPosition(qint64 nRelAddress)
+{
+    qint64 nResult=0;
+
+    qint64 nAddress=XBinary::relAddressToAddress(&(pStats->memoryMap),nRelAddress);
 
     if(nAddress!=-1)
     {

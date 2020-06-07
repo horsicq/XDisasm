@@ -41,6 +41,8 @@ public:
 private slots:
     void on_pushButtonClose_clicked();
     void on_pushButtonGoTo_clicked();
+    void on_tableViewLabels_doubleClicked(const QModelIndex &index);
+    void goTo();
 
 private:
     Ui::DialogDisasmLabels *ui;

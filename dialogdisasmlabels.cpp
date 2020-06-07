@@ -88,6 +88,18 @@ void DialogDisasmLabels::on_pushButtonClose_clicked()
 
 void DialogDisasmLabels::on_pushButtonGoTo_clicked()
 {
+    goTo();
+}
+
+void DialogDisasmLabels::on_tableViewLabels_doubleClicked(const QModelIndex &index)
+{
+    Q_UNUSED(index)
+
+    goTo();
+}
+
+void DialogDisasmLabels::goTo()
+{
     QItemSelectionModel *pSelectionModel=ui->tableViewLabels->selectionModel();
 
     if(pSelectionModel)

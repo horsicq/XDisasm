@@ -59,6 +59,13 @@ void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
 
         bool bStopBranch=false;
         int nDelta=0;
+
+        if(nAddress==0x400401)
+        {
+            int z=0;
+            z++;
+        }
+
         qint64 nOffset=XBinary::addressToOffset(&(pOptions->stats.memoryMap),nAddress); // TODO optimize if image
         if(nOffset!=-1)
         {
@@ -72,49 +79,48 @@ void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
 
             if(count>0)
             {
-//                QString sMnemonic=insn->mnemonic;
-//                QString sArgs=insn->op_str;
-
-//                QString sOpcode=sMnemonic;
-//                if(sArgs!="")
-//                {
-//                    sOpcode+=" "+sArgs;
-//                }
-
-                for(int i=0; i<insn->detail->x86.op_count; i++)
+                if(insn->size>1)
                 {
-                    if(insn->detail->x86.operands[i].type==X86_OP_IMM)
-                    {
-                        qint64 nImm=insn->detail->x86.operands[i].imm;
-
-                        if(isJmpOpcode(insn->id))
-                        {
-                            if(isCallOpcode(insn->id))
-                            {
-                                pOptions->stats.stCalls.insert(nImm);
-                            }
-                            else
-                            {
-                                pOptions->stats.stJumps.insert(nImm);
-                            }
-
-                            _disasm(nAddress,nImm);
-                        }
-                    }
+                    bStopBranch=!XBinary::isAddressPhysical(&(pOptions->stats.memoryMap),nAddress+insn->size-1);
                 }
 
-                RECORD opcode={};
-                opcode.nOffset=nOffset;
-                opcode.nSize=insn->size;
-                opcode.type=RECORD_TYPE_OPCODE;
-
-                pOptions->stats.mapRecords.insert(nAddress,opcode);
-
-                nDelta=insn->size;
-
-                if(isEndBranchOpcode(insn->id))
+                if(!bStopBranch)
                 {
-                    bStopBranch=true;
+                    for(int i=0; i<insn->detail->x86.op_count; i++)
+                    {
+                        if(insn->detail->x86.operands[i].type==X86_OP_IMM)
+                        {
+                            qint64 nImm=insn->detail->x86.operands[i].imm;
+
+                            if(isJmpOpcode(insn->id))
+                            {
+                                if(isCallOpcode(insn->id))
+                                {
+                                    pOptions->stats.stCalls.insert(nImm);
+                                }
+                                else
+                                {
+                                    pOptions->stats.stJumps.insert(nImm);
+                                }
+
+                                _disasm(nAddress,nImm);
+                            }
+                        }
+                    }
+
+                    RECORD opcode={};
+                    opcode.nOffset=nOffset;
+                    opcode.nSize=insn->size;
+                    opcode.type=RECORD_TYPE_OPCODE;
+
+                    pOptions->stats.mapRecords.insert(nAddress,opcode);
+
+                    nDelta=insn->size;
+
+                    if(isEndBranchOpcode(insn->id))
+                    {
+                        bStopBranch=true;
+                    }
                 }
 
                 cs_free(insn,count);

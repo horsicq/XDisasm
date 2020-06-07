@@ -50,11 +50,12 @@ class XDisasmWidget : public QWidget
     };
 
 public:
-    explicit XDisasmWidget(QWidget *parent = nullptr);
-    void setData(QIODevice *pDevice,XDisasmModel::SHOWOPTIONS *pShowOptions,XDisasm::OPTIONS *pDisasmOptions,bool bAuto=true);
+    explicit XDisasmWidget(QWidget *parent=nullptr);
+    void setData(QIODevice *pDevice,XDisasmModel::SHOWOPTIONS *pShowOptions=0,XDisasm::OPTIONS *pDisasmOptions=0,bool bAuto=true);
     void analyze();
     void goToAddress(qint64 nAddress);
     void goToOffset(qint64 nOffset);
+    void goToRelAddress(qint64 nRelAddress);
     void goToDisasmAddress(qint64 nAddress);
     void goToEntryPoint();
     void disasm(qint64 nAddress);
@@ -69,6 +70,7 @@ private slots:
     void on_pushButtonLabels_clicked();
     void on_tableViewDisasm_customContextMenuRequested(const QPoint &pos);
     void _goToAddress();
+    void _goToRelAddress();
     void _goToOffset();
     void _dumpToFile();
     void _disasm();
@@ -76,6 +78,8 @@ private slots:
     void _signature();
     SELECTION_STAT getSelectionStat();
     void on_pushButtonAnalyze_clicked();
+    void _goToPosition(qint32 nPosition);
+    void on_pushButtonEntryPoint_clicked();
 
 private:
     Ui::XDisasmWidget *ui;
