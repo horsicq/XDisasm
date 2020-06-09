@@ -138,6 +138,26 @@ QVariant XDisasmModel::data(const QModelIndex &index, int role) const
 
         result=_this->positionToAddress(nRow);
     }
+    else if(role==Qt::UserRole+UD_OFFSET)
+    {
+        XDisasmModel* _this=const_cast<XDisasmModel *>(this);
+
+        int nRow=index.row();
+
+        qint64 nAddress=_this->positionToAddress(nRow);
+
+        result=XBinary::addressToOffset(&(pStats->memoryMap),nAddress);
+    }
+    else if(role==Qt::UserRole+UD_RELADDRESS)
+    {
+        XDisasmModel* _this=const_cast<XDisasmModel *>(this);
+
+        int nRow=index.row();
+
+        qint64 nAddress=_this->positionToAddress(nRow);
+
+        result=XBinary::addressToRelAddress(&(pStats->memoryMap),nAddress);
+    }
     else if(role==Qt::UserRole+UD_SIZE)
     {
         result=1;
@@ -402,17 +422,12 @@ bool XDisasmModel::initDisasm()
     cs_arch arch=CS_ARCH_X86;
     cs_mode _mode=CS_MODE_16;
 
-    if(pStats->mode==XDisasm::MODE_X86_16)
-    {
-        arch=CS_ARCH_X86;
-        _mode=CS_MODE_16;
-    }
-    else if(pStats->mode==XDisasm::MODE_X86_32)
+    if(pStats->ft==XBinary::FT_PE32)
     {
         arch=CS_ARCH_X86;
         _mode=CS_MODE_32;
     }
-    else if(pStats->mode==XDisasm::MODE_X86_64)
+    else if(pStats->ft==XBinary::FT_PE64)
     {
         arch=CS_ARCH_X86;
         _mode=CS_MODE_64;

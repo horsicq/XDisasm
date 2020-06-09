@@ -36,9 +36,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButtonEntryPoint">
+      <widget class="QPushButton" name="pushButtonOverlay">
        <property name="text">
-        <string>Entry point</string>
+        <string>Overlay</string>
        </property>
       </widget>
      </item>

@@ -156,9 +156,9 @@ void XDisasm::processDisasm()
         pOptions->stats.csarch=CS_ARCH_X86;
         pOptions->stats.csmode=CS_MODE_16;
 
-        pOptions->stats.mode=pOptions->mode;
+        pOptions->stats.ft=pOptions->ft;
 
-        if(pOptions->stats.mode==MODE_UNKNOWN)
+        if(pOptions->stats.ft==XBinary::FT_UNKNOWN)
         {
             QSet<XBinary::FT> stFt=XBinary::getFileTypes(pDevice);
 
@@ -177,39 +177,35 @@ void XDisasm::processDisasm()
                 if(modeBinary==XBinary::MODE_32)
                 {
                     pOptions->stats.csmode=CS_MODE_32;
-                    pOptions->stats.mode=MODE_X86_32;
+                    pOptions->stats.ft=XBinary::FT_PE32;
                 }
                 else if(modeBinary==XBinary::MODE_64)
                 {
                     pOptions->stats.csmode=CS_MODE_64;
-                    pOptions->stats.mode=MODE_X86_64;
+                    pOptions->stats.ft=XBinary::FT_PE64;
                 }
             }
             else
             {
-                XBinary binary(pDevice,pOptions->bIsImage,pOptions->nImageBase);
+                // TODO
+//                XBinary binary(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
-                pOptions->stats.memoryMap=binary.getMemoryMap();
-                pOptions->stats.nEntryPointAddress=nStartAddress;
+//                pOptions->stats.memoryMap=binary.getMemoryMap();
+//                pOptions->stats.nEntryPointAddress=nStartAddress;
 
-                pOptions->stats.csarch=CS_ARCH_X86; // TODO
-                pOptions->stats.csmode=CS_MODE_32;
-                pOptions->stats.mode=MODE_X86_32;
+//                pOptions->stats.csarch=CS_ARCH_X86; // TODO
+//                pOptions->stats.csmode=CS_MODE_32;
+//                pOptions->stats.mode=MODE_X86_32;
             }
         }
         else
         {
-            if(pOptions->stats.mode==MODE_X86_16)
-            {
-                pOptions->stats.csarch=CS_ARCH_X86;
-                pOptions->stats.csmode=CS_MODE_16;
-            }
-            else if(pOptions->stats.mode==MODE_X86_32)
+            if(pOptions->stats.ft==XBinary::FT_PE32)
             {
                 pOptions->stats.csarch=CS_ARCH_X86;
                 pOptions->stats.csmode=CS_MODE_32;
             }
-            else if(pOptions->stats.mode==MODE_X86_64)
+            else if(pOptions->stats.ft==XBinary::FT_PE64)
             {
                 pOptions->stats.csarch=CS_ARCH_X86;
                 pOptions->stats.csmode=CS_MODE_64;

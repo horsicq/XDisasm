@@ -31,6 +31,7 @@ XDisasmWidget::XDisasmWidget(QWidget *parent) :
     font.setFamily("Courier"); // TODO
     ui->tableViewDisasm->setFont(font);
 
+    new QShortcut(QKeySequence(XShortcuts::GOTOENTRYPOINT), this,SLOT(_goToEntryPoint()));
     new QShortcut(QKeySequence(XShortcuts::GOTOADDRESS),    this,SLOT(_goToAddress()));
     new QShortcut(QKeySequence(XShortcuts::GOTOOFFSET),     this,SLOT(_goToOffset()));
     new QShortcut(QKeySequence(XShortcuts::GOTORELADDRESS), this,SLOT(_goToRelAddress()));
@@ -38,6 +39,10 @@ XDisasmWidget::XDisasmWidget(QWidget *parent) :
     new QShortcut(QKeySequence(XShortcuts::DISASM),         this,SLOT(_disasm()));
     new QShortcut(QKeySequence(XShortcuts::TODATA),         this,SLOT(_toData()));
     new QShortcut(QKeySequence(XShortcuts::SIGNATURE),      this,SLOT(_signature()));
+    new QShortcut(QKeySequence(XShortcuts::COPYADDRESS),    this,SLOT(_copyAddress()));
+    new QShortcut(QKeySequence(XShortcuts::COPYOFFSET),     this,SLOT(_copyOffset()));
+    new QShortcut(QKeySequence(XShortcuts::COPYRELADDRESS), this,SLOT(_copyRelAddress()));
+    new QShortcut(QKeySequence(XShortcuts::HEX),            this,SLOT(_hex()));
 
     pShowOptions=0;
     pDisasmOptions=0;
@@ -50,6 +55,8 @@ XDisasmWidget::XDisasmWidget(QWidget *parent) :
 void XDisasmWidget::setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShowOptions, XDisasm::OPTIONS *pDisasmOptions, bool bAuto)
 {
     this->pDevice=pDevice;
+
+    sBackupFileName=XBinary::getBackupName(pDevice);
 
     if(pShowOptions)
     {
@@ -102,6 +109,8 @@ void XDisasmWidget::analyze()
         ui->tableViewDisasm->horizontalHeader()->setSectionResizeMode(2,QHeaderView::Interactive);
         ui->tableViewDisasm->horizontalHeader()->setSectionResizeMode(3,QHeaderView::Interactive);
         ui->tableViewDisasm->horizontalHeader()->setSectionResizeMode(4,QHeaderView::Stretch);
+
+        ui->pushButtonOverlay->setEnabled(XFormats::isOverlayPresent(pDevice,pDisasmOptions->ft));
     }
 }
 
@@ -176,6 +185,28 @@ void XDisasmWidget::signature(qint64 nAddress)
     ds.exec();
 }
 
+void XDisasmWidget::hex(qint64 nOffset)
+{
+    QHexView::OPTIONS hexOptions={};
+
+    XBinary binary(pDevice);
+
+    hexOptions.memoryMap=binary.getMemoryMap();
+    hexOptions.sBackupFileName=sBackupFileName;
+    hexOptions.nStartAddress=nOffset;
+    hexOptions.nStartSelectionAddress=nOffset;
+    hexOptions.nSizeOfSelection=1;
+
+    DialogHex dialogHex(this,pDevice,&hexOptions);
+
+    connect(&dialogHex,SIGNAL(editState(bool)),this,SLOT(setEdited(bool)));
+
+    dialogHex.exec();
+
+    // TODO
+    // Reload after edit
+}
+
 void XDisasmWidget::clear()
 {
     ui->tableViewDisasm->setModel(0);
@@ -229,6 +260,9 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
 
         QMenu goToMenu(tr("Go to"),this);
 
+        QAction actionGoToEntryPoint(tr("Entry point"),this);
+        actionGoToEntryPoint.setShortcut(QKeySequence(XShortcuts::GOTOENTRYPOINT));
+        connect(&actionGoToEntryPoint,SIGNAL(triggered()),this,SLOT(_goToEntryPoint()));
 
         QAction actionGoToAddress(tr("Virtual address"),this);
         actionGoToAddress.setShortcut(QKeySequence(XShortcuts::GOTOADDRESS));
@@ -242,11 +276,40 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
         actionGoToOffset.setShortcut(QKeySequence(XShortcuts::GOTOOFFSET));
         connect(&actionGoToOffset,SIGNAL(triggered()),this,SLOT(_goToOffset()));
 
+        goToMenu.addAction(&actionGoToEntryPoint);
         goToMenu.addAction(&actionGoToAddress);
         goToMenu.addAction(&actionGoToRelAddress);
         goToMenu.addAction(&actionGoToOffset);
 
         contextMenu.addMenu(&goToMenu);
+
+        QMenu copyMenu(tr("Copy"),this);
+
+        QAction actionCopyAddress(tr("Virtual address"),this);
+        actionCopyAddress.setShortcut(QKeySequence(XShortcuts::COPYADDRESS));
+        connect(&actionCopyAddress,SIGNAL(triggered()),this,SLOT(_copyAddress()));
+
+        QAction actionCopyRelAddress(tr("Relative virtual address"),this);
+        actionCopyRelAddress.setShortcut(QKeySequence(XShortcuts::COPYRELADDRESS));
+        connect(&actionCopyRelAddress,SIGNAL(triggered()),this,SLOT(_copyRelAddress()));
+
+        QAction actionCopyOffset(tr("File offset"),this);
+        actionCopyOffset.setShortcut(QKeySequence(XShortcuts::COPYOFFSET));
+        connect(&actionCopyOffset,SIGNAL(triggered()),this,SLOT(_copyOffset()));
+
+        copyMenu.addAction(&actionCopyAddress);
+        copyMenu.addAction(&actionCopyRelAddress);
+        copyMenu.addAction(&actionCopyOffset);
+
+        contextMenu.addMenu(&copyMenu);
+
+        QAction actionHex(tr("Hex"),this);
+        actionHex.setShortcut(QKeySequence(XShortcuts::HEX));
+        connect(&actionHex,SIGNAL(triggered()),this,SLOT(_hex()));
+
+        QAction actionSignature(tr("Signature"),this);
+        actionSignature.setShortcut(QKeySequence(XShortcuts::SIGNATURE));
+        connect(&actionSignature,SIGNAL(triggered()),this,SLOT(_signature()));
 
         QAction actionDump(tr("Dump to file"),this);
         actionDump.setShortcut(QKeySequence(XShortcuts::DUMPTOFILE));
@@ -260,10 +323,7 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
         actionToData.setShortcut(QKeySequence(XShortcuts::TODATA));
         connect(&actionToData,SIGNAL(triggered()),this,SLOT(_toData()));
 
-        QAction actionSignature(tr("Signature"),this);
-        actionSignature.setShortcut(QKeySequence(XShortcuts::SIGNATURE));
-        connect(&actionSignature,SIGNAL(triggered()),this,SLOT(_signature()));
-
+        contextMenu.addAction(&actionHex);
         contextMenu.addAction(&actionSignature);
 
         if((selectionStat.nSize)&&XBinary::isSolidAddressRange(&(pModel->getStats()->memoryMap),selectionStat.nAddress,selectionStat.nSize))
@@ -318,6 +378,50 @@ void XDisasmWidget::_goToOffset()
         if(da.exec()==QDialog::Accepted)
         {
             goToOffset(da.getValue());
+        }
+    }
+}
+
+void XDisasmWidget::_goToEntryPoint()
+{
+    goToEntryPoint();
+}
+
+void XDisasmWidget::_copyAddress()
+{
+    if(pModel)
+    {
+        SELECTION_STAT selectionStat=getSelectionStat();
+
+        if(selectionStat.nSize)
+        {
+            QApplication::clipboard()->setText(QString("%1").arg(selectionStat.nAddress,0,16));
+        }
+    }
+}
+
+void XDisasmWidget::_copyOffset()
+{
+    if(pModel)
+    {
+        SELECTION_STAT selectionStat=getSelectionStat();
+
+        if(selectionStat.nSize)
+        {
+            QApplication::clipboard()->setText(QString("%1").arg(selectionStat.nOffset,0,16));
+        }
+    }
+}
+
+void XDisasmWidget::_copyRelAddress()
+{
+    if(pModel)
+    {
+        SELECTION_STAT selectionStat=getSelectionStat();
+
+        if(selectionStat.nSize)
+        {
+            QApplication::clipboard()->setText(QString("%1").arg(selectionStat.nRelAddress,0,16));
         }
     }
 }
@@ -386,6 +490,16 @@ void XDisasmWidget::_signature()
     }
 }
 
+void XDisasmWidget::_hex()
+{
+    if(pModel)
+    {
+        SELECTION_STAT selectionStat=getSelectionStat();
+
+        hex(selectionStat.nOffset);
+    }
+}
+
 XDisasmWidget::SELECTION_STAT XDisasmWidget::getSelectionStat()
 {
     SELECTION_STAT result={};
@@ -398,6 +512,8 @@ XDisasmWidget::SELECTION_STAT XDisasmWidget::getSelectionStat()
     if(result.nCount)
     {
         result.nAddress=il.at(0).data(Qt::UserRole+XDisasmModel::UD_ADDRESS).toLongLong();
+        result.nOffset=il.at(0).data(Qt::UserRole+XDisasmModel::UD_OFFSET).toLongLong();
+        result.nRelAddress=il.at(0).data(Qt::UserRole+XDisasmModel::UD_RELADDRESS).toLongLong();
 
         qint64 nLastElementAddress=il.at(result.nCount-1).data(Qt::UserRole+XDisasmModel::UD_ADDRESS).toLongLong();
         qint64 nLastElementSize=il.at(result.nCount-1).data(Qt::UserRole+XDisasmModel::UD_SIZE).toLongLong();
@@ -425,7 +541,15 @@ void XDisasmWidget::_goToPosition(qint32 nPosition)
     ui->tableViewDisasm->setCurrentIndex(ui->tableViewDisasm->model()->index(nPosition,0));
 }
 
-void XDisasmWidget::on_pushButtonEntryPoint_clicked()
+void XDisasmWidget::on_pushButtonOverlay_clicked()
 {
-    goToEntryPoint();
+
+}
+
+void XDisasmWidget::setEdited(bool bState)
+{
+    if(bState)
+    {
+        analyze();
+    }
 }

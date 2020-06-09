@@ -33,6 +33,8 @@ public:
     enum UD
     {
         UD_ADDRESS=0,
+        UD_OFFSET,
+        UD_RELADDRESS,
         UD_SIZE
     };
 

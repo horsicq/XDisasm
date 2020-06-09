@@ -25,6 +25,7 @@
 #include <QScrollBar>
 #include <QThread>
 #include <QMenu>
+#include <QClipboard>
 #include "xdisasmmodel.h"
 #include "dialogdisasmlabels.h"
 #include "xshortcuts.h"
@@ -33,6 +34,7 @@
 #include "dialogdumpprocess.h"
 #include "xlineedithex.h"
 #include "dialogsignature.h"
+#include "dialoghex.h"
 
 namespace Ui {
 class XDisasmWidget;
@@ -45,6 +47,8 @@ class XDisasmWidget : public QWidget
     struct SELECTION_STAT
     {
         qint64 nAddress;
+        qint64 nOffset;
+        qint64 nRelAddress;
         qint64 nSize;
         qint32 nCount;
     };
@@ -61,6 +65,7 @@ public:
     void disasm(qint64 nAddress);
     void toData(qint64 nAddress,qint64 nSize);
     void signature(qint64 nAddress);
+    void hex(qint64 nOffset);
     void clear();
     ~XDisasmWidget();
     void process(QIODevice *pDevice, XDisasm::OPTIONS *pOptions, qint64 nStartAddress, XDisasm::DM dm);
@@ -72,14 +77,20 @@ private slots:
     void _goToAddress();
     void _goToRelAddress();
     void _goToOffset();
+    void _goToEntryPoint();
+    void _copyAddress();
+    void _copyOffset();
+    void _copyRelAddress();
     void _dumpToFile();
     void _disasm();
     void _toData();
     void _signature();
+    void _hex();
     SELECTION_STAT getSelectionStat();
     void on_pushButtonAnalyze_clicked();
     void _goToPosition(qint32 nPosition);
-    void on_pushButtonEntryPoint_clicked();
+    void on_pushButtonOverlay_clicked();
+    void setEdited(bool bState);
 
 private:
     Ui::XDisasmWidget *ui;
@@ -89,6 +100,7 @@ private:
     XDisasmModel *pModel;
     XDisasmModel::SHOWOPTIONS __showOptions;
     XDisasm::OPTIONS __disasmOptions;
+    QString sBackupFileName; // TODO save backup
 };
 
 #endif // FORMDISASM_H

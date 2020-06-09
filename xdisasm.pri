@@ -38,9 +38,9 @@ FORMS += \
     include(../Controls/xlineedithex.pri)
 }
 
-!contains(XCONFIG, xpe) {
-    XCONFIG += xpe
-    include(../Formats/xpe.pri)
+!contains(XCONFIG, xformats) {
+    XCONFIG += xformats
+    include(../Formats/xformats.pri)
 }
 
 !contains(XCONFIG, dialoggotoaddress) {
@@ -51,4 +51,9 @@ FORMS += \
 !contains(XCONFIG, dialogdump) {
     XCONFIG += dialogdump
     include(../FormatDialogs/dialogdump.pri)
+}
+
+!contains(XCONFIG, qhexview) {
+    XCONFIG += qhexview
+    include(../QhexView/qhexview.pri)
 }

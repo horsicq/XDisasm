@@ -22,7 +22,7 @@
 #define XDISASM_H
 
 #include <QObject>
-#include "xpe.h"
+#include "xformats.h"
 #include "capstone/capstone.h"
 
 
@@ -36,14 +36,6 @@ public:
         DM_UNKNOWN=0,
         DM_DISASM,
         DM_TODATA
-    };
-
-    enum MODE
-    {
-        MODE_UNKNOWN=0,
-        MODE_X86_16,
-        MODE_X86_32,
-        MODE_X86_64
     };
 
     enum VBT
@@ -91,7 +83,7 @@ public:
     {
         bool bInit;
         XBinary::_MEMORY_MAP memoryMap;
-        MODE mode;
+        XBinary::FT ft;
         cs_arch csarch;
         cs_mode csmode;
         qint64 nImageBase;
@@ -114,7 +106,7 @@ public:
     {
         bool bIsImage;
         qint64 nImageBase;
-        XDisasm::MODE mode;
+        XBinary::FT ft;
         XDisasm::STATS stats;
     };
 
