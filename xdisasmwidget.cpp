@@ -56,8 +56,6 @@ void XDisasmWidget::setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShow
 {
     this->pDevice=pDevice;
 
-    sBackupFileName=XBinary::getBackupName(pDevice);
-
     if(pShowOptions)
     {
         this->pShowOptions=pShowOptions;
@@ -235,6 +233,11 @@ void XDisasmWidget::process(QIODevice *pDevice,XDisasm::OPTIONS *pOptions, qint6
 XDisasm::STATS *XDisasmWidget::getDisasmStats()
 {
     return &(pDisasmOptions->stats);
+}
+
+void XDisasmWidget::setBackupFileName(QString sBackupFileName)
+{
+    this->sBackupFileName=sBackupFileName;
 }
 
 void XDisasmWidget::on_pushButtonLabels_clicked()

@@ -70,6 +70,7 @@ public:
     ~XDisasmWidget();
     void process(QIODevice *pDevice, XDisasm::OPTIONS *pOptions, qint64 nStartAddress, XDisasm::DM dm);
     XDisasm::STATS *getDisasmStats();
+    void setBackupFileName(QString sBackupFileName);
 
 private slots:
     void on_pushButtonLabels_clicked();
