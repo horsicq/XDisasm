@@ -388,7 +388,6 @@ void XDisasm::_adjust()
 
         for(int i=0;(i<nMMCount)&&(!bStop);i++)
         {
-            // 41a000 419200 e00
             qint64 nRegionAddress=pOptions->stats.memoryMap.listRecords.at(i).nAddress;
             qint64 nRegionOffset=pOptions->stats.memoryMap.listRecords.at(i).nOffset;
             qint64 nRegionSize=pOptions->stats.memoryMap.listRecords.at(i).nSize;
@@ -396,12 +395,10 @@ void XDisasm::_adjust()
             for(qint64 nCurrentAddress=nRegionAddress,nCurrentOffset=nRegionOffset;nCurrentAddress<(nRegionAddress+nRegionSize);)
             {
                 VIEW_BLOCK vb=pOptions->stats.mapVB.value(nCurrentAddress);
-
+                // 418c00 418c04
                 if(!vb.nSize)
                 {
                     QMap<qint64,VIEW_BLOCK>::const_iterator iter=pOptions->stats.mapVB.lowerBound(nCurrentAddress);
-                    QMap<qint64,VIEW_BLOCK>::const_iterator prevIter=iter;
-                    --prevIter;
 
                     qint64 nBlockAddress=0;
                     qint64 nBlockOffset=0;
@@ -424,18 +421,10 @@ void XDisasm::_adjust()
                     }
                     else if(iter==pOptions->stats.mapVB.end())
                     {
-                        if(prevIter.key()>=nRegionAddress)
-                        {
-                            nBlockAddress=prevIter.value().nAddress+prevIter.value().nSize;
-                            nBlockOffset=prevIter.value().nOffset+prevIter.value().nSize;
-                        }
-                        else
-                        {
-                            nBlockAddress=nRegionAddress;
-                            nBlockOffset=nRegionOffset;
-                        }
+                        nBlockAddress=nCurrentAddress;
+                        nBlockOffset=nCurrentOffset;
 
-                        nBlockSize=(pOptions->stats.nImageBase+pOptions->stats.nImageSize)-nBlockAddress;
+                        nBlockSize=(nRegionAddress+nRegionSize)-nBlockAddress;
                     }
                     else
                     {
