@@ -108,7 +108,7 @@ void XDisasmWidget::analyze()
         ui->tableViewDisasm->horizontalHeader()->setSectionResizeMode(3,QHeaderView::Interactive);
         ui->tableViewDisasm->horizontalHeader()->setSectionResizeMode(4,QHeaderView::Stretch);
 
-        ui->pushButtonOverlay->setEnabled(XFormats::isOverlayPresent(pDevice,pDisasmOptions->ft));
+        ui->pushButtonOverlay->setEnabled(pDisasmOptions->stats.bIsOverlayPresent);
     }
 }
 
@@ -546,7 +546,7 @@ void XDisasmWidget::_goToPosition(qint32 nPosition)
 
 void XDisasmWidget::on_pushButtonOverlay_clicked()
 {
-
+    hex(pDisasmOptions->stats.nOverlayOffset);
 }
 
 void XDisasmWidget::setEdited(bool bState)

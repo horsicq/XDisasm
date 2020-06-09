@@ -100,6 +100,9 @@ public:
         qint64 nPositions;
         QMap<qint64,qint64> mapPositions;
         QMap<qint64,qint64> mapAddresses;
+        bool bIsOverlayPresent;
+        qint64 nOverlayOffset;
+        qint64 nOverlaySize;
     };
 
     struct OPTIONS

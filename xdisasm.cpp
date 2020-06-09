@@ -184,6 +184,10 @@ void XDisasm::processDisasm()
                     pOptions->stats.csmode=CS_MODE_64;
                     pOptions->stats.ft=XBinary::FT_PE64;
                 }
+
+                pOptions->stats.bIsOverlayPresent=pe.isOverlayPresent();
+                pOptions->stats.nOverlaySize=pe.getOverlaySize();
+                pOptions->stats.nOverlayOffset=pe.getOverlayOffset();
             }
             else
             {
