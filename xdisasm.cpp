@@ -69,7 +69,7 @@ void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
         qint64 nOffset=XBinary::addressToOffset(&(pOptions->stats.memoryMap),nAddress); // TODO optimize if image
         if(nOffset!=-1)
         {
-            QByteArray baData=XBinary::read_array(pDevice,nOffset,N_X64_OPCODE_SIZE);
+            QByteArray baData=XBinary::read_array(pDevice,nOffset,N_X64_OPCODE_SIZE); // TODO defs
 
             uint8_t *pData=(uint8_t *)baData.data();
             size_t nDataSize=(size_t)baData.size();
@@ -160,65 +160,69 @@ void XDisasm::processDisasm()
 
         if(pOptions->stats.ft==XBinary::FT_UNKNOWN)
         {
-            QSet<XBinary::FT> stFt=XBinary::getFileTypes(pDevice);
-
-            if(stFt.contains(XBinary::FT_PE))
-            {
-                XPE pe(pDevice,pOptions->bIsImage,pOptions->nImageBase);
-
-                pOptions->stats.memoryMap=pe.getMemoryMap();
-                pOptions->stats.nEntryPointAddress=pe.getEntryPointAddress(&pOptions->stats.memoryMap);
-
-                XBinary::MODE modeBinary=pe.getMode();
-                QString sArch=pe.getArch();
-
-                if(sArch=="I386") pOptions->stats.csarch=CS_ARCH_X86; // TODO more defs
-
-                if(modeBinary==XBinary::MODE_32)
-                {
-                    pOptions->stats.csmode=CS_MODE_32;
-                    pOptions->stats.ft=XBinary::FT_PE32;
-                }
-                else if(modeBinary==XBinary::MODE_64)
-                {
-                    pOptions->stats.csmode=CS_MODE_64;
-                    pOptions->stats.ft=XBinary::FT_PE64;
-                }
-
-                pOptions->stats.bIsOverlayPresent=pe.isOverlayPresent();
-                pOptions->stats.nOverlaySize=pe.getOverlaySize();
-                pOptions->stats.nOverlayOffset=pe.getOverlayOffset();
-            }
-            else
-            {
-                // TODO
-//                XBinary binary(pDevice,pOptions->bIsImage,pOptions->nImageBase);
-
-//                pOptions->stats.memoryMap=binary.getMemoryMap();
-//                pOptions->stats.nEntryPointAddress=nStartAddress;
-
-//                pOptions->stats.csarch=CS_ARCH_X86; // TODO
-//                pOptions->stats.csmode=CS_MODE_32;
-//                pOptions->stats.mode=MODE_X86_32;
-            }
+            pOptions->stats.ft=XBinary::getPrefFileType(pDevice);
         }
-        else
+
+        if((pOptions->stats.ft==XBinary::FT_PE32)||(pOptions->stats.ft==XBinary::FT_PE64))
         {
-            if(pOptions->stats.ft==XBinary::FT_PE32)
+            XPE pe(pDevice,pOptions->bIsImage,pOptions->nImageBase);
+
+            pOptions->stats.memoryMap=pe.getMemoryMap();
+            pOptions->stats.nEntryPointAddress=pe.getEntryPointAddress(&pOptions->stats.memoryMap);
+            pOptions->stats.bIsOverlayPresent=pe.isOverlayPresent();
+            pOptions->stats.nOverlaySize=pe.getOverlaySize();
+            pOptions->stats.nOverlayOffset=pe.getOverlayOffset();
+
+            XBinary::MODE modeBinary=pe.getMode();
+            QString sArch=pe.getArch();
+
+            if(sArch=="I386") pOptions->stats.csarch=CS_ARCH_X86; // TODO more defs
+
+            if(modeBinary==XBinary::MODE_32)
             {
-                pOptions->stats.csarch=CS_ARCH_X86;
                 pOptions->stats.csmode=CS_MODE_32;
             }
-            else if(pOptions->stats.ft==XBinary::FT_PE64)
+            else if(modeBinary==XBinary::MODE_64)
             {
-                pOptions->stats.csarch=CS_ARCH_X86;
                 pOptions->stats.csmode=CS_MODE_64;
             }
+        }
+        else if((pOptions->stats.ft==XBinary::FT_ELF32)||(pOptions->stats.ft==XBinary::FT_ELF64))
+        {
+            XELF elf(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
-            XBinary binary(pDevice,pOptions->bIsImage,pOptions->nImageBase); // TODO Check bIsImage
+            pOptions->stats.memoryMap=elf.getMemoryMap();
+            pOptions->stats.nEntryPointAddress=elf.getEntryPointAddress(&pOptions->stats.memoryMap);
+            pOptions->stats.bIsOverlayPresent=elf.isOverlayPresent();
+            pOptions->stats.nOverlaySize=elf.getOverlaySize();
+            pOptions->stats.nOverlayOffset=elf.getOverlayOffset();
 
-            pOptions->stats.memoryMap=binary.getMemoryMap();
-            pOptions->stats.nEntryPointAddress=nStartAddress;
+            XBinary::MODE modeBinary=elf.getMode();
+            QString sArch=elf.getArch();
+
+            if(sArch=="386") pOptions->stats.csarch=CS_ARCH_X86; // TODO more defs
+
+            if(modeBinary==XBinary::MODE_32)
+            {
+                pOptions->stats.csmode=CS_MODE_32;
+            }
+            else if(modeBinary==XBinary::MODE_64)
+            {
+                pOptions->stats.csmode=CS_MODE_64;
+            }
+        }
+        else if(pOptions->stats.ft==XBinary::FT_MSDOS)
+        {
+            XELF elf(pDevice,pOptions->bIsImage,pOptions->nImageBase);
+
+            pOptions->stats.memoryMap=elf.getMemoryMap();
+            pOptions->stats.nEntryPointAddress=elf.getEntryPointAddress(&pOptions->stats.memoryMap);
+            pOptions->stats.bIsOverlayPresent=elf.isOverlayPresent();
+            pOptions->stats.nOverlaySize=elf.getOverlaySize();
+            pOptions->stats.nOverlayOffset=elf.getOverlayOffset();
+
+            pOptions->stats.csarch=CS_ARCH_X86;
+            pOptions->stats.csmode=CS_MODE_16;
         }
 
         pOptions->stats.nImageBase=pOptions->stats.memoryMap.nBaseAddress;
@@ -392,104 +396,117 @@ void XDisasm::_adjust()
             qint64 nRegionOffset=pOptions->stats.memoryMap.listRecords.at(i).nOffset;
             qint64 nRegionSize=pOptions->stats.memoryMap.listRecords.at(i).nSize;
 
-            for(qint64 nCurrentAddress=nRegionAddress,nCurrentOffset=nRegionOffset;nCurrentAddress<(nRegionAddress+nRegionSize);)
+            if(nRegionAddress!=-1)
             {
-                VIEW_BLOCK vb=pOptions->stats.mapVB.value(nCurrentAddress);
-                // 418c00 418c04
-                if(!vb.nSize)
+                for(qint64 nCurrentAddress=nRegionAddress,nCurrentOffset=nRegionOffset;nCurrentAddress<(nRegionAddress+nRegionSize);)
                 {
-                    QMap<qint64,VIEW_BLOCK>::const_iterator iter=pOptions->stats.mapVB.lowerBound(nCurrentAddress);
-
-                    qint64 nBlockAddress=0;
-                    qint64 nBlockOffset=0;
-                    qint64 nBlockSize=0;
-
-                    qint64 nIterKey=iter.key();
-
-                    if(nIterKey==pOptions->stats.mapVB.firstKey()) // TODO move outside 'for'
+                    VIEW_BLOCK vb=pOptions->stats.mapVB.value(nCurrentAddress);
+                    // 418c00 418c04
+                    if(!vb.nSize)
                     {
-                        nBlockAddress=pOptions->stats.nImageBase;
-                        nBlockOffset=0;
-                        if(nIterKey<(nRegionAddress+nRegionSize))
+                        QMap<qint64,VIEW_BLOCK>::const_iterator iter=pOptions->stats.mapVB.lowerBound(nCurrentAddress);
+
+                        qint64 nBlockAddress=0;
+                        qint64 nBlockOffset=0;
+                        qint64 nBlockSize=0;
+
+                        qint64 nIterKey=iter.key();
+
+                        if(pOptions->stats.mapVB.count())
                         {
-                            nBlockSize=iter.key()-pOptions->stats.nImageBase;
+                            if(nIterKey==pOptions->stats.mapVB.firstKey()) // TODO move outside 'for'
+                            {
+                                nBlockAddress=pOptions->stats.nImageBase;
+                                nBlockOffset=0;
+                                if(nIterKey<(nRegionAddress+nRegionSize))
+                                {
+                                    nBlockSize=iter.key()-pOptions->stats.nImageBase;
+                                }
+                                else
+                                {
+                                    nBlockSize=(nRegionAddress+nRegionSize)-nBlockAddress;
+                                }
+                            }
+                            else if(iter==pOptions->stats.mapVB.end())
+                            {
+                                nBlockAddress=nCurrentAddress;
+                                nBlockOffset=nCurrentOffset;
+
+                                nBlockSize=(nRegionAddress+nRegionSize)-nBlockAddress;
+                            }
+                            else
+                            {
+                                nBlockAddress=nCurrentAddress;
+                                nBlockOffset=nCurrentOffset;
+                                if(nIterKey<(nRegionAddress+nRegionSize))
+                                {
+                                    nBlockSize=iter.key()-nBlockAddress;
+                                }
+                                else
+                                {
+                                    nBlockSize=(nRegionAddress+nRegionSize)-nBlockAddress;
+                                }
+                            }
                         }
                         else
                         {
+                            nBlockAddress=nCurrentAddress;
+                            nBlockOffset=nCurrentOffset;
+
                             nBlockSize=(nRegionAddress+nRegionSize)-nBlockAddress;
                         }
-                    }
-                    else if(iter==pOptions->stats.mapVB.end())
-                    {
-                        nBlockAddress=nCurrentAddress;
-                        nBlockOffset=nCurrentOffset;
 
-                        nBlockSize=(nRegionAddress+nRegionSize)-nBlockAddress;
-                    }
-                    else
-                    {
-                        nBlockAddress=nCurrentAddress;
-                        nBlockOffset=nCurrentOffset;
-                        if(nIterKey<(nRegionAddress+nRegionSize))
+                        qint64 _nAddress=nBlockAddress;
+                        qint64 _nOffset=nBlockOffset;
+                        qint64 _nSize=nBlockSize;
+
+                        if(_nOffset!=-1)
                         {
-                            nBlockSize=iter.key()-nBlockAddress;
+                            while(_nSize>=16)
+                            {
+                                VIEW_BLOCK record;
+                                record.nAddress=_nAddress;
+                                record.nOffset=_nOffset;
+                                record.nSize=16;
+                                record.type=VBT_DATABLOCK;
+
+                                if(!pOptions->stats.mapVB.contains(_nAddress))
+                                {
+                                    pOptions->stats.mapVB.insert(_nAddress,record);
+                                }
+
+                                _nSize-=16;
+                                _nAddress+=16;
+                                _nOffset+=16;
+                            }
                         }
                         else
-                        {
-                            nBlockSize=(nRegionAddress+nRegionSize)-nBlockAddress;
-                        }
-                    }
-
-                    qint64 _nAddress=nBlockAddress;
-                    qint64 _nOffset=nBlockOffset;
-                    qint64 _nSize=nBlockSize;
-
-                    if(_nOffset!=-1)
-                    {
-                        while(_nSize>=16)
                         {
                             VIEW_BLOCK record;
                             record.nAddress=_nAddress;
-                            record.nOffset=_nOffset;
-                            record.nSize=16;
+                            record.nOffset=-1;
+                            record.nSize=_nSize;
                             record.type=VBT_DATABLOCK;
 
                             if(!pOptions->stats.mapVB.contains(_nAddress))
                             {
                                 pOptions->stats.mapVB.insert(_nAddress,record);
                             }
+                        }
 
-                            _nSize-=16;
-                            _nAddress+=16;
-                            _nOffset+=16;
+                        nCurrentAddress=nBlockAddress+nBlockSize;
+                        if(nBlockOffset!=-1)
+                        {
+                            nCurrentOffset=nBlockOffset+nBlockSize;
                         }
                     }
                     else
                     {
-                        VIEW_BLOCK record;
-                        record.nAddress=_nAddress;
-                        record.nOffset=-1;
-                        record.nSize=_nSize;
-                        record.type=VBT_DATABLOCK;
-
-                        if(!pOptions->stats.mapVB.contains(_nAddress))
+                        nCurrentAddress=vb.nAddress+vb.nSize;
+                        if(nCurrentOffset!=-1)
                         {
-                            pOptions->stats.mapVB.insert(_nAddress,record);
+                            nCurrentOffset=vb.nOffset+vb.nSize;
                         }
-                    }
-
-                    nCurrentAddress=nBlockAddress+nBlockSize;
-                    if(nBlockOffset!=-1)
-                    {
-                        nCurrentOffset=nBlockOffset+nBlockSize;
-                    }
-                }
-                else
-                {
-                    nCurrentAddress=vb.nAddress+vb.nSize;
-                    if(nCurrentOffset!=-1)
-                    {
-                        nCurrentOffset=vb.nOffset+vb.nSize;
                     }
                 }
             }

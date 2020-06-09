@@ -419,21 +419,7 @@ bool XDisasmModel::initDisasm()
 {
     bool bResult=false;
 
-    cs_arch arch=CS_ARCH_X86;
-    cs_mode _mode=CS_MODE_16;
-
-    if(pStats->ft==XBinary::FT_PE32)
-    {
-        arch=CS_ARCH_X86;
-        _mode=CS_MODE_32;
-    }
-    else if(pStats->ft==XBinary::FT_PE64)
-    {
-        arch=CS_ARCH_X86;
-        _mode=CS_MODE_64;
-    }
-
-    cs_err err=cs_open(arch,_mode,&disasm_handle);
+    cs_err err=cs_open(pStats->csarch,pStats->csmode,&disasm_handle);
     if(!err)
     {
         cs_option(disasm_handle,CS_OPT_DETAIL,CS_OPT_ON); // TODO Check
