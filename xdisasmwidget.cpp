@@ -200,9 +200,6 @@ void XDisasmWidget::hex(qint64 nOffset)
     connect(&dialogHex,SIGNAL(editState(bool)),this,SLOT(setEdited(bool)));
 
     dialogHex.exec();
-
-    // TODO
-    // Reload after edit
 }
 
 void XDisasmWidget::clear()

@@ -222,7 +222,8 @@ void XDisasm::processDisasm()
         }
 
         pOptions->stats.nImageBase=pOptions->stats.memoryMap.nBaseAddress;
-        pOptions->stats.nImageSize=XBinary::getTotalVirtualSize(&(pOptions->stats.memoryMap));
+//        pOptions->stats.nImageSize=XBinary::getTotalVirtualSize(&(pOptions->stats.memoryMap));
+        pOptions->stats.nImageSize=pOptions->stats.memoryMap.nImageSize;
 
         cs_err err=cs_open(pOptions->stats.csarch,pOptions->stats.csmode,&disasm_handle);
         if(!err)
@@ -387,77 +388,120 @@ void XDisasm::_adjust()
 
         for(int i=0;(i<nMMCount)&&(!bStop);i++)
         {
+            // 41a000 419200 e00
             qint64 nRegionAddress=pOptions->stats.memoryMap.listRecords.at(i).nAddress;
             qint64 nRegionOffset=pOptions->stats.memoryMap.listRecords.at(i).nOffset;
             qint64 nRegionSize=pOptions->stats.memoryMap.listRecords.at(i).nSize;
 
             for(qint64 nCurrentAddress=nRegionAddress,nCurrentOffset=nRegionOffset;nCurrentAddress<(nRegionAddress+nRegionSize);)
             {
-                QMap<qint64,VIEW_BLOCK>::iterator iter=pOptions->stats.mapVB.lowerBound(nCurrentAddress);
-                // TODO address till near label
+                VIEW_BLOCK vb=pOptions->stats.mapVB.value(nCurrentAddress);
 
-                qint64 nBlockAddress=0;
-                qint64 nBlockOffset=0;
-                qint64 nBlockSize=0;
-
-                if(iter!=pOptions->stats.mapVB.end())
+                if(!vb.nSize)
                 {
-                    VIEW_BLOCK block=*iter;
-                    nBlockAddress=block.nAddress;
-                    nBlockOffset=block.nOffset;
-                    nBlockSize=block.nSize;
-                }
-                else
-                {
-                    nBlockAddress=nRegionAddress+nRegionSize;
+                    QMap<qint64,VIEW_BLOCK>::const_iterator iter=pOptions->stats.mapVB.lowerBound(nCurrentAddress);
+                    QMap<qint64,VIEW_BLOCK>::const_iterator prevIter=iter;
+                    --prevIter;
 
-                    if(nRegionOffset!=-1)
+                    qint64 nBlockAddress=0;
+                    qint64 nBlockOffset=0;
+                    qint64 nBlockSize=0;
+
+                    qint64 nIterKey=iter.key();
+
+                    if(nIterKey==pOptions->stats.mapVB.firstKey()) // TODO move outside 'for'
                     {
-                        nBlockOffset=nRegionOffset+nRegionSize;
-                    }
-                }
-
-                qint64 _nAddress=qMin(nBlockAddress,nRegionAddress+nRegionSize);
-                qint64 _nSize=_nAddress-nCurrentAddress;
-
-                if(nCurrentOffset!=-1)
-                {
-                    while(_nSize>=16)
-                    {
-                        VIEW_BLOCK record;
-                        record.nAddress=nCurrentAddress;
-                        record.nOffset=nCurrentOffset;
-                        record.nSize=16;
-                        record.type=VBT_DATABLOCK;
-
-                        if(!pOptions->stats.mapVB.contains(nCurrentAddress))
+                        nBlockAddress=pOptions->stats.nImageBase;
+                        nBlockOffset=0;
+                        if(nIterKey<(nRegionAddress+nRegionSize))
                         {
-                            pOptions->stats.mapVB.insert(nCurrentAddress,record);
+                            nBlockSize=iter.key()-pOptions->stats.nImageBase;
+                        }
+                        else
+                        {
+                            nBlockSize=(nRegionAddress+nRegionSize)-nBlockAddress;
+                        }
+                    }
+                    else if(iter==pOptions->stats.mapVB.end())
+                    {
+                        if(prevIter.key()>=nRegionAddress)
+                        {
+                            nBlockAddress=prevIter.value().nAddress+prevIter.value().nSize;
+                            nBlockOffset=prevIter.value().nOffset+prevIter.value().nSize;
+                        }
+                        else
+                        {
+                            nBlockAddress=nRegionAddress;
+                            nBlockOffset=nRegionOffset;
                         }
 
-                        _nSize-=16;
-                        nCurrentAddress+=16;
-                        nCurrentOffset+=16;
+                        nBlockSize=(pOptions->stats.nImageBase+pOptions->stats.nImageSize)-nBlockAddress;
+                    }
+                    else
+                    {
+                        nBlockAddress=nCurrentAddress;
+                        nBlockOffset=nCurrentOffset;
+                        if(nIterKey<(nRegionAddress+nRegionSize))
+                        {
+                            nBlockSize=iter.key()-nBlockAddress;
+                        }
+                        else
+                        {
+                            nBlockSize=(nRegionAddress+nRegionSize)-nBlockAddress;
+                        }
+                    }
+
+                    qint64 _nAddress=nBlockAddress;
+                    qint64 _nOffset=nBlockOffset;
+                    qint64 _nSize=nBlockSize;
+
+                    if(_nOffset!=-1)
+                    {
+                        while(_nSize>=16)
+                        {
+                            VIEW_BLOCK record;
+                            record.nAddress=_nAddress;
+                            record.nOffset=_nOffset;
+                            record.nSize=16;
+                            record.type=VBT_DATABLOCK;
+
+                            if(!pOptions->stats.mapVB.contains(_nAddress))
+                            {
+                                pOptions->stats.mapVB.insert(_nAddress,record);
+                            }
+
+                            _nSize-=16;
+                            _nAddress+=16;
+                            _nOffset+=16;
+                        }
+                    }
+                    else
+                    {
+                        VIEW_BLOCK record;
+                        record.nAddress=_nAddress;
+                        record.nOffset=-1;
+                        record.nSize=_nSize;
+                        record.type=VBT_DATABLOCK;
+
+                        if(!pOptions->stats.mapVB.contains(_nAddress))
+                        {
+                            pOptions->stats.mapVB.insert(_nAddress,record);
+                        }
+                    }
+
+                    nCurrentAddress=nBlockAddress+nBlockSize;
+                    if(nBlockOffset!=-1)
+                    {
+                        nCurrentOffset=nBlockOffset+nBlockSize;
                     }
                 }
                 else
                 {
-                    VIEW_BLOCK record;
-                    record.nAddress=nCurrentAddress;
-                    record.nOffset=-1;
-                    record.nSize=_nSize;
-                    record.type=VBT_DATABLOCK;
-
-                    if(!pOptions->stats.mapVB.contains(nCurrentAddress))
+                    nCurrentAddress=vb.nAddress+vb.nSize;
+                    if(nCurrentOffset!=-1)
                     {
-                        pOptions->stats.mapVB.insert(nCurrentAddress,record);
+                        nCurrentOffset=vb.nOffset+vb.nSize;
                     }
-                }
-
-                nCurrentAddress=nBlockAddress+nBlockSize;
-                if(nBlockOffset!=-1)
-                {
-                    nCurrentOffset=nBlockOffset+nBlockSize;
                 }
             }
         }
@@ -502,7 +546,10 @@ void XDisasm::_adjust()
 
 void XDisasm::_updatePositions()
 {
-    pOptions->stats.nPositions=pOptions->stats.nImageSize+pOptions->stats.mapVB.count()-getVBSize(&(pOptions->stats.mapVB)); // TODO
+    qint64 nImageSize=pOptions->stats.nImageSize;
+    qint64 nVBCount=pOptions->stats.mapVB.count();
+    qint64 nVBSize=getVBSize(&(pOptions->stats.mapVB));
+    pOptions->stats.nPositions=nImageSize+nVBCount-nVBSize; // TODO
 
     pOptions->stats.mapPositions.clear();
     // TODO cache
