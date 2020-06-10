@@ -231,13 +231,13 @@ void XDisasm::processDisasm()
         }
         else if(pOptions->stats.ft==XBinary::FT_MSDOS)
         {
-            XELF elf(pDevice,pOptions->bIsImage,pOptions->nImageBase);
+            XMSDOS msdos(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
-            pOptions->stats.memoryMap=elf.getMemoryMap();
-            pOptions->stats.nEntryPointAddress=elf.getEntryPointAddress(&pOptions->stats.memoryMap);
-            pOptions->stats.bIsOverlayPresent=elf.isOverlayPresent();
-            pOptions->stats.nOverlaySize=elf.getOverlaySize();
-            pOptions->stats.nOverlayOffset=elf.getOverlayOffset();
+            pOptions->stats.memoryMap=msdos.getMemoryMap();
+            pOptions->stats.nEntryPointAddress=msdos.getEntryPointAddress(&pOptions->stats.memoryMap);
+            pOptions->stats.bIsOverlayPresent=msdos.isOverlayPresent();
+            pOptions->stats.nOverlaySize=msdos.getOverlaySize();
+            pOptions->stats.nOverlayOffset=msdos.getOverlayOffset();
 
             pOptions->stats.csarch=CS_ARCH_X86;
             pOptions->stats.csmode=CS_MODE_16;
