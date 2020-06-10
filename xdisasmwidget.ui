@@ -36,6 +36,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="pushButtonHex">
+       <property name="text">
+        <string>Hex</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="pushButtonOverlay">
        <property name="text">
         <string>Overlay</string>
