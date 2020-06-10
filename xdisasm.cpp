@@ -242,6 +242,46 @@ void XDisasm::processDisasm()
             pOptions->stats.csarch=CS_ARCH_X86;
             pOptions->stats.csmode=CS_MODE_16;
         }
+        else if(pOptions->stats.ft==XBinary::FT_COM)
+        {
+            XCOM xcom(pDevice,pOptions->bIsImage,pOptions->nImageBase);
+
+            pOptions->stats.memoryMap=xcom.getMemoryMap();
+            pOptions->stats.nEntryPointAddress=xcom.getEntryPointAddress(&pOptions->stats.memoryMap);
+
+            pOptions->stats.csarch=CS_ARCH_X86;
+            pOptions->stats.csmode=CS_MODE_16;
+        }
+        else if(pOptions->stats.ft==XBinary::FT_BINARY)
+        {
+            XBinary binary(pDevice,pOptions->bIsImage,pOptions->nImageBase);
+
+            pOptions->stats.memoryMap=binary.getMemoryMap();
+            pOptions->stats.nEntryPointAddress=binary.getEntryPointAddress(&pOptions->stats.memoryMap);
+
+            pOptions->stats.csarch=CS_ARCH_X86;
+            pOptions->stats.csmode=CS_MODE_16;
+        }
+        else if(pOptions->stats.ft==XBinary::FT_BINARY32)
+        {
+            XBinary binary(pDevice,pOptions->bIsImage,pOptions->nImageBase);
+
+            pOptions->stats.memoryMap=binary.getMemoryMap();
+            pOptions->stats.nEntryPointAddress=binary.getEntryPointAddress(&pOptions->stats.memoryMap);
+
+            pOptions->stats.csarch=CS_ARCH_X86;
+            pOptions->stats.csmode=CS_MODE_32;
+        }
+        else if(pOptions->stats.ft==XBinary::FT_BINARY64)
+        {
+            XBinary binary(pDevice,pOptions->bIsImage,pOptions->nImageBase);
+
+            pOptions->stats.memoryMap=binary.getMemoryMap();
+            pOptions->stats.nEntryPointAddress=binary.getEntryPointAddress(&pOptions->stats.memoryMap);
+
+            pOptions->stats.csarch=CS_ARCH_X86;
+            pOptions->stats.csmode=CS_MODE_64;
+        }
 
         pOptions->stats.nImageBase=pOptions->stats.memoryMap.nBaseAddress;
 //        pOptions->stats.nImageSize=XBinary::getTotalVirtualSize(&(pOptions->stats.memoryMap));
