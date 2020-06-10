@@ -60,12 +60,6 @@ void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
         bool bStopBranch=false;
         int nDelta=0;
 
-        if(nAddress==0x400401)
-        {
-            int z=0;
-            z++;
-        }
-
         qint64 nOffset=XBinary::addressToOffset(&(pOptions->stats.memoryMap),nAddress); // TODO optimize if image
         if(nOffset!=-1)
         {
@@ -174,10 +168,10 @@ void XDisasm::processDisasm()
             pOptions->stats.nOverlayOffset=pe.getOverlayOffset();
 
             XBinary::MODE modeBinary=pe.getMode();
-            QString sArch=pe.getArch();
+//            QString sArch=pe.getArch();
+//            if(sArch=="I386") pOptions->stats.csarch=CS_ARCH_X86; // TODO more defs
 
-            if(sArch=="I386") pOptions->stats.csarch=CS_ARCH_X86; // TODO more defs
-
+            pOptions->stats.csarch=CS_ARCH_X86;
             if(modeBinary==XBinary::MODE_32)
             {
                 pOptions->stats.csmode=CS_MODE_32;
@@ -198,10 +192,34 @@ void XDisasm::processDisasm()
             pOptions->stats.nOverlayOffset=elf.getOverlayOffset();
 
             XBinary::MODE modeBinary=elf.getMode();
-            QString sArch=elf.getArch();
+//            QString sArch=elf.getArch();
+//            if(sArch=="386") pOptions->stats.csarch=CS_ARCH_X86; // TODO more defs
 
-            if(sArch=="386") pOptions->stats.csarch=CS_ARCH_X86; // TODO more defs
+            pOptions->stats.csarch=CS_ARCH_X86;
+            if(modeBinary==XBinary::MODE_32)
+            {
+                pOptions->stats.csmode=CS_MODE_32;
+            }
+            else if(modeBinary==XBinary::MODE_64)
+            {
+                pOptions->stats.csmode=CS_MODE_64;
+            }
+        }
+        else if((pOptions->stats.ft==XBinary::FT_MACH32)||(pOptions->stats.ft==XBinary::FT_MACH64))
+        {
+            XMACH mach(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
+            pOptions->stats.memoryMap=mach.getMemoryMap();
+            pOptions->stats.nEntryPointAddress=mach.getEntryPointAddress(&pOptions->stats.memoryMap);
+            pOptions->stats.bIsOverlayPresent=mach.isOverlayPresent();
+            pOptions->stats.nOverlaySize=mach.getOverlaySize();
+            pOptions->stats.nOverlayOffset=mach.getOverlayOffset();
+
+            XBinary::MODE modeBinary=mach.getMode();
+//            QString sArch=elf.getArch();
+//            if(sArch=="386") pOptions->stats.csarch=CS_ARCH_X86; // TODO more defs
+
+            pOptions->stats.csarch=CS_ARCH_X86;
             if(modeBinary==XBinary::MODE_32)
             {
                 pOptions->stats.csmode=CS_MODE_32;
