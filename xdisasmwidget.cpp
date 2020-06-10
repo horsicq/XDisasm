@@ -553,3 +553,8 @@ void XDisasmWidget::setEdited(bool bState)
         analyze();
     }
 }
+
+void XDisasmWidget::on_pushButtonHex_clicked()
+{
+    hex(0);
+}

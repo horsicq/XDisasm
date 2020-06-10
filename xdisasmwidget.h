@@ -92,6 +92,7 @@ private slots:
     void _goToPosition(qint32 nPosition);
     void on_pushButtonOverlay_clicked();
     void setEdited(bool bState);
+    void on_pushButtonHex_clicked();
 
 private:
     Ui::XDisasmWidget *ui;
