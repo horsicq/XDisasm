@@ -176,11 +176,25 @@ void XDisasmWidget::toData(qint64 nAddress, qint64 nSize)
     goToAddress(nAddress);
 }
 
-void XDisasmWidget::signature(qint64 nAddress)
+void XDisasmWidget::signature(qint64 nAddress, qint64 nSize)
 {
-    DialogSignature ds(this,pModel,nAddress);
+    if(pDisasmOptions->stats.mapRecords.value(nAddress).type==XDisasm::RECORD_TYPE_OPCODE)
+    {
+        DialogSignature ds(this,pModel,nAddress);
 
-    ds.exec();
+        ds.exec();
+    }
+    else
+    {
+        qint64 nOffset=XBinary::addressToOffset(&(pDisasmOptions->stats.memoryMap),nAddress);
+
+        if(nOffset!=-1)
+        {
+            DialogHexSignature dhs(this,pDevice,nOffset,nSize);
+
+            dhs.exec();
+        }
+    }
 }
 
 void XDisasmWidget::hex(qint64 nOffset)
@@ -485,7 +499,7 @@ void XDisasmWidget::_signature()
 
         if(selectionStat.nSize)
         {
-            signature(selectionStat.nAddress);
+            signature(selectionStat.nAddress,selectionStat.nSize);
         }
     }
 }

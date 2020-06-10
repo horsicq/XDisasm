@@ -33,6 +33,7 @@
 #include "dialogdisasmprocess.h"
 #include "dialogdumpprocess.h"
 #include "xlineedithex.h"
+#include "dialoghexsignature.h"
 #include "dialogsignature.h"
 #include "dialoghex.h"
 
@@ -64,7 +65,7 @@ public:
     void goToEntryPoint();
     void disasm(qint64 nAddress);
     void toData(qint64 nAddress,qint64 nSize);
-    void signature(qint64 nAddress);
+    void signature(qint64 nAddress,qint64 nSize);
     void hex(qint64 nOffset);
     void clear();
     ~XDisasmWidget();
