@@ -103,11 +103,14 @@ void XDisasmWidget::analyze()
         pDisasmOptions->ft=ft;
 
         pDisasmOptions->stats={};
+
+        QItemSelectionModel *modelOld=ui->tableViewDisasm->selectionModel();
+        ui->tableViewDisasm->setModel(0);
+
         process(pDevice,pDisasmOptions,-1,XDisasm::DM_DISASM);
 
         pModel=new XDisasmModel(pDevice,&(pDisasmOptions->stats),pShowOptions,this);
 
-        QItemSelectionModel *modelOld=ui->tableViewDisasm->selectionModel();
         ui->tableViewDisasm->setModel(pModel);
         delete modelOld;
 

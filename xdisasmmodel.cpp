@@ -400,12 +400,12 @@ XDisasm::STATS *XDisasmModel::getStats()
 
 void XDisasmModel::_beginResetModel()
 {
-    beginResetModel();
+    resetCache();
 }
 
 void XDisasmModel::_endResetModel()
 {
-    resetCache();
+    beginResetModel();
     endResetModel();
 }
 
