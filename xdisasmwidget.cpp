@@ -74,6 +74,21 @@ void XDisasmWidget::setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShow
         this->pDisasmOptions=&__disasmOptions;
     }
 
+    QList<XBinary::FT> listFileTypes=XBinary::_getFileTypeListFromSet(XBinary::getFileTypes(pDevice));
+
+    int nCount=listFileTypes.count();
+
+    for(int i=0;i<nCount;i++)
+    {
+        XBinary::FT ft=listFileTypes.at(i);
+        ui->comboBoxType->addItem(XBinary::fileTypeIdToString(ft),ft);
+    }
+
+    if(nCount)
+    {
+        ui->comboBoxType->setCurrentIndex(nCount-1);
+    }
+
     if(bAuto)
     {
         analyze();
@@ -84,6 +99,9 @@ void XDisasmWidget::analyze()
 {
     if(pDisasmOptions&&pShowOptions)
     {
+        XBinary::FT ft=(XBinary::FT)ui->comboBoxType->currentData().toInt();
+        pDisasmOptions->ft=ft;
+
         pDisasmOptions->stats={};
         process(pDevice,pDisasmOptions,-1,XDisasm::DM_DISASM);
 
