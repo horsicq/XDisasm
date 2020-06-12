@@ -138,6 +138,8 @@ void XDisasmWidget::analyze()
         ui->tableViewDisasm->horizontalHeader()->setSectionResizeMode(4,QHeaderView::Stretch);
 
         ui->pushButtonOverlay->setEnabled(pDisasmOptions->stats.bIsOverlayPresent);
+
+        goToEntryPoint();
     }
 }
 
