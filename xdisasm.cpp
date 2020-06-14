@@ -486,7 +486,7 @@ void XDisasm::_adjust()
                 for(qint64 nCurrentAddress=nRegionAddress,nCurrentOffset=nRegionOffset;nCurrentAddress<(nRegionAddress+nRegionSize);)
                 {
                     VIEW_BLOCK vb=pOptions->stats.mapVB.value(nCurrentAddress);
-                    // 418c00 418c04
+
                     if(!vb.nSize)
                     {
                         QMap<qint64,VIEW_BLOCK>::const_iterator iter=pOptions->stats.mapVB.lowerBound(nCurrentAddress);
