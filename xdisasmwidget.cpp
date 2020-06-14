@@ -139,7 +139,7 @@ void XDisasmWidget::analyze()
 
         ui->pushButtonOverlay->setEnabled(pDisasmOptions->stats.bIsOverlayPresent);
 
-        goToEntryPoint();
+        goToAddress(pDisasmOptions->stats.nEntryPointAddress);
     }
 }
 
