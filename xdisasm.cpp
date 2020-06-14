@@ -63,10 +63,14 @@ void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
         qint64 nOffset=XBinary::addressToOffset(&(pOptions->stats.memoryMap),nAddress); // TODO optimize if image
         if(nOffset!=-1)
         {
-            QByteArray baData=XBinary::read_array(pDevice,nOffset,N_X64_OPCODE_SIZE); // TODO defs
+            char opcode[32];
 
-            uint8_t *pData=(uint8_t *)baData.data();
-            size_t nDataSize=(size_t)baData.size();
+            XBinary::_zeroMemory(opcode,N_X64_OPCODE_SIZE);
+
+            XBinary::read_array(pDevice,nOffset,opcode,N_X64_OPCODE_SIZE); // TODO defs
+
+            uint8_t *pData=(uint8_t *)opcode;
+            size_t nDataSize=sizeof(opcode);
 
             cs_insn *insn;
             size_t count=cs_disasm(disasm_handle,pData,nDataSize,nAddress,1,&insn);
@@ -679,7 +683,8 @@ bool XDisasm::isEndBranchOpcode(uint nOpcodeID)
     bool bResult=false;
 
     if( (nOpcodeID==X86_INS_JMP)||
-        (nOpcodeID==X86_INS_RET))
+        (nOpcodeID==X86_INS_RET)||
+        (nOpcodeID==X86_INS_INT3))
     {
         bResult=true;
     }
