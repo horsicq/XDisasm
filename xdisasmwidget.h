@@ -94,6 +94,7 @@ private slots:
     void on_pushButtonOverlay_clicked();
     void setEdited(bool bState);
     void on_pushButtonHex_clicked();
+    void errorMessage(QString sText);
 
 private:
     Ui::XDisasmWidget *ui;

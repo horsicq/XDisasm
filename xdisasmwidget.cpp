@@ -265,6 +265,8 @@ void XDisasmWidget::process(QIODevice *pDevice,XDisasm::OPTIONS *pOptions, qint6
 
         DialogDisasmProcess ddp(this);
 
+        connect(&ddp,SIGNAL(errorMessage(QString)),this,SLOT(errorMessage(QString)));
+
         ddp.setData(pDevice,pOptions,nStartAddress,dm);
         ddp.exec();
 
@@ -602,4 +604,9 @@ void XDisasmWidget::setEdited(bool bState)
 void XDisasmWidget::on_pushButtonHex_clicked()
 {
     hex(0);
+}
+
+void XDisasmWidget::errorMessage(QString sText)
+{
+    QMessageBox::critical(this,tr("Error"),sText);
 }
