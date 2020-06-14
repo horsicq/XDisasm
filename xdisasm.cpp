@@ -177,8 +177,7 @@ void XDisasm::processDisasm()
             pOptions->stats.nOverlayOffset=pe.getOverlayOffset();
 
             XBinary::MODE modeBinary=pe.getMode();
-//            QString sArch=pe.getArch();
-//            if(sArch=="I386") pOptions->stats.csarch=CS_ARCH_X86; // TODO more defs
+            pOptions->stats.sArch=pe.getArch();
 
             pOptions->stats.csarch=CS_ARCH_X86;
             if(modeBinary==XBinary::MODE_32)
@@ -201,8 +200,7 @@ void XDisasm::processDisasm()
             pOptions->stats.nOverlayOffset=elf.getOverlayOffset();
 
             XBinary::MODE modeBinary=elf.getMode();
-//            QString sArch=elf.getArch();
-//            if(sArch=="386") pOptions->stats.csarch=CS_ARCH_X86; // TODO more defs
+            pOptions->stats.sArch=elf.getArch();
 
             pOptions->stats.csarch=CS_ARCH_X86;
             if(modeBinary==XBinary::MODE_32)
@@ -225,8 +223,7 @@ void XDisasm::processDisasm()
             pOptions->stats.nOverlayOffset=mach.getOverlayOffset();
 
             XBinary::MODE modeBinary=mach.getMode();
-//            QString sArch=elf.getArch();
-//            if(sArch=="386") pOptions->stats.csarch=CS_ARCH_X86; // TODO more defs
+            pOptions->stats.sArch=mach.getArch();
 
             pOptions->stats.csarch=CS_ARCH_X86;
             if(modeBinary==XBinary::MODE_32)
@@ -248,6 +245,8 @@ void XDisasm::processDisasm()
             pOptions->stats.nOverlaySize=msdos.getOverlaySize();
             pOptions->stats.nOverlayOffset=msdos.getOverlayOffset();
 
+            pOptions->stats.sArch=msdos.getArch();
+
             pOptions->stats.csarch=CS_ARCH_X86;
             pOptions->stats.csmode=CS_MODE_16;
         }
@@ -258,6 +257,8 @@ void XDisasm::processDisasm()
             pOptions->stats.memoryMap=xcom.getMemoryMap();
             pOptions->stats.nEntryPointAddress=xcom.getEntryPointAddress(&pOptions->stats.memoryMap);
 
+            pOptions->stats.sArch=xcom.getArch();
+
             pOptions->stats.csarch=CS_ARCH_X86;
             pOptions->stats.csmode=CS_MODE_16;
         }
@@ -265,8 +266,12 @@ void XDisasm::processDisasm()
         {
             XBinary binary(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
+            binary.setArch("8086");
+
             pOptions->stats.memoryMap=binary.getMemoryMap();
             pOptions->stats.nEntryPointAddress=binary.getEntryPointAddress(&pOptions->stats.memoryMap);
+
+            pOptions->stats.sArch=binary.getArch();
 
             pOptions->stats.csarch=CS_ARCH_X86;
             pOptions->stats.csmode=CS_MODE_16;
@@ -275,8 +280,12 @@ void XDisasm::processDisasm()
         {
             XBinary binary(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
+            binary.setArch("386");
+
             pOptions->stats.memoryMap=binary.getMemoryMap();
             pOptions->stats.nEntryPointAddress=binary.getEntryPointAddress(&pOptions->stats.memoryMap);
+
+            pOptions->stats.sArch=binary.getArch();
 
             pOptions->stats.csarch=CS_ARCH_X86;
             pOptions->stats.csmode=CS_MODE_32;
@@ -285,8 +294,12 @@ void XDisasm::processDisasm()
         {
             XBinary binary(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
+            binary.setArch("AMD64");
+
             pOptions->stats.memoryMap=binary.getMemoryMap();
             pOptions->stats.nEntryPointAddress=binary.getEntryPointAddress(&pOptions->stats.memoryMap);
+
+            pOptions->stats.sArch=binary.getArch();
 
             pOptions->stats.csarch=CS_ARCH_X86;
             pOptions->stats.csmode=CS_MODE_64;
@@ -296,63 +309,68 @@ void XDisasm::processDisasm()
 //        pOptions->stats.nImageSize=XBinary::getTotalVirtualSize(&(pOptions->stats.memoryMap));
         pOptions->stats.nImageSize=pOptions->stats.memoryMap.nImageSize;
 
-        cs_err err=cs_open(pOptions->stats.csarch,pOptions->stats.csmode,&disasm_handle);
-        if(!err)
-        {
-            cs_option(disasm_handle,CS_OPT_DETAIL,CS_OPT_ON); // TODO Check
-        }
-
-    //    if(pBinary->metaObject()->className()==QString("XPE"))
-    //    {
-    //        XPE *pPE=(XPE *)pBinary;
-    //        if(pPE->isValid())
-    //        {
-    //            // TODO
-    //        }
-    //    }
-
-        _disasm(0,pOptions->stats.nEntryPointAddress);
-
-        if(nStartAddress!=-1)
-        {
-            if(nStartAddress!=pOptions->stats.nEntryPointAddress)
-            {
-                _disasm(0,nStartAddress);
-            }
-        }
-
-        _adjust();
-        _updatePositions();
-
-        pOptions->stats.bInit=true;
-
-        if(disasm_handle)
-        {
-            cs_close(&disasm_handle);
-            disasm_handle=0;
-        }
-    }
-    else
-    {
-        // TODO move to function
-        if(disasm_handle==0)
+        if(XBinary::isX86asm(pOptions->stats.sArch))
         {
             cs_err err=cs_open(pOptions->stats.csarch,pOptions->stats.csmode,&disasm_handle);
             if(!err)
             {
                 cs_option(disasm_handle,CS_OPT_DETAIL,CS_OPT_ON); // TODO Check
             }
+
+            _disasm(0,pOptions->stats.nEntryPointAddress);
+
+            if(nStartAddress!=-1)
+            {
+                if(nStartAddress!=pOptions->stats.nEntryPointAddress)
+                {
+                    _disasm(0,nStartAddress);
+                }
+            }
+
+            _adjust();
+            _updatePositions();
+
+            pOptions->stats.bInit=true;
+
+            if(disasm_handle)
+            {
+                cs_close(&disasm_handle);
+                disasm_handle=0;
+            }
         }
-
-        _disasm(0,nStartAddress);
-
-        _adjust();
-        _updatePositions();
-
-        if(disasm_handle)
+        else
         {
-            cs_close(&disasm_handle);
-            disasm_handle=0;
+            emit errorMessage(QString("%1: %2").arg("Architecture").arg(pOptions->stats.sArch));
+        }
+    }
+    else
+    {
+        if(XBinary::isX86asm(pOptions->stats.sArch))
+        {
+            // TODO move to function
+            if(disasm_handle==0)
+            {
+                cs_err err=cs_open(pOptions->stats.csarch,pOptions->stats.csmode,&disasm_handle);
+                if(!err)
+                {
+                    cs_option(disasm_handle,CS_OPT_DETAIL,CS_OPT_ON); // TODO Check
+                }
+            }
+
+            _disasm(0,nStartAddress);
+
+            _adjust();
+            _updatePositions();
+
+            if(disasm_handle)
+            {
+                cs_close(&disasm_handle);
+                disasm_handle=0;
+            }
+        }
+        else
+        {
+            emit errorMessage(QString("%1: %2").arg("Architecture").arg(pOptions->stats.sArch));
         }
     }
 

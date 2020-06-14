@@ -84,6 +84,7 @@ public:
         bool bInit;
         XBinary::_MEMORY_MAP memoryMap;
         XBinary::FT ft;
+        QString sArch;
         cs_arch csarch;
         cs_mode csmode;
         qint64 nImageBase;
@@ -137,6 +138,7 @@ private:
     void _updatePositions();
 
 signals:
+    void errorMessage(QString sText);
     void processFinished();
 
 private:

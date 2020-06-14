@@ -43,6 +43,9 @@ private slots:
     void on_pushButtonCancel_clicked();
     void timerSlot();
 
+signals:
+    void errorMessage(QString sText);
+
 private:
     Ui::DialogDisasmProcess *ui;
     QThread *pThread;
