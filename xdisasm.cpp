@@ -70,7 +70,7 @@ void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
             XBinary::read_array(pDevice,nOffset,opcode,N_X64_OPCODE_SIZE); // TODO defs
 
             uint8_t *pData=(uint8_t *)opcode;
-            size_t nDataSize=sizeof(opcode);
+            size_t nDataSize=N_X64_OPCODE_SIZE;
 
             cs_insn *insn;
             size_t count=cs_disasm(disasm_handle,pData,nDataSize,nAddress,1,&insn);
