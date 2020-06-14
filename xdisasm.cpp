@@ -252,7 +252,7 @@ void XDisasm::processDisasm()
             pOptions->stats.csarch=CS_ARCH_X86;
             pOptions->stats.csmode=CS_MODE_16;
         }
-        else if(pOptions->stats.ft==XBinary::FT_BINARY)
+        else if((pOptions->stats.ft==XBinary::FT_BINARY16)||(pOptions->stats.ft==XBinary::FT_BINARY))
         {
             XBinary binary(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
