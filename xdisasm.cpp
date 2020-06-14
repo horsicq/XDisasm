@@ -127,6 +127,11 @@ void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
             {
                 bStopBranch=true;
             }
+
+            if(XBinary::_isMemoryZeroFilled(opcode,N_X64_OPCODE_SIZE))
+            {
+                bStopBranch=true;
+            }
         }
 
         if(nDelta)
