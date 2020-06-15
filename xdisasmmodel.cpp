@@ -187,6 +187,7 @@ XDisasmModel::VEIW_RECORD XDisasmModel::getViewRecord(int nRow)
 
     qint64 nSize=1;
 
+    // TODO check
     if(nAddress>0xFFFFFFFF)
     {
         result.sAddress=XBinary::valueToHex((quint64)nAddress);

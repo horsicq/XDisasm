@@ -36,6 +36,7 @@
 #include "dialoghexsignature.h"
 #include "dialogsignature.h"
 #include "dialoghex.h"
+#include "xoptions.h"
 
 namespace Ui {
 class XDisasmWidget;

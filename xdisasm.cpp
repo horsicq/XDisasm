@@ -63,11 +63,11 @@ void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
         qint64 nOffset=XBinary::addressToOffset(&(pOptions->stats.memoryMap),nAddress); // TODO optimize if image
         if(nOffset!=-1)
         {
-            char opcode[32];
+            char opcode[N_X64_OPCODE_SIZE];
 
             XBinary::_zeroMemory(opcode,N_X64_OPCODE_SIZE);
 
-            size_t nDataSize=XBinary::read_array(pDevice,nOffset,opcode,N_X64_OPCODE_SIZE); // TODO defs
+            size_t nDataSize=XBinary::read_array(pDevice,nOffset,opcode,N_X64_OPCODE_SIZE);
 
             uint8_t *pData=(uint8_t *)opcode;
 
@@ -672,7 +672,99 @@ QList<XDisasm::SIGNATURE_RECORD> XDisasm::getSignature(XDisasm::SIGNATURE_OPTION
 {
     QList<SIGNATURE_RECORD> listResult;
 
-    // TODO
+    csh _disasm_handle;
+    cs_err err=cs_open(pSignatureOptions->csarch,pSignatureOptions->csmode,&_disasm_handle);
+    if(!err)
+    {
+        cs_option(_disasm_handle,CS_OPT_DETAIL,CS_OPT_ON);
+    }
+
+    QSet<qint64> stRecords;
+
+    bool bStopBranch=false;
+
+    for(int i=0;(i<pSignatureOptions->nCount)&&(!bStopBranch);i++)
+    {
+        qint64 nOffset=XBinary::addressToOffset(&(pSignatureOptions->memoryMap),nAddress);
+        if(nOffset!=-1)
+        {
+            char opcode[N_X64_OPCODE_SIZE];
+
+            XBinary::_zeroMemory(opcode,N_X64_OPCODE_SIZE);
+
+            size_t nDataSize=XBinary::read_array(pSignatureOptions->pDevice,nOffset,opcode,N_X64_OPCODE_SIZE);
+
+            uint8_t *pData=(uint8_t *)opcode;
+
+            cs_insn *insn;
+            size_t count=cs_disasm(_disasm_handle,pData,nDataSize,nAddress,1,&insn);
+
+            if(count>0)
+            {
+                if(insn->size>1)
+                {
+                    bStopBranch=!XBinary::isAddressPhysical(&(pSignatureOptions->memoryMap),nAddress+insn->size-1);
+                }
+
+                if(stRecords.contains(nAddress))
+                {
+                    bStopBranch=true;
+                }
+
+                if(!bStopBranch)
+                {
+                    SIGNATURE_RECORD record={};
+
+                    record.nAddress=nAddress;
+                    record.sOpcode=insn->mnemonic;
+                    QString sArgs=insn->op_str;
+
+                    if(sArgs!="")
+                    {
+                        record.sOpcode+=" "+sArgs;
+                    }
+
+                    record.baOpcode=QByteArray(opcode,insn->size);
+
+                    record.nDispOffset=insn->detail->x86.encoding.disp_offset;
+                    record.nDispSize=insn->detail->x86.encoding.disp_size;
+                    record.nImmOffset=insn->detail->x86.encoding.imm_offset;
+                    record.nImmSize=insn->detail->x86.encoding.imm_size;
+
+                    stRecords.insert(nAddress);
+
+                    nAddress+=insn->size;
+
+                    if(pSignatureOptions->sm==XDisasm::SM_RELATIVEADDRESS)
+                    {
+                        for(int i=0; i<insn->detail->x86.op_count; i++)
+                        {
+                            if(insn->detail->x86.operands[i].type==X86_OP_IMM)
+                            {
+                                qint64 nImm=insn->detail->x86.operands[i].imm;
+
+                                if(isJmpOpcode(insn->id))
+                                {
+                                    nAddress=nImm;
+                                    record.bIsConst=true;
+                                }
+                            }
+                        }
+                    }
+
+                    listResult.append(record);
+                }
+
+                cs_free(insn,count);
+            }
+            else
+            {
+                bStopBranch=true;
+            }
+        }
+    }
+
+    cs_close(&_disasm_handle);
 
     return listResult;
 }

@@ -29,7 +29,7 @@
 class XDisasm : public QObject
 {
     Q_OBJECT
-
+    static const int N_X64_OPCODE_SIZE=15;
 public:
     enum DM
     {
@@ -120,20 +120,35 @@ public:
     static qint64 getVBSize(QMap<qint64,VIEW_BLOCK> *pMapVB);
     static QString getDisasmString(csh disasm_handle, qint64 nAddress, char *pData, qint32 nDataSize);
 
+    enum SM
+    {
+        SM_NORMAL=0,
+        SM_RELATIVEADDRESS
+    };
+
     struct SIGNATURE_OPTIONS
     {
         QIODevice *pDevice;
         XBinary::_MEMORY_MAP memoryMap;
         cs_arch csarch;
         cs_mode csmode;
+        int nCount;
+        SM sm;
     };
 
     struct SIGNATURE_RECORD
     {
         qint64 nAddress;
+        QString sOpcode;
+        QByteArray baOpcode;
+        qint32 nDispOffset;
+        qint32 nDispSize;
+        qint32 nImmOffset;
+        qint32 nImmSize;
+        bool bIsConst;
     };
 
-    QList<SIGNATURE_RECORD> getSignature(SIGNATURE_OPTIONS *pSignatureOptions,qint64 nAddress);
+    static QList<SIGNATURE_RECORD> getSignature(SIGNATURE_OPTIONS *pSignatureOptions,qint64 nAddress);
 
 public slots:
     void processDisasm();
@@ -141,11 +156,9 @@ public slots:
     void process();
 
 private:
-    const int N_X64_OPCODE_SIZE=15;
-
     bool isEndBranchOpcode(uint nOpcodeID);
-    bool isJmpOpcode(uint nOpcodeID);
-    bool isCallOpcode(uint nOpcodeID);
+    static bool isJmpOpcode(uint nOpcodeID);
+    static bool isCallOpcode(uint nOpcodeID);
     void _disasm(qint64 nInitAddress, qint64 nAddress);
     void _adjust();
     void _updatePositions();

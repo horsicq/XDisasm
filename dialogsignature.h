@@ -22,7 +22,10 @@
 #define DIALOGSIGNATURE_H
 
 #include <QDialog>
+#include <QClipboard>
 #include "xdisasmmodel.h"
+#include "xlineedithex.h"
+#include "xoptions.h"
 
 namespace Ui {
 class DialogSignature;
@@ -33,16 +36,28 @@ class DialogSignature : public QDialog
     Q_OBJECT
 
 public:
-    explicit DialogSignature(QWidget *parent,XDisasmModel *pModel,qint64 nAddress);
+    explicit DialogSignature(QWidget *parent,QIODevice *pDevice,XDisasmModel *pModel,qint64 nAddress);
     ~DialogSignature();
+    void reload();
 
 private slots:
     void on_pushButtonOK_clicked();
+    void reloadSignature();
+    void on_checkBoxSpaces_toggled(bool checked);
+    void on_checkBoxUpper_toggled(bool checked);
+    void on_lineEditWildcard_textChanged(const QString &arg1);
+    void on_pushButtonCopy_clicked();
+    QString replaceWild(QString sString, qint32 nOffset, qint32 nSize, QChar cWild);
+    void on_spinBoxCount_valueChanged(int arg1);
+
+    void on_comboBoxMethod_currentIndexChanged(int index);
 
 private:
     Ui::DialogSignature *ui;
+    QIODevice *pDevice;
     XDisasmModel *pModel;
     qint64 nAddress;
+    QList<XDisasm::SIGNATURE_RECORD> listRecords;
 };
 
 #endif // DIALOGSIGNATURE_H

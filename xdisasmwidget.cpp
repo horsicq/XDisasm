@@ -27,9 +27,7 @@ XDisasmWidget::XDisasmWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QFont font=ui->tableViewDisasm->font();
-    font.setFamily("Courier"); // TODO
-    ui->tableViewDisasm->setFont(font);
+    XOptions::setMonoFont(ui->tableViewDisasm);
 
     new QShortcut(QKeySequence(XShortcuts::GOTOENTRYPOINT), this,SLOT(_goToEntryPoint()));
     new QShortcut(QKeySequence(XShortcuts::GOTOADDRESS),    this,SLOT(_goToAddress()));
@@ -85,6 +83,8 @@ void XDisasmWidget::setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShow
     QList<XBinary::FT> listFileTypes=XBinary::_getFileTypeListFromSet(stFT);
 
     int nCount=listFileTypes.count();
+
+    ui->comboBoxType->clear();
 
     for(int i=0;i<nCount;i++)
     {
@@ -211,7 +211,7 @@ void XDisasmWidget::signature(qint64 nAddress, qint64 nSize)
 {
     if(pDisasmOptions->stats.mapRecords.value(nAddress).type==XDisasm::RECORD_TYPE_OPCODE)
     {
-        DialogSignature ds(this,pModel,nAddress);
+        DialogSignature ds(this,pDevice,pModel,nAddress);
 
         ds.exec();
     }
@@ -259,19 +259,27 @@ XDisasmWidget::~XDisasmWidget()
 
 void XDisasmWidget::process(QIODevice *pDevice,XDisasm::OPTIONS *pOptions, qint64 nStartAddress, XDisasm::DM dm)
 {
-    if(pModel)
-    {
-        pModel->_beginResetModel();
+    DialogDisasmProcess ddp(this);
 
-        DialogDisasmProcess ddp(this);
+    connect(&ddp,SIGNAL(errorMessage(QString)),this,SLOT(errorMessage(QString)));
 
-        connect(&ddp,SIGNAL(errorMessage(QString)),this,SLOT(errorMessage(QString)));
+    ddp.setData(pDevice,pOptions,nStartAddress,dm);
+    ddp.exec();
 
-        ddp.setData(pDevice,pOptions,nStartAddress,dm);
-        ddp.exec();
 
-        pModel->_endResetModel();
-    }
+//    if(pModel)
+//    {
+//        pModel->_beginResetModel();
+
+//        DialogDisasmProcess ddp(this);
+
+//        connect(&ddp,SIGNAL(errorMessage(QString)),this,SLOT(errorMessage(QString)));
+
+//        ddp.setData(pDevice,pOptions,nStartAddress,dm);
+//        ddp.exec();
+
+//        pModel->_endResetModel();
+//    }
 }
 
 XDisasm::STATS *XDisasmWidget::getDisasmStats()
