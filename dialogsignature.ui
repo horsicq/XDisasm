@@ -72,7 +72,7 @@
       <enum>QAbstractItemView::SelectRows</enum>
      </property>
      <attribute name="horizontalHeaderVisible">
-      <bool>false</bool>
+      <bool>true</bool>
      </attribute>
      <attribute name="verticalHeaderVisible">
       <bool>false</bool>
@@ -165,12 +165,6 @@ p, li { white-space: pre-wrap; }
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonCopy">
-       <property name="maximumSize">
-        <size>
-         <width>75</width>
-         <height>23</height>
-        </size>
-       </property>
        <property name="text">
         <string>Copy</string>
        </property>
