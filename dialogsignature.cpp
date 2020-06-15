@@ -61,6 +61,8 @@ void DialogSignature::reload()
 
     listRecords=XDisasm::getSignature(&options,nAddress);
 
+    int nSymbolWidth=XLineEditHEX::getSymbolWidth(ui->tableWidgetSignature);
+
     int nCount=listRecords.count();
 
     ui->tableWidgetSignature->clear();
@@ -98,6 +100,7 @@ void DialogSignature::reload()
                 QPushButton *pDispButton=new QPushButton(this);
                 pDispButton->setText(QString("d"));
                 pDispButton->setCheckable(true);
+                pDispButton->setMaximumWidth(nSymbolWidth*6);
                 connect(pDispButton,SIGNAL(clicked()),this,SLOT(reloadSignature()));
 
                 ui->tableWidgetSignature->setCellWidget(i,3,pDispButton);
@@ -108,6 +111,7 @@ void DialogSignature::reload()
                 QPushButton *pImmButton=new QPushButton(this);
                 pImmButton->setText(QString("i"));
                 pImmButton->setCheckable(true);
+                pImmButton->setMaximumWidth(nSymbolWidth*6);
                 connect(pImmButton,SIGNAL(clicked()),this,SLOT(reloadSignature()));
 
                 ui->tableWidgetSignature->setCellWidget(i,4,pImmButton);
@@ -118,8 +122,6 @@ void DialogSignature::reload()
             ui->tableWidgetSignature->setItem(i,2,new QTableWidgetItem(listRecords.at(i).sOpcode));
         }
     }
-
-    int nSymbolWidth=XLineEditHEX::getSymbolWidth(ui->tableWidgetSignature);
 
     ui->tableWidgetSignature->setColumnWidth(0,nSymbolWidth*12);
     ui->tableWidgetSignature->setColumnWidth(1,nSymbolWidth*8);
