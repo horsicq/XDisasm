@@ -120,10 +120,20 @@ public:
     static qint64 getVBSize(QMap<qint64,VIEW_BLOCK> *pMapVB);
     static QString getDisasmString(csh disasm_handle, qint64 nAddress, char *pData, qint32 nDataSize);
 
-    struct SIGNATURE
+    struct SIGNATURE_OPTIONS
     {
-        XBinary::FT ft;
+        QIODevice *pDevice;
+        XBinary::_MEMORY_MAP memoryMap;
+        cs_arch csarch;
+        cs_mode csmode;
     };
+
+    struct SIGNATURE_RECORD
+    {
+        qint64 nAddress;
+    };
+
+    QList<SIGNATURE_RECORD> getSignature(SIGNATURE_OPTIONS *pSignatureOptions,qint64 nAddress);
 
 public slots:
     void processDisasm();

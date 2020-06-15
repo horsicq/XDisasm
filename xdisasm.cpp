@@ -669,6 +669,15 @@ QString XDisasm::getDisasmString(csh disasm_handle, qint64 nAddress, char *pData
     return sResult;
 }
 
+QList<XDisasm::SIGNATURE_RECORD> XDisasm::getSignature(XDisasm::SIGNATURE_OPTIONS *pSignatureOptions, qint64 nAddress)
+{
+    QList<SIGNATURE_RECORD> listResult;
+
+    // TODO
+
+    return listResult;
+}
+
 bool XDisasm::isEndBranchOpcode(uint nOpcodeID)
 {
     bool bResult=false;
