@@ -159,14 +159,14 @@ void XDisasm::processDisasm()
         pOptions->stats.csarch=CS_ARCH_X86;
         pOptions->stats.csmode=CS_MODE_16;
 
-        pOptions->stats.ft=pOptions->ft;
+        XBinary::FT ft=pOptions->ft;
 
-        if(pOptions->stats.ft==XBinary::FT_UNKNOWN)
+        if(ft==XBinary::FT_UNKNOWN)
         {
-            pOptions->stats.ft=XBinary::getPrefFileType(pDevice);
+            ft=XBinary::getPrefFileType(pDevice);
         }
 
-        if((pOptions->stats.ft==XBinary::FT_PE32)||(pOptions->stats.ft==XBinary::FT_PE64))
+        if((ft==XBinary::FT_PE32)||(ft==XBinary::FT_PE64))
         {
             XPE pe(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
@@ -177,7 +177,6 @@ void XDisasm::processDisasm()
             pOptions->stats.nOverlayOffset=pe.getOverlayOffset();
 
             XBinary::MODE modeBinary=pe.getMode();
-            pOptions->stats.sArch=pe.getArch();
 
             pOptions->stats.csarch=CS_ARCH_X86;
             if(modeBinary==XBinary::MODE_32)
@@ -189,7 +188,7 @@ void XDisasm::processDisasm()
                 pOptions->stats.csmode=CS_MODE_64;
             }
         }
-        else if((pOptions->stats.ft==XBinary::FT_ELF32)||(pOptions->stats.ft==XBinary::FT_ELF64))
+        else if((ft==XBinary::FT_ELF32)||(ft==XBinary::FT_ELF64))
         {
             XELF elf(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
@@ -198,21 +197,8 @@ void XDisasm::processDisasm()
             pOptions->stats.bIsOverlayPresent=elf.isOverlayPresent();
             pOptions->stats.nOverlaySize=elf.getOverlaySize();
             pOptions->stats.nOverlayOffset=elf.getOverlayOffset();
-
-            XBinary::MODE modeBinary=elf.getMode();
-            pOptions->stats.sArch=elf.getArch();
-
-            pOptions->stats.csarch=CS_ARCH_X86;
-            if(modeBinary==XBinary::MODE_32)
-            {
-                pOptions->stats.csmode=CS_MODE_32;
-            }
-            else if(modeBinary==XBinary::MODE_64)
-            {
-                pOptions->stats.csmode=CS_MODE_64;
-            }
         }
-        else if((pOptions->stats.ft==XBinary::FT_MACH32)||(pOptions->stats.ft==XBinary::FT_MACH64))
+        else if((ft==XBinary::FT_MACH32)||(ft==XBinary::FT_MACH64))
         {
             XMACH mach(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
@@ -221,21 +207,8 @@ void XDisasm::processDisasm()
             pOptions->stats.bIsOverlayPresent=mach.isOverlayPresent();
             pOptions->stats.nOverlaySize=mach.getOverlaySize();
             pOptions->stats.nOverlayOffset=mach.getOverlayOffset();
-
-            XBinary::MODE modeBinary=mach.getMode();
-            pOptions->stats.sArch=mach.getArch();
-
-            pOptions->stats.csarch=CS_ARCH_X86;
-            if(modeBinary==XBinary::MODE_32)
-            {
-                pOptions->stats.csmode=CS_MODE_32;
-            }
-            else if(modeBinary==XBinary::MODE_64)
-            {
-                pOptions->stats.csmode=CS_MODE_64;
-            }
         }
-        else if(pOptions->stats.ft==XBinary::FT_MSDOS)
+        else if(ft==XBinary::FT_MSDOS)
         {
             XMSDOS msdos(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
@@ -244,73 +217,68 @@ void XDisasm::processDisasm()
             pOptions->stats.bIsOverlayPresent=msdos.isOverlayPresent();
             pOptions->stats.nOverlaySize=msdos.getOverlaySize();
             pOptions->stats.nOverlayOffset=msdos.getOverlayOffset();
-
-            pOptions->stats.sArch=msdos.getArch();
-
-            pOptions->stats.csarch=CS_ARCH_X86;
-            pOptions->stats.csmode=CS_MODE_16;
         }
-        else if(pOptions->stats.ft==XBinary::FT_COM)
+        else if(ft==XBinary::FT_COM)
         {
             XCOM xcom(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
             pOptions->stats.memoryMap=xcom.getMemoryMap();
             pOptions->stats.nEntryPointAddress=xcom.getEntryPointAddress(&pOptions->stats.memoryMap);
 
-            pOptions->stats.sArch=xcom.getArch();
-
             pOptions->stats.csarch=CS_ARCH_X86;
             pOptions->stats.csmode=CS_MODE_16;
         }
-        else if((pOptions->stats.ft==XBinary::FT_BINARY16)||(pOptions->stats.ft==XBinary::FT_BINARY))
+        else if((ft==XBinary::FT_BINARY16)||(ft==XBinary::FT_BINARY))
         {
             XBinary binary(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
             binary.setArch("8086");
+            binary.setMode(XBinary::MODE_16);
 
             pOptions->stats.memoryMap=binary.getMemoryMap();
             pOptions->stats.nEntryPointAddress=binary.getEntryPointAddress(&pOptions->stats.memoryMap);
-
-            pOptions->stats.sArch=binary.getArch();
-
-            pOptions->stats.csarch=CS_ARCH_X86;
-            pOptions->stats.csmode=CS_MODE_16;
         }
-        else if(pOptions->stats.ft==XBinary::FT_BINARY32)
+        else if(ft==XBinary::FT_BINARY32)
         {
             XBinary binary(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
             binary.setArch("386");
+            binary.setMode(XBinary::MODE_32);
 
             pOptions->stats.memoryMap=binary.getMemoryMap();
             pOptions->stats.nEntryPointAddress=binary.getEntryPointAddress(&pOptions->stats.memoryMap);
-
-            pOptions->stats.sArch=binary.getArch();
-
-            pOptions->stats.csarch=CS_ARCH_X86;
-            pOptions->stats.csmode=CS_MODE_32;
         }
-        else if(pOptions->stats.ft==XBinary::FT_BINARY64)
+        else if(ft==XBinary::FT_BINARY64)
         {
             XBinary binary(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
             binary.setArch("AMD64");
+            binary.setMode(XBinary::MODE_64);
 
             pOptions->stats.memoryMap=binary.getMemoryMap();
             pOptions->stats.nEntryPointAddress=binary.getEntryPointAddress(&pOptions->stats.memoryMap);
-
-            pOptions->stats.sArch=binary.getArch();
-
-            pOptions->stats.csarch=CS_ARCH_X86;
-            pOptions->stats.csmode=CS_MODE_64;
         }
 
         pOptions->stats.nImageBase=pOptions->stats.memoryMap.nBaseAddress;
 //        pOptions->stats.nImageSize=XBinary::getTotalVirtualSize(&(pOptions->stats.memoryMap));
         pOptions->stats.nImageSize=pOptions->stats.memoryMap.nImageSize;
 
-        if(XBinary::isX86asm(pOptions->stats.sArch))
+        if(XBinary::isX86asm(pOptions->stats.memoryMap.sArch))
         {
+            pOptions->stats.csarch=CS_ARCH_X86;
+            if(pOptions->stats.memoryMap.mode==XBinary::MODE_16)
+            {
+                pOptions->stats.csmode=CS_MODE_16;
+            }
+            else if(pOptions->stats.memoryMap.mode==XBinary::MODE_32)
+            {
+                pOptions->stats.csmode=CS_MODE_32;
+            }
+            else if(pOptions->stats.memoryMap.mode==XBinary::MODE_64)
+            {
+                pOptions->stats.csmode=CS_MODE_64;
+            }
+
             cs_err err=cs_open(pOptions->stats.csarch,pOptions->stats.csmode,&disasm_handle);
             if(!err)
             {
@@ -340,12 +308,12 @@ void XDisasm::processDisasm()
         }
         else
         {
-            emit errorMessage(QString("%1: %2").arg("Architecture").arg(pOptions->stats.sArch));
+            emit errorMessage(QString("%1: %2").arg("Architecture").arg(pOptions->stats.memoryMap.sArch));
         }
     }
     else
     {
-        if(XBinary::isX86asm(pOptions->stats.sArch))
+        if(XBinary::isX86asm(pOptions->stats.memoryMap.sArch))
         {
             // TODO move to function
             if(disasm_handle==0)
@@ -370,7 +338,7 @@ void XDisasm::processDisasm()
         }
         else
         {
-            emit errorMessage(QString("%1: %2").arg("Architecture").arg(pOptions->stats.sArch));
+            emit errorMessage(QString("%1: %2").arg("Architecture").arg(pOptions->stats.memoryMap.sArch));
         }
     }
 

@@ -83,8 +83,6 @@ public:
     {
         bool bInit;
         XBinary::_MEMORY_MAP memoryMap;
-        XBinary::FT ft;
-        QString sArch;
         cs_arch csarch;
         cs_mode csmode;
         qint64 nImageBase;
@@ -121,6 +119,11 @@ public:
     STATS *getStats();
     static qint64 getVBSize(QMap<qint64,VIEW_BLOCK> *pMapVB);
     static QString getDisasmString(csh disasm_handle, qint64 nAddress, char *pData, qint32 nDataSize);
+
+    struct SIGNATURE
+    {
+        XBinary::FT ft;
+    };
 
 public slots:
     void processDisasm();
