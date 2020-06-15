@@ -96,7 +96,7 @@ void DialogSignature::reload()
             if(listRecords.at(i).nDispSize)
             {
                 QPushButton *pDispButton=new QPushButton(this);
-                pDispButton->setText(QString("disp"));
+                pDispButton->setText(QString("d"));
                 pDispButton->setCheckable(true);
                 connect(pDispButton,SIGNAL(clicked()),this,SLOT(reloadSignature()));
 
@@ -106,7 +106,7 @@ void DialogSignature::reload()
             if(listRecords.at(i).nImmSize)
             {
                 QPushButton *pImmButton=new QPushButton(this);
-                pImmButton->setText(QString("imm"));
+                pImmButton->setText(QString("i"));
                 pImmButton->setCheckable(true);
                 connect(pImmButton,SIGNAL(clicked()),this,SLOT(reloadSignature()));
 
