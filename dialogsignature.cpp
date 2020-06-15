@@ -31,7 +31,7 @@ DialogSignature::DialogSignature(QWidget *parent, QIODevice *pDevice, XDisasmMod
     this->pModel=pModel;
     this->nAddress=nAddress;
 
-    XOptions::setMonoFont(ui->tableWidgetSignature);
+//    XOptions::setMonoFont(ui->tableWidgetSignature);
     XOptions::setMonoFont(ui->textEditSignature);
 
     QSignalBlocker signalBlocker1(ui->spinBoxCount);
@@ -123,7 +123,7 @@ void DialogSignature::reload()
 
     ui->tableWidgetSignature->setColumnWidth(0,nSymbolWidth*12);
     ui->tableWidgetSignature->setColumnWidth(1,nSymbolWidth*8);
-    ui->tableWidgetSignature->setColumnWidth(2,nSymbolWidth*30);
+    ui->tableWidgetSignature->setColumnWidth(2,nSymbolWidth*20);
     ui->tableWidgetSignature->setColumnWidth(3,nSymbolWidth*6);
     ui->tableWidgetSignature->setColumnWidth(4,nSymbolWidth*6);
 
