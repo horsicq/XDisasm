@@ -217,6 +217,16 @@ void XDisasm::processDisasm()
             pOptions->stats.nOverlaySize=msdos.getOverlaySize();
             pOptions->stats.nOverlayOffset=msdos.getOverlayOffset();
         }
+        else if(ft==XBinary::FT_NE)
+        {
+            XNE ne(pDevice,pOptions->bIsImage,pOptions->nImageBase);
+
+            pOptions->stats.memoryMap=ne.getMemoryMap();
+            pOptions->stats.nEntryPointAddress=ne.getEntryPointAddress(&pOptions->stats.memoryMap);
+            pOptions->stats.bIsOverlayPresent=ne.isOverlayPresent();
+            pOptions->stats.nOverlaySize=ne.getOverlaySize();
+            pOptions->stats.nOverlayOffset=ne.getOverlayOffset();
+        }
         else if(ft==XBinary::FT_COM)
         {
             XCOM xcom(pDevice,pOptions->bIsImage,pOptions->nImageBase);
@@ -265,7 +275,7 @@ void XDisasm::processDisasm()
         if(XBinary::isX86asm(pOptions->stats.memoryMap.sArch))
         {
             pOptions->stats.csarch=CS_ARCH_X86;
-            if(pOptions->stats.memoryMap.mode==XBinary::MODE_16)
+            if((pOptions->stats.memoryMap.mode==XBinary::MODE_16)||(pOptions->stats.memoryMap.mode==XBinary::MODE_16SEG))
             {
                 pOptions->stats.csmode=CS_MODE_16;
             }
