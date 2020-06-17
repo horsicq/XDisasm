@@ -227,15 +227,22 @@ void XDisasm::processDisasm()
             pOptions->stats.nOverlaySize=ne.getOverlaySize();
             pOptions->stats.nOverlayOffset=ne.getOverlayOffset();
         }
+        else if((ft==XBinary::FT_LE)||(ft==XBinary::FT_LX))
+        {
+            XLE le(pDevice,pOptions->bIsImage,pOptions->nImageBase);
+
+            pOptions->stats.memoryMap=le.getMemoryMap();
+            pOptions->stats.nEntryPointAddress=le.getEntryPointAddress(&pOptions->stats.memoryMap);
+            pOptions->stats.bIsOverlayPresent=le.isOverlayPresent();
+            pOptions->stats.nOverlaySize=le.getOverlaySize();
+            pOptions->stats.nOverlayOffset=le.getOverlayOffset();
+        }
         else if(ft==XBinary::FT_COM)
         {
             XCOM xcom(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
             pOptions->stats.memoryMap=xcom.getMemoryMap();
             pOptions->stats.nEntryPointAddress=xcom.getEntryPointAddress(&pOptions->stats.memoryMap);
-
-            pOptions->stats.csarch=CS_ARCH_X86;
-            pOptions->stats.csmode=CS_MODE_16;
         }
         else if((ft==XBinary::FT_BINARY16)||(ft==XBinary::FT_BINARY))
         {
