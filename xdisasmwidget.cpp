@@ -358,7 +358,7 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
 
         contextMenu.addMenu(&copyMenu);
 
-        QAction actionHex(tr("Hex"),this);
+        QAction actionHex(QString("Hex"),this);
         actionHex.setShortcut(QKeySequence(XShortcuts::HEX));
         connect(&actionHex,SIGNAL(triggered()),this,SLOT(_hex()));
 
