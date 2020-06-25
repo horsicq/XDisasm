@@ -25,35 +25,35 @@ FORMS += \
 
 !contains(XCONFIG, xcapstone) {
     XCONFIG += xcapstone
-    include(../XCapstone/xcapstone.pri)
+    include($$PWD/../XCapstone/xcapstone.pri)
 }
 
 !contains(XCONFIG, dialoggotoaddress) {
     XCONFIG += dialoggotoaddress
-    include(../FormatDialogs/dialoggotoaddress.pri)
+    include($$PWD/../FormatDialogs/dialoggotoaddress.pri)
 }
 
 !contains(XCONFIG, xlineedithex) {
     XCONFIG += xlineedithex
-    include(../Controls/xlineedithex.pri)
+    include($$PWD/../Controls/xlineedithex.pri)
 }
 
 !contains(XCONFIG, xformats) {
     XCONFIG += xformats
-    include(../Formats/xformats.pri)
+    include($$PWD/../Formats/xformats.pri)
 }
 
 !contains(XCONFIG, dialoggotoaddress) {
     XCONFIG += dialoggotoaddress
-    include(../FormatDialogs/dialoggotoaddress.pri)
+    include($$PWD/../FormatDialogs/dialoggotoaddress.pri)
 }
 
 !contains(XCONFIG, dialogdump) {
     XCONFIG += dialogdump
-    include(../FormatDialogs/dialogdump.pri)
+    include($$PWD/../FormatDialogs/dialogdump.pri)
 }
 
 !contains(XCONFIG, qhexview) {
     XCONFIG += qhexview
-    include(../QhexView/qhexview.pri)
+    include($$PWD/../QhexView/qhexview.pri)
 }
