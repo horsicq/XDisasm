@@ -104,10 +104,6 @@ void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
                                 {
                                     _disasm(nAddress,nImm);
                                 }
-                                else
-                                {
-                                    qDebug("%x",nImm);
-                                }
                             }
                         }
                     }
