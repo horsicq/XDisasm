@@ -658,7 +658,7 @@ bool XDisasm::_insertOpcode(qint64 nAddress, XDisasm::RECORD *pOpcode)
 
     int nCount=pOptions->stats.mapRecords.count();
 
-    return (nCount<N_OPCODE_COUNT); // TODO const
+    return (nCount<N_OPCODE_COUNT);
 }
 
 qint64 XDisasm::getVBSize(QMap<qint64, XDisasm::VIEW_BLOCK> *pMapVB)
