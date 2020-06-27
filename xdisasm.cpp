@@ -100,7 +100,14 @@ void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
                                     pOptions->stats.stJumps.insert(nImm);
                                 }
 
-                                _disasm(nAddress,nImm);
+                                if(nAddress!=nImm)
+                                {
+                                    _disasm(nAddress,nImm);
+                                }
+                                else
+                                {
+                                    qDebug("%x",nImm);
+                                }
                             }
                         }
                     }
@@ -110,7 +117,10 @@ void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
                     opcode.nSize=insn->size;
                     opcode.type=RECORD_TYPE_OPCODE;
 
-                    pOptions->stats.mapRecords.insert(nAddress,opcode);
+                    if(!_insertOpcode(nAddress,&opcode))
+                    {
+                        bStopBranch=true;
+                    }
 
                     nDelta=insn->size;
 
@@ -644,6 +654,15 @@ void XDisasm::_updatePositions()
 
         nCurrentAddress++;
     }
+}
+
+bool XDisasm::_insertOpcode(qint64 nAddress, XDisasm::RECORD *pOpcode)
+{
+    pOptions->stats.mapRecords.insert(nAddress,*pOpcode);
+
+    int nCount=pOptions->stats.mapRecords.count();
+
+    return (nCount<50000); // TODO const
 }
 
 qint64 XDisasm::getVBSize(QMap<qint64, XDisasm::VIEW_BLOCK> *pMapVB)

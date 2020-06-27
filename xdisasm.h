@@ -162,6 +162,7 @@ private:
     void _disasm(qint64 nInitAddress, qint64 nAddress);
     void _adjust();
     void _updatePositions();
+    bool _insertOpcode(qint64 nAddress,RECORD *pOpcode);
 
 signals:
     void errorMessage(QString sText);
