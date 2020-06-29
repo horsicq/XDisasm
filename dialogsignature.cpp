@@ -78,8 +78,6 @@ void DialogSignature::reload()
     listHeaders.append(tr(""));
 
     ui->tableWidgetSignature->setHorizontalHeaderLabels(listHeaders);
-//            horizontalHeader()->setHeaderData(0,Qt::Horizontal,tr("Name"));
-//    pModel->setHeaderData(1,Qt::Horizontal,tr("Address"));
 
     for(int i=0;i<nCount;i++)
     {
