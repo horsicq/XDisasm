@@ -491,7 +491,7 @@ void XDisasmWidget::_dumpToFile()
         {
             QString sFilter;
             sFilter+=QString("%1 (*.bin)").arg(tr("Raw data"));
-            QString sSaveFileName="Result"; // TODO default directory
+            QString sSaveFileName="Result"; // TODO default directory / TODO getDumpName
             QString sFileName=QFileDialog::getSaveFileName(this,tr("Save dump"),sSaveFileName,sFilter);
 
             qint64 nOffset=XBinary::addressToOffset(&(pModel->getStats()->memoryMap),selectionStat.nAddress);
