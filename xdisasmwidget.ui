@@ -60,12 +60,6 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonAnalyze">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
        <property name="text">
         <string>Analyze</string>
        </property>
@@ -73,12 +67,6 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonLabels">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
        <property name="text">
         <string>Labels</string>
        </property>
@@ -86,12 +74,6 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonHex">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
        <property name="text">
         <string notr="true">Hex</string>
        </property>
@@ -99,12 +81,6 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonOverlay">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
        <property name="text">
         <string>Overlay</string>
        </property>
