@@ -77,4 +77,10 @@ void DialogDisasmProcess::timerSlot()
     ui->labelJumps->setText(QString("%1").arg(pDisasm->getStats()->stJumps.count()));
     ui->labelRefFrom->setText(QString("%1").arg(pDisasm->getStats()->mmapRefFrom.count()));
     ui->labelRefTo->setText(QString("%1").arg(pDisasm->getStats()->mmapRefTo.count()));
+
+    ui->labelDataLabels->setText(QString("%1").arg(pDisasm->getStats()->mmapDataLabels.count()));
+    ui->labelVB->setText(QString("%1").arg(pDisasm->getStats()->mapVB.count()));
+    ui->labelLabelStrings->setText(QString("%1").arg(pDisasm->getStats()->mapLabelStrings.count()));
+    ui->labelPositions->setText(QString("%1").arg(pDisasm->getStats()->mapPositions.count()));
+    ui->labelAddresses->setText(QString("%1").arg(pDisasm->getStats()->mapAddresses.count()));
 }
