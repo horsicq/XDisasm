@@ -43,8 +43,8 @@ public:
 private slots:
     void on_pushButtonOK_clicked();
     void reloadSignature();
-    void on_checkBoxSpaces_toggled(bool checked);
-    void on_checkBoxUpper_toggled(bool checked);
+    void on_checkBoxSpaces_toggled(bool bChecked);
+    void on_checkBoxUpper_toggled(bool bChecked);
     void on_lineEditWildcard_textChanged(const QString &sText);
     void on_pushButtonCopy_clicked();
     QString replaceWild(QString sString, qint32 nOffset, qint32 nSize, QChar cWild);

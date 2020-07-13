@@ -248,12 +248,12 @@ void DialogSignature::on_pushButtonOK_clicked()
     this->close();
 }
 
-void DialogSignature::on_checkBoxSpaces_toggled(bool checked)
+void DialogSignature::on_checkBoxSpaces_toggled(bool bChecked)
 {
     reloadSignature();
 }
 
-void DialogSignature::on_checkBoxUpper_toggled(bool checked)
+void DialogSignature::on_checkBoxUpper_toggled(bool bChecked)
 {
     reloadSignature();
 }
