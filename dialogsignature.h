@@ -45,10 +45,10 @@ private slots:
     void reloadSignature();
     void on_checkBoxSpaces_toggled(bool checked);
     void on_checkBoxUpper_toggled(bool checked);
-    void on_lineEditWildcard_textChanged(const QString &arg1);
+    void on_lineEditWildcard_textChanged(const QString &sText);
     void on_pushButtonCopy_clicked();
     QString replaceWild(QString sString, qint32 nOffset, qint32 nSize, QChar cWild);
-    void on_spinBoxCount_valueChanged(int arg1);
+    void on_spinBoxCount_valueChanged(int nValue);
 
     void on_comboBoxMethod_currentIndexChanged(int index);
 

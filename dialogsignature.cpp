@@ -258,7 +258,7 @@ void DialogSignature::on_checkBoxUpper_toggled(bool checked)
     reloadSignature();
 }
 
-void DialogSignature::on_lineEditWildcard_textChanged(const QString &arg1)
+void DialogSignature::on_lineEditWildcard_textChanged(const QString &sText)
 {
     reloadSignature();
 }
@@ -281,9 +281,9 @@ QString DialogSignature::replaceWild(QString sString, qint32 nOffset, qint32 nSi
     return sResult;
 }
 
-void DialogSignature::on_spinBoxCount_valueChanged(int arg1)
+void DialogSignature::on_spinBoxCount_valueChanged(int nValue)
 {
-    Q_UNUSED(arg1)
+    Q_UNUSED(nValue)
 
     reload();
 }
