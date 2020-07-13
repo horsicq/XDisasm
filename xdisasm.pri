@@ -2,6 +2,7 @@ INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD
 
 SOURCES += \
+    $$PWD/dialogdisasm.cpp \
     $$PWD/dialogdisasmlabels.cpp \
     $$PWD/dialogdisasmprocess.cpp \
     $$PWD/dialogsignature.cpp \
@@ -10,6 +11,7 @@ SOURCES += \
     $$PWD/xdisasmwidget.cpp
 
 HEADERS += \
+    $$PWD/dialogdisasm.h \
     $$PWD/dialogdisasmlabels.h \
     $$PWD/dialogdisasmprocess.h \
     $$PWD/dialogsignature.h \
@@ -18,6 +20,7 @@ HEADERS += \
     $$PWD/xdisasmwidget.h
 
 FORMS += \
+    $$PWD/dialogdisasm.ui \
     $$PWD/dialogdisasmlabels.ui \
     $$PWD/dialogdisasmprocess.ui \
     $$PWD/dialogsignature.ui \
