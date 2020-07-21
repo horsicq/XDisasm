@@ -805,6 +805,7 @@ bool XDisasm::isEndBranchOpcode(uint nOpcodeID)
 {
     bool bResult=false;
 
+    // TODO more checks
     if( (nOpcodeID==X86_INS_JMP)||
         (nOpcodeID==X86_INS_RET)||
         (nOpcodeID==X86_INS_INT3))
