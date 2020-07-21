@@ -288,9 +288,9 @@ void DialogSignature::on_spinBoxCount_valueChanged(int nValue)
     reload();
 }
 
-void DialogSignature::on_comboBoxMethod_currentIndexChanged(int index)
+void DialogSignature::on_comboBoxMethod_currentIndexChanged(int nIndex)
 {
-    Q_UNUSED(index)
+    Q_UNUSED(nIndex)
 
     reload();
 }

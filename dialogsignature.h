@@ -50,7 +50,7 @@ private slots:
     QString replaceWild(QString sString, qint32 nOffset, qint32 nSize, QChar cWild);
     void on_spinBoxCount_valueChanged(int nValue);
 
-    void on_comboBoxMethod_currentIndexChanged(int index);
+    void on_comboBoxMethod_currentIndexChanged(int nIndex);
 
 private:
     Ui::DialogSignature *ui;
