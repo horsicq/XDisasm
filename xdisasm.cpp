@@ -473,7 +473,7 @@ void XDisasm::_adjust()
 
             if(nRegionAddress!=-1)
             {
-                for(qint64 nCurrentAddress=nRegionAddress,nCurrentOffset=nRegionOffset;nCurrentAddress<(nRegionAddress+nRegionSize);)
+                for(qint64 nCurrentAddress=nRegionAddress,nCurrentOffset=nRegionOffset;(nCurrentAddress<(nRegionAddress+nRegionSize))&&(!bStop);)
                 {
                     VIEW_BLOCK vb=pOptions->stats.mapVB.value(nCurrentAddress);
 
@@ -491,8 +491,10 @@ void XDisasm::_adjust()
                         {
                             if(nIterKey==pOptions->stats.mapVB.firstKey()) // TODO move outside 'for'
                             {
-                                nBlockAddress=pOptions->stats.nImageBase;
-                                nBlockOffset=0;
+//                                nBlockAddress=pOptions->stats.nImageBase;
+                                nBlockAddress=pOptions->stats.memoryMap.listRecords.at(0).nAddress;
+                                nBlockOffset=pOptions->stats.memoryMap.listRecords.at(0).nOffset;
+
                                 if(nIterKey<(nRegionAddress+nRegionSize))
                                 {
                                     nBlockSize=iter.key()-pOptions->stats.nImageBase;
