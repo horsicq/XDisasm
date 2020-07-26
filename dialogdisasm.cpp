@@ -27,6 +27,8 @@ DialogDisasm::DialogDisasm(QWidget *parent, QIODevice *pDevice, XDisasmModel::SH
 {
     ui->setupUi(this);
 
+    setWindowFlags(Qt::Window);
+
     ui->widgetDisasm->setData(pDevice,pShowOptions,pDisasmOptions,true);
 }
 

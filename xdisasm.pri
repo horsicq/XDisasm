@@ -60,3 +60,8 @@ FORMS += \
     XCONFIG += qhexview
     include($$PWD/../QhexView/qhexview.pri)
 }
+
+!contains(XCONFIG, xoptions) {
+    XCONFIG += xoptions
+    include($$PWD/../Xoptions/xoptions.pri)
+}
