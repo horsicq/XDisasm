@@ -94,7 +94,24 @@ void XDisasmWidget::setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShow
 
     if(nCount)
     {
-        ui->comboBoxType->setCurrentIndex(nCount-1);
+        if(pDisasmOptions->ft==XBinary::FT_UNKNOWN)
+        {
+            ui->comboBoxType->setCurrentIndex(nCount-1);
+        }
+        else
+        {
+            int nCount=ui->comboBoxType->count();
+
+            for(int i=0;i<nCount;i++)
+            {
+                if(ui->comboBoxType->itemData(i).toUInt()==pDisasmOptions->ft)
+                {
+                    ui->comboBoxType->setCurrentIndex(i);
+
+                    break;
+                }
+            }
+        }
     }
 
     if(bAuto)
