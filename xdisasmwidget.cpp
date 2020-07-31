@@ -228,7 +228,7 @@ void XDisasmWidget::signature(qint64 nAddress, qint64 nSize)
 {
     if(pDisasmOptions->stats.mapRecords.value(nAddress).type==XDisasm::RECORD_TYPE_OPCODE)
     {
-        DialogSignature ds(this,pDevice,pModel,nAddress);
+        DialogAsmSignature ds(this,pDevice,pModel,nAddress);
 
         ds.exec();
     }

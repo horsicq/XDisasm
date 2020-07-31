@@ -5,7 +5,7 @@ SOURCES += \
     $$PWD/dialogdisasm.cpp \
     $$PWD/dialogdisasmlabels.cpp \
     $$PWD/dialogdisasmprocess.cpp \
-    $$PWD/dialogsignature.cpp \
+    $$PWD/dialogasmsignature.cpp \
     $$PWD/xdisasm.cpp \
     $$PWD/xdisasmmodel.cpp \
     $$PWD/xdisasmwidget.cpp
@@ -14,7 +14,7 @@ HEADERS += \
     $$PWD/dialogdisasm.h \
     $$PWD/dialogdisasmlabels.h \
     $$PWD/dialogdisasmprocess.h \
-    $$PWD/dialogsignature.h \
+    $$PWD/dialogasmsignature.h \
     $$PWD/xdisasm.h \
     $$PWD/xdisasmmodel.h \
     $$PWD/xdisasmwidget.h
@@ -23,7 +23,7 @@ FORMS += \
     $$PWD/dialogdisasm.ui \
     $$PWD/dialogdisasmlabels.ui \
     $$PWD/dialogdisasmprocess.ui \
-    $$PWD/dialogsignature.ui \
+    $$PWD/dialogasmsignature.ui \
     $$PWD/xdisasmwidget.ui
 
 !contains(XCONFIG, xcapstone) {

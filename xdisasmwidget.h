@@ -34,7 +34,7 @@
 #include "dialogdumpprocess.h"
 #include "xlineedithex.h"
 #include "dialoghexsignature.h"
-#include "dialogsignature.h"
+#include "dialogasmsignature.h"
 #include "dialoghex.h"
 #include "xoptions.h"
 
