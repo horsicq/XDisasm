@@ -63,5 +63,5 @@ FORMS += \
 
 !contains(XCONFIG, xoptions) {
     XCONFIG += xoptions
-    include($$PWD/../Xoptions/xoptions.pri)
+    include($$PWD/../XOptions/xoptions.pri)
 }
