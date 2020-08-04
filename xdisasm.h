@@ -113,7 +113,7 @@ public:
         XDisasm::STATS stats;
     };
 
-    explicit XDisasm(QObject *parent=nullptr);
+    explicit XDisasm(QObject *pParent=nullptr);
     ~XDisasm();
     void setData(QIODevice *pDevice,OPTIONS *pOptions, qint64 nStartAddress,DM dm);
     void stop();

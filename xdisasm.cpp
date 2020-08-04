@@ -20,7 +20,7 @@
 //
 #include "xdisasm.h"
 
-XDisasm::XDisasm(QObject *parent) : QObject(parent)
+XDisasm::XDisasm(QObject *pParent) : QObject(pParent)
 {
     pOptions=0;
     nStartAddress=0;
