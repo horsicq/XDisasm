@@ -21,8 +21,8 @@
 #include "dialogdisasm.h"
 #include "ui_dialogdisasm.h"
 
-DialogDisasm::DialogDisasm(QWidget *parent, QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShowOptions, XDisasm::OPTIONS *pDisasmOptions) :
-    QDialog(parent),
+DialogDisasm::DialogDisasm(QWidget *pParent, QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShowOptions, XDisasm::OPTIONS *pDisasmOptions) :
+    QDialog(pParent),
     ui(new Ui::DialogDisasm)
 {
     ui->setupUi(this);
