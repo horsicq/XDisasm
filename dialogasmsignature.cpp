@@ -21,8 +21,8 @@
 #include "dialogasmsignature.h"
 #include "ui_dialogasmsignature.h"
 
-DialogAsmSignature::DialogAsmSignature(QWidget *parent, QIODevice *pDevice, XDisasmModel *pModel, qint64 nAddress) :
-    QDialog(parent),
+DialogAsmSignature::DialogAsmSignature(QWidget *pParent, QIODevice *pDevice, XDisasmModel *pModel, qint64 nAddress) :
+    QDialog(pParent),
     ui(new Ui::DialogAsmSignature)
 {
     ui->setupUi(this);

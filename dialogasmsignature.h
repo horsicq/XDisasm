@@ -36,7 +36,7 @@ class DialogAsmSignature : public QDialog
     Q_OBJECT
 
 public:
-    explicit DialogAsmSignature(QWidget *parent,QIODevice *pDevice,XDisasmModel *pModel,qint64 nAddress);
+    explicit DialogAsmSignature(QWidget *pParent,QIODevice *pDevice,XDisasmModel *pModel,qint64 nAddress);
     ~DialogAsmSignature();
     void reload();
 
