@@ -21,8 +21,8 @@
 #include "xdisasmwidget.h"
 #include "ui_xdisasmwidget.h"
 
-XDisasmWidget::XDisasmWidget(QWidget *parent) :
-    QWidget(parent),
+XDisasmWidget::XDisasmWidget(QWidget *pParent) :
+    QWidget(pParent),
     ui(new Ui::XDisasmWidget)
 {
     ui->setupUi(this);

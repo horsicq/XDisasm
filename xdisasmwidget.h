@@ -56,7 +56,7 @@ class XDisasmWidget : public QWidget
     };
 
 public:
-    explicit XDisasmWidget(QWidget *parent=nullptr);
+    explicit XDisasmWidget(QWidget *pParent=nullptr);
     void setData(QIODevice *pDevice,XDisasmModel::SHOWOPTIONS *pShowOptions=0,XDisasm::OPTIONS *pDisasmOptions=0,bool bAuto=true);
     void analyze();
     void goToAddress(qint64 nAddress);
