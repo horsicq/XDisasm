@@ -20,8 +20,8 @@
 //
 #include "xdisasmmodel.h"
 
-XDisasmModel::XDisasmModel(QIODevice *pDevice, XDisasm::STATS *pStats,SHOWOPTIONS *pShowOptions, QObject *parent)
-    : QAbstractTableModel(parent)
+XDisasmModel::XDisasmModel(QIODevice *pDevice, XDisasm::STATS *pStats, SHOWOPTIONS *pShowOptions, QObject *pParent)
+    : QAbstractTableModel(pParent)
 {
     this->pDevice=pDevice;
     this->pStats=pStats;

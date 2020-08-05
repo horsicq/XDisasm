@@ -61,7 +61,7 @@ public:
         bool bShowLabels;
     };
 
-    explicit XDisasmModel(QIODevice *pDevice, XDisasm::STATS *pStats,SHOWOPTIONS *pShowOptions,QObject *parent);
+    explicit XDisasmModel(QIODevice *pDevice, XDisasm::STATS *pStats,SHOWOPTIONS *pShowOptions,QObject *pParent);
     ~XDisasmModel();
     // Header:
     QVariant headerData(int section, Qt::Orientation orientation, int role=Qt::DisplayRole) const override;

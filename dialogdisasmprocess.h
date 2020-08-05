@@ -35,7 +35,7 @@ class DialogDisasmProcess : public QDialog
     Q_OBJECT
 
 public:
-    explicit DialogDisasmProcess(QWidget *parent=nullptr);
+    explicit DialogDisasmProcess(QWidget *pParent=nullptr);
     ~DialogDisasmProcess();
     void setData(QIODevice *pDevice, XDisasm::OPTIONS *pOptions, qint64 nStartAddress, XDisasm::DM dm);
 

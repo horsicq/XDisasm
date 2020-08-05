@@ -21,8 +21,8 @@
 #include "dialogdisasmprocess.h"
 #include "ui_dialogdisasmprocess.h"
 
-DialogDisasmProcess::DialogDisasmProcess(QWidget *parent) :
-    QDialog(parent),
+DialogDisasmProcess::DialogDisasmProcess(QWidget *pParent) :
+    QDialog(pParent),
     ui(new Ui::DialogDisasmProcess)
 {
     ui->setupUi(this);
