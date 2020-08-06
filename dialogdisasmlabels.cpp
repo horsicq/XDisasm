@@ -21,8 +21,8 @@
 #include "dialogdisasmlabels.h"
 #include "ui_dialogdisasmlabels.h"
 
-DialogDisasmLabels::DialogDisasmLabels(QWidget *parent, XDisasm::STATS *pDisasmStats) :
-    QDialog(parent),
+DialogDisasmLabels::DialogDisasmLabels(QWidget *pParent, XDisasm::STATS *pDisasmStats) :
+    QDialog(pParent),
     ui(new Ui::DialogDisasmLabels)
 {
     ui->setupUi(this);
