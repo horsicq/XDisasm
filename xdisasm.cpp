@@ -71,27 +71,27 @@ void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
 
             uint8_t *pData=(uint8_t *)opcode;
 
-            cs_insn *insn;
-            size_t count=cs_disasm(disasm_handle,pData,nDataSize,nAddress,1,&insn);
+            cs_insn *pInsn=0;
+            size_t count=cs_disasm(disasm_handle,pData,nDataSize,nAddress,1,&pInsn);
 
             if(count>0)
             {
-                if(insn->size>1)
+                if(pInsn->size>1)
                 {
-                    bStopBranch=!XBinary::isAddressPhysical(&(pOptions->stats.memoryMap),nAddress+insn->size-1);
+                    bStopBranch=!XBinary::isAddressPhysical(&(pOptions->stats.memoryMap),nAddress+pInsn->size-1);
                 }
 
                 if(!bStopBranch)
                 {
-                    for(int i=0; i<insn->detail->x86.op_count; i++)
+                    for(int i=0; i<pInsn->detail->x86.op_count; i++)
                     {
-                        if(insn->detail->x86.operands[i].type==X86_OP_IMM)
+                        if(pInsn->detail->x86.operands[i].type==X86_OP_IMM)
                         {
-                            qint64 nImm=insn->detail->x86.operands[i].imm;
+                            qint64 nImm=pInsn->detail->x86.operands[i].imm;
 
-                            if(isJmpOpcode(insn->id))
+                            if(isJmpOpcode(pInsn->id))
                             {
-                                if(isCallOpcode(insn->id))
+                                if(isCallOpcode(pInsn->id))
                                 {
                                     pOptions->stats.stCalls.insert(nImm);
                                 }
@@ -110,7 +110,7 @@ void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
 
                     RECORD opcode={};
                     opcode.nOffset=nOffset;
-                    opcode.nSize=insn->size;
+                    opcode.nSize=pInsn->size;
                     opcode.type=RECORD_TYPE_OPCODE;
 
                     if(!_insertOpcode(nAddress,&opcode))
@@ -118,15 +118,15 @@ void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
                         bStopBranch=true;
                     }
 
-                    nDelta=insn->size;
+                    nDelta=pInsn->size;
 
-                    if(isEndBranchOpcode(insn->id))
+                    if(isEndBranchOpcode(pInsn->id))
                     {
                         bStopBranch=true;
                     }
                 }
 
-                cs_free(insn,count);
+                cs_free(pInsn,count);
             }
             else
             {
@@ -682,13 +682,13 @@ QString XDisasm::getDisasmString(csh disasm_handle, qint64 nAddress, char *pData
 {
     QString sResult;
 
-    cs_insn *insn;
-    size_t count=cs_disasm(disasm_handle,(uint8_t *)pData,nDataSize,nAddress,1,&insn);
+    cs_insn *pInsn=0;
+    size_t count=cs_disasm(disasm_handle,(uint8_t *)pData,nDataSize,nAddress,1,&pInsn);
 
     if(count>0)
     {
-        QString sMnemonic=insn->mnemonic;
-        QString sArgs=insn->op_str;
+        QString sMnemonic=pInsn->mnemonic;
+        QString sArgs=pInsn->op_str;
 
         sResult=sMnemonic;
         if(sArgs!="")
@@ -696,7 +696,7 @@ QString XDisasm::getDisasmString(csh disasm_handle, qint64 nAddress, char *pData
             sResult+=" "+sArgs;
         }
 
-        cs_free(insn,count);
+        cs_free(pInsn,count);
     }
 
     return sResult;
@@ -730,14 +730,14 @@ QList<XDisasm::SIGNATURE_RECORD> XDisasm::getSignature(XDisasm::SIGNATURE_OPTION
 
             uint8_t *pData=(uint8_t *)opcode;
 
-            cs_insn *insn;
-            size_t count=cs_disasm(_disasm_handle,pData,nDataSize,nAddress,1,&insn);
+            cs_insn *pInsn=0;
+            size_t count=cs_disasm(_disasm_handle,pData,nDataSize,nAddress,1,&pInsn);
 
             if(count>0)
             {
-                if(insn->size>1)
+                if(pInsn->size>1)
                 {
-                    bStopBranch=!XBinary::isAddressPhysical(&(pSignatureOptions->memoryMap),nAddress+insn->size-1);
+                    bStopBranch=!XBinary::isAddressPhysical(&(pSignatureOptions->memoryMap),nAddress+pInsn->size-1);
                 }
 
                 if(stRecords.contains(nAddress))
@@ -750,34 +750,34 @@ QList<XDisasm::SIGNATURE_RECORD> XDisasm::getSignature(XDisasm::SIGNATURE_OPTION
                     SIGNATURE_RECORD record={};
 
                     record.nAddress=nAddress;
-                    record.sOpcode=insn->mnemonic;
-                    QString sArgs=insn->op_str;
+                    record.sOpcode=pInsn->mnemonic;
+                    QString sArgs=pInsn->op_str;
 
                     if(sArgs!="")
                     {
                         record.sOpcode+=" "+sArgs;
                     }
 
-                    record.baOpcode=QByteArray(opcode,insn->size);
+                    record.baOpcode=QByteArray(opcode,pInsn->size);
 
-                    record.nDispOffset=insn->detail->x86.encoding.disp_offset;
-                    record.nDispSize=insn->detail->x86.encoding.disp_size;
-                    record.nImmOffset=insn->detail->x86.encoding.imm_offset;
-                    record.nImmSize=insn->detail->x86.encoding.imm_size;
+                    record.nDispOffset=pInsn->detail->x86.encoding.disp_offset;
+                    record.nDispSize=pInsn->detail->x86.encoding.disp_size;
+                    record.nImmOffset=pInsn->detail->x86.encoding.imm_offset;
+                    record.nImmSize=pInsn->detail->x86.encoding.imm_size;
 
                     stRecords.insert(nAddress);
 
-                    nAddress+=insn->size;
+                    nAddress+=pInsn->size;
 
                     if(pSignatureOptions->sm==XDisasm::SM_RELATIVEADDRESS)
                     {
-                        for(int i=0; i<insn->detail->x86.op_count; i++)
+                        for(int i=0; i<pInsn->detail->x86.op_count; i++)
                         {
-                            if(insn->detail->x86.operands[i].type==X86_OP_IMM)
+                            if(pInsn->detail->x86.operands[i].type==X86_OP_IMM)
                             {
-                                qint64 nImm=insn->detail->x86.operands[i].imm;
+                                qint64 nImm=pInsn->detail->x86.operands[i].imm;
 
-                                if(isJmpOpcode(insn->id))
+                                if(isJmpOpcode(pInsn->id))
                                 {
                                     nAddress=nImm;
                                     record.bIsConst=true;
@@ -789,7 +789,7 @@ QList<XDisasm::SIGNATURE_RECORD> XDisasm::getSignature(XDisasm::SIGNATURE_OPTION
                     listResult.append(record);
                 }
 
-                cs_free(insn,count);
+                cs_free(pInsn,count);
             }
             else
             {
