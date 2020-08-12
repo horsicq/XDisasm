@@ -283,6 +283,11 @@ void XDisasmWidget::process(QIODevice *pDevice,XDisasm::OPTIONS *pOptions, qint6
     ddp.setData(pDevice,pOptions,nStartAddress,dm);
     ddp.exec();
 
+    if(pModel)
+    {
+        pModel->resetCache();
+    }
+
 //    if(pModel)
 //    {
 //        pModel->_beginResetModel();
