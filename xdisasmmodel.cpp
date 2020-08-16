@@ -179,7 +179,7 @@ QVariant XDisasmModel::data(const QModelIndex &index, int role) const
 
 XDisasmModel::VEIW_RECORD XDisasmModel::getViewRecord(int nRow)
 {
-    VEIW_RECORD result;
+    VEIW_RECORD result={0};
 
     qint64 nAddress=positionToAddress(nRow);
 
