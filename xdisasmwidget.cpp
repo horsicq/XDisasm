@@ -88,8 +88,8 @@ void XDisasmWidget::setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShow
 
     for(int i=0;i<nCount;i++)
     {
-        XBinary::FT ft=listFileTypes.at(i);
-        ui->comboBoxType->addItem(XBinary::fileTypeIdToString(ft),ft);
+        XBinary::FT fileType=listFileTypes.at(i);
+        ui->comboBoxType->addItem(XBinary::fileTypeIdToString(fileType),fileType);
     }
 
     if(nCount)
