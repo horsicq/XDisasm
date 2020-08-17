@@ -164,14 +164,14 @@ void XDisasm::processDisasm()
         pOptions->stats.csarch=CS_ARCH_X86;
         pOptions->stats.csmode=CS_MODE_16;
 
-        XBinary::FT ft=pOptions->ft;
+        XBinary::FT fileType=pOptions->ft;
 
-        if(ft==XBinary::FT_UNKNOWN)
+        if(fileType==XBinary::FT_UNKNOWN)
         {
-            ft=XBinary::getPrefFileType(pDevice);
+            fileType=XBinary::getPrefFileType(pDevice);
         }
 
-        if((ft==XBinary::FT_PE32)||(ft==XBinary::FT_PE64))
+        if((fileType==XBinary::FT_PE32)||(fileType==XBinary::FT_PE64))
         {
             XPE pe(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
@@ -193,7 +193,7 @@ void XDisasm::processDisasm()
                 pOptions->stats.csmode=CS_MODE_64;
             }
         }
-        else if((ft==XBinary::FT_ELF32)||(ft==XBinary::FT_ELF64))
+        else if((fileType==XBinary::FT_ELF32)||(fileType==XBinary::FT_ELF64))
         {
             XELF elf(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
@@ -203,7 +203,7 @@ void XDisasm::processDisasm()
             pOptions->stats.nOverlaySize=elf.getOverlaySize();
             pOptions->stats.nOverlayOffset=elf.getOverlayOffset();
         }
-        else if((ft==XBinary::FT_MACH32)||(ft==XBinary::FT_MACH64))
+        else if((fileType==XBinary::FT_MACH32)||(fileType==XBinary::FT_MACH64))
         {
             XMACH mach(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
@@ -213,7 +213,7 @@ void XDisasm::processDisasm()
             pOptions->stats.nOverlaySize=mach.getOverlaySize();
             pOptions->stats.nOverlayOffset=mach.getOverlayOffset();
         }
-        else if(ft==XBinary::FT_MSDOS)
+        else if(fileType==XBinary::FT_MSDOS)
         {
             XMSDOS msdos(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
@@ -223,7 +223,7 @@ void XDisasm::processDisasm()
             pOptions->stats.nOverlaySize=msdos.getOverlaySize();
             pOptions->stats.nOverlayOffset=msdos.getOverlayOffset();
         }
-        else if(ft==XBinary::FT_NE)
+        else if(fileType==XBinary::FT_NE)
         {
             XNE ne(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
@@ -233,7 +233,7 @@ void XDisasm::processDisasm()
             pOptions->stats.nOverlaySize=ne.getOverlaySize();
             pOptions->stats.nOverlayOffset=ne.getOverlayOffset();
         }
-        else if((ft==XBinary::FT_LE)||(ft==XBinary::FT_LX))
+        else if((fileType==XBinary::FT_LE)||(fileType==XBinary::FT_LX))
         {
             XLE le(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
@@ -243,14 +243,14 @@ void XDisasm::processDisasm()
             pOptions->stats.nOverlaySize=le.getOverlaySize();
             pOptions->stats.nOverlayOffset=le.getOverlayOffset();
         }
-        else if(ft==XBinary::FT_COM)
+        else if(fileType==XBinary::FT_COM)
         {
             XCOM xcom(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
             pOptions->stats.memoryMap=xcom.getMemoryMap();
             pOptions->stats.nEntryPointAddress=xcom.getEntryPointAddress(&pOptions->stats.memoryMap);
         }
-        else if((ft==XBinary::FT_BINARY16)||(ft==XBinary::FT_BINARY))
+        else if((fileType==XBinary::FT_BINARY16)||(fileType==XBinary::FT_BINARY))
         {
             XBinary binary(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
@@ -260,7 +260,7 @@ void XDisasm::processDisasm()
             pOptions->stats.memoryMap=binary.getMemoryMap();
             pOptions->stats.nEntryPointAddress=binary.getEntryPointAddress(&pOptions->stats.memoryMap);
         }
-        else if(ft==XBinary::FT_BINARY32)
+        else if(fileType==XBinary::FT_BINARY32)
         {
             XBinary binary(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
@@ -270,7 +270,7 @@ void XDisasm::processDisasm()
             pOptions->stats.memoryMap=binary.getMemoryMap();
             pOptions->stats.nEntryPointAddress=binary.getEntryPointAddress(&pOptions->stats.memoryMap);
         }
-        else if(ft==XBinary::FT_BINARY64)
+        else if(fileType==XBinary::FT_BINARY64)
         {
             XBinary binary(pDevice,pOptions->bIsImage,pOptions->nImageBase);
 
