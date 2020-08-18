@@ -124,8 +124,8 @@ void XDisasmWidget::analyze()
 {
     if(pDisasmOptions&&pShowOptions)
     {
-        XBinary::FT ft=(XBinary::FT)ui->comboBoxType->currentData().toInt();
-        pDisasmOptions->fileType=ft;
+        XBinary::FT fileType=(XBinary::FT)ui->comboBoxType->currentData().toInt();
+        pDisasmOptions->fileType=fileType;
 
         pDisasmOptions->stats={};
 
