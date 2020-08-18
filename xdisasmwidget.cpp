@@ -94,7 +94,7 @@ void XDisasmWidget::setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShow
 
     if(nCount)
     {
-        if(pDisasmOptions->ft==XBinary::FT_UNKNOWN)
+        if(pDisasmOptions->fileType==XBinary::FT_UNKNOWN)
         {
             ui->comboBoxType->setCurrentIndex(nCount-1);
         }
@@ -104,7 +104,7 @@ void XDisasmWidget::setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShow
 
             for(int i=0;i<nCount;i++)
             {
-                if(ui->comboBoxType->itemData(i).toUInt()==pDisasmOptions->ft)
+                if(ui->comboBoxType->itemData(i).toUInt()==pDisasmOptions->fileType)
                 {
                     ui->comboBoxType->setCurrentIndex(i);
 
@@ -125,7 +125,7 @@ void XDisasmWidget::analyze()
     if(pDisasmOptions&&pShowOptions)
     {
         XBinary::FT ft=(XBinary::FT)ui->comboBoxType->currentData().toInt();
-        pDisasmOptions->ft=ft;
+        pDisasmOptions->fileType=ft;
 
         pDisasmOptions->stats={};
 

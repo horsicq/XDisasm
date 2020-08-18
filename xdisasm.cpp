@@ -164,7 +164,7 @@ void XDisasm::processDisasm()
         pOptions->stats.csarch=CS_ARCH_X86;
         pOptions->stats.csmode=CS_MODE_16;
 
-        XBinary::FT fileType=pOptions->ft;
+        XBinary::FT fileType=pOptions->fileType;
 
         if(fileType==XBinary::FT_UNKNOWN)
         {

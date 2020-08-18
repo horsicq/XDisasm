@@ -109,7 +109,7 @@ public:
     {
         bool bIsImage;
         qint64 nImageBase;
-        XBinary::FT ft;
+        XBinary::FT fileType;
         XDisasm::STATS stats;
     };
 
