@@ -46,14 +46,14 @@ DialogDisasmLabels::DialogDisasmLabels(QWidget *pParent, XDisasm::STATS *pDisasm
         QString sName=iMap.value();
         qint64 nAddress=iMap.key();
 
-        QStandardItem *itemName=new QStandardItem;
-        itemName->setText(sName);
-        itemName->setData(nAddress);
-        pModel->setItem(i,0,itemName);
+        QStandardItem *pItemName=new QStandardItem;
+        pItemName->setText(sName);
+        pItemName->setData(nAddress);
+        pModel->setItem(i,0,pItemName);
 
-        QStandardItem *itemAddress=new QStandardItem;
-        itemAddress->setText(QString("0x%1").arg(nAddress,8,16,QChar('0'))); // TODO function in Binary
-        pModel->setItem(i,1,itemAddress);
+        QStandardItem *pItemAddress=new QStandardItem;
+        pItemAddress->setText(QString("0x%1").arg(nAddress,8,16,QChar('0'))); // TODO function in Binary
+        pModel->setItem(i,1,pItemAddress);
 
         i++;
     }
