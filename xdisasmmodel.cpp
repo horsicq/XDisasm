@@ -38,13 +38,13 @@ XDisasmModel::~XDisasmModel()
     }
 }
 
-QVariant XDisasmModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant XDisasmModel::headerData(int section, Qt::Orientation orientation, int nRole) const
 {
     QVariant result;
 
     if(orientation==Qt::Horizontal)
     {
-        if(role==Qt::DisplayRole)
+        if(nRole==Qt::DisplayRole)
         {
             switch(section)
             {
@@ -84,7 +84,7 @@ int XDisasmModel::columnCount(const QModelIndex &parent) const
     return nResult;
 }
 
-QVariant XDisasmModel::data(const QModelIndex &index, int role) const
+QVariant XDisasmModel::data(const QModelIndex &index, int nRole) const
 {
     if(!index.isValid()) // TODO optimize
     {
@@ -93,7 +93,7 @@ QVariant XDisasmModel::data(const QModelIndex &index, int role) const
 
     QVariant result;
 
-    if(role==Qt::DisplayRole)
+    if(nRole==Qt::DisplayRole)
     {
         XDisasmModel* _this=const_cast<XDisasmModel *>(this);
 
@@ -130,7 +130,7 @@ QVariant XDisasmModel::data(const QModelIndex &index, int role) const
             case DMCOLUMN_OPCODE:       result=vrRecord.sOpcode;        break;
         }
     }
-    else if(role==Qt::UserRole+UD_ADDRESS)
+    else if(nRole==Qt::UserRole+UD_ADDRESS)
     {
         XDisasmModel* _this=const_cast<XDisasmModel *>(this);
 
@@ -138,7 +138,7 @@ QVariant XDisasmModel::data(const QModelIndex &index, int role) const
 
         result=_this->positionToAddress(nRow);
     }
-    else if(role==Qt::UserRole+UD_OFFSET)
+    else if(nRole==Qt::UserRole+UD_OFFSET)
     {
         XDisasmModel* _this=const_cast<XDisasmModel *>(this);
 
@@ -148,7 +148,7 @@ QVariant XDisasmModel::data(const QModelIndex &index, int role) const
 
         result=XBinary::addressToOffset(&(pStats->memoryMap),nAddress);
     }
-    else if(role==Qt::UserRole+UD_RELADDRESS)
+    else if(nRole==Qt::UserRole+UD_RELADDRESS)
     {
         XDisasmModel* _this=const_cast<XDisasmModel *>(this);
 
@@ -158,7 +158,7 @@ QVariant XDisasmModel::data(const QModelIndex &index, int role) const
 
         result=XBinary::addressToRelAddress(&(pStats->memoryMap),nAddress);
     }
-    else if(role==Qt::UserRole+UD_SIZE)
+    else if(nRole==Qt::UserRole+UD_SIZE)
     {
         result=1;
 
