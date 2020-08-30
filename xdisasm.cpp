@@ -72,9 +72,9 @@ void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
             uint8_t *pData=(uint8_t *)opcode;
 
             cs_insn *pInsn=0;
-            size_t count=cs_disasm(disasm_handle,pData,nDataSize,nAddress,1,&pInsn);
+            size_t nNumberOfOpcodes=cs_disasm(disasm_handle,pData,nDataSize,nAddress,1,&pInsn);
 
-            if(count>0)
+            if(nNumberOfOpcodes>0)
             {
                 if(pInsn->size>1)
                 {
@@ -126,7 +126,7 @@ void XDisasm::_disasm(qint64 nInitAddress, qint64 nAddress)
                     }
                 }
 
-                cs_free(pInsn,count);
+                cs_free(pInsn,nNumberOfOpcodes);
             }
             else
             {
