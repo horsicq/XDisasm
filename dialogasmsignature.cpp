@@ -63,12 +63,12 @@ void DialogAsmSignature::reload()
 
     int nSymbolWidth=XLineEditHEX::getSymbolWidth(ui->tableWidgetSignature);
 
-    int nCount=listRecords.count();
+    int nNumberOfRecords=listRecords.count();
 
     ui->tableWidgetSignature->clear();
 
     ui->tableWidgetSignature->setColumnCount(5);
-    ui->tableWidgetSignature->setRowCount(nCount);
+    ui->tableWidgetSignature->setRowCount(nNumberOfRecords);
 
     QStringList listHeaders;
     listHeaders.append(tr("Address"));
@@ -79,7 +79,7 @@ void DialogAsmSignature::reload()
 
     ui->tableWidgetSignature->setHorizontalHeaderLabels(listHeaders);
 
-    for(int i=0;i<nCount;i++)
+    for(int i=0;i<nNumberOfRecords;i++)
     {
         ui->tableWidgetSignature->setItem(i,0,new QTableWidgetItem(XBinary::valueToHex(pModel->getStats()->memoryMap.mode,listRecords.at(i).nAddress)));
         ui->tableWidgetSignature->setItem(i,1,new QTableWidgetItem(listRecords.at(i).baOpcode.toHex().data()));
