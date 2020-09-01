@@ -82,21 +82,21 @@ void XDisasmWidget::setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShow
 
     QList<XBinary::FT> listFileTypes=XBinary::_getFileTypeListFromSet(stFT);
 
-    int nCount=listFileTypes.count();
+    int nNumberOfFileTypes=listFileTypes.count();
 
     ui->comboBoxType->clear();
 
-    for(int i=0;i<nCount;i++)
+    for(int i=0;i<nNumberOfFileTypes;i++)
     {
         XBinary::FT fileType=listFileTypes.at(i);
         ui->comboBoxType->addItem(XBinary::fileTypeIdToString(fileType),fileType);
     }
 
-    if(nCount)
+    if(nNumberOfFileTypes)
     {
         if(pDisasmOptions->fileType==XBinary::FT_UNKNOWN)
         {
-            ui->comboBoxType->setCurrentIndex(nCount-1);
+            ui->comboBoxType->setCurrentIndex(nNumberOfFileTypes-1);
         }
         else
         {
