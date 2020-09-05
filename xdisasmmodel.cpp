@@ -238,7 +238,9 @@ XDisasmModel::VEIW_RECORD XDisasmModel::getViewRecord(int nRow)
             {
                 QList<qint64> listRefs=pStats->mmapRefTo.values(nAddress);
 
-                for(int i=0;i<listRefs.count();i++)
+                int nNumberOfRefs=listRefs.count();
+
+                for(int i=0;i<nNumberOfRefs;i++)
                 {
                     QString sAddress=QString("0x%1").arg(listRefs.at(i),0,16);
                     QString sRString=pStats->mapLabelStrings.value(listRefs.at(i));
