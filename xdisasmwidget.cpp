@@ -100,9 +100,9 @@ void XDisasmWidget::setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShow
         }
         else
         {
-            int nCount=ui->comboBoxType->count();
+            int nNumberOfTypes=ui->comboBoxType->count();
 
-            for(int i=0;i<nCount;i++)
+            for(int i=0;i<nNumberOfTypes;i++)
             {
                 if(ui->comboBoxType->itemData(i).toUInt()==pDisasmOptions->fileType)
                 {
