@@ -148,9 +148,9 @@ void DialogAsmSignature::reloadSignature()
         cWild=_sWild.at(0);
     }
 
-    int nCount=listRecords.count();
+    int nNumberOfRecords=listRecords.count();
 
-    for(int i=0;i<nCount;i++)
+    for(int i=0;i<nNumberOfRecords;i++)
     {
         bool bUse=true;
         bool bDisp=true;
