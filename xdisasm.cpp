@@ -463,9 +463,9 @@ void XDisasm::_adjust()
             }
         }
 
-        int nMMCount=pOptions->stats.memoryMap.listRecords.count(); // TODO
+        int nNumberOfRecords=pOptions->stats.memoryMap.listRecords.count(); // TODO
 
-        for(int i=0;(i<nMMCount)&&(!bStop);i++)
+        for(int i=0;(i<nNumberOfRecords)&&(!bStop);i++)
         {
             qint64 nRegionAddress=pOptions->stats.memoryMap.listRecords.at(i).nAddress;
             qint64 nRegionOffset=pOptions->stats.memoryMap.listRecords.at(i).nOffset;
@@ -630,9 +630,9 @@ void XDisasm::_adjust()
 void XDisasm::_updatePositions()
 {
     qint64 nImageSize=pOptions->stats.nImageSize;
-    qint64 nVBCount=pOptions->stats.mapVB.count();
+    qint64 nNumberOfVBs=pOptions->stats.mapVB.count();
     qint64 nVBSize=getVBSize(&(pOptions->stats.mapVB));
-    pOptions->stats.nPositions=nImageSize+nVBCount-nVBSize; // TODO
+    pOptions->stats.nPositions=nImageSize+nNumberOfVBs-nVBSize; // TODO
 
     pOptions->stats.mapPositions.clear();
     // TODO cache
