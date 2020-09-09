@@ -683,9 +683,9 @@ QString XDisasm::getDisasmString(csh disasm_handle, qint64 nAddress, char *pData
     QString sResult;
 
     cs_insn *pInsn=0;
-    size_t count=cs_disasm(disasm_handle,(uint8_t *)pData,nDataSize,nAddress,1,&pInsn);
+    size_t nNumberOfOpcodes=cs_disasm(disasm_handle,(uint8_t *)pData,nDataSize,nAddress,1,&pInsn);
 
-    if(count>0)
+    if(nNumberOfOpcodes>0)
     {
         QString sMnemonic=pInsn->mnemonic;
         QString sArgs=pInsn->op_str;
@@ -696,7 +696,7 @@ QString XDisasm::getDisasmString(csh disasm_handle, qint64 nAddress, char *pData
             sResult+=" "+sArgs;
         }
 
-        cs_free(pInsn,count);
+        cs_free(pInsn,nNumberOfOpcodes);
     }
 
     return sResult;
