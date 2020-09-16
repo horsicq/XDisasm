@@ -47,7 +47,7 @@ private slots:
 private:
     Ui::DialogDisasmLabels *ui;
     XDisasm::STATS *pDisasmStats;
-    qint64 __nAddress;
+    qint64 g_nAddress;
 };
 
 #endif // DIALOGDISASMLABELS_H

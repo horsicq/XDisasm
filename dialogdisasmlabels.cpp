@@ -28,7 +28,7 @@ DialogDisasmLabels::DialogDisasmLabels(QWidget *pParent, XDisasm::STATS *pDisasm
     ui->setupUi(this);
 
     this->pDisasmStats=pDisasmStats;
-    __nAddress=0;
+    g_nAddress=0;
 
     int nNumberOfLabels=pDisasmStats->mapLabelStrings.count();
 
@@ -78,7 +78,7 @@ DialogDisasmLabels::~DialogDisasmLabels()
 
 qint64 DialogDisasmLabels::getAddress()
 {
-    return __nAddress;
+    return g_nAddress;
 }
 
 void DialogDisasmLabels::on_pushButtonClose_clicked()
@@ -108,7 +108,7 @@ void DialogDisasmLabels::goTo()
 
         if(listIndexes.count())
         {
-            __nAddress=listIndexes.at(0).data(Qt::UserRole+1).toLongLong();
+            g_nAddress=listIndexes.at(0).data(Qt::UserRole+1).toLongLong();
 
             done(QDialog::Accepted);
         }
