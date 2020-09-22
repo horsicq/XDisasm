@@ -72,15 +72,15 @@ void XDisasmWidget::setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShow
         this->pDisasmOptions=&__disasmOptions;
     }
 
-    QSet<XBinary::FT> stFT=XBinary::getFileTypes(pDevice);
+    QSet<XBinary::FT> stFileType=XBinary::getFileTypes(pDevice);
 
-    stFT.remove(XBinary::FT_BINARY);
-    stFT.insert(XBinary::FT_BINARY16);
-    stFT.insert(XBinary::FT_BINARY32);
-    stFT.insert(XBinary::FT_BINARY64);
-    stFT.insert(XBinary::FT_COM);
+    stFileType.remove(XBinary::FT_BINARY);
+    stFileType.insert(XBinary::FT_BINARY16);
+    stFileType.insert(XBinary::FT_BINARY32);
+    stFileType.insert(XBinary::FT_BINARY64);
+    stFileType.insert(XBinary::FT_COM);
 
-    QList<XBinary::FT> listFileTypes=XBinary::_getFileTypeListFromSet(stFT);
+    QList<XBinary::FT> listFileTypes=XBinary::_getFileTypeListFromSet(stFileType);
 
     int nNumberOfFileTypes=listFileTypes.count();
 
