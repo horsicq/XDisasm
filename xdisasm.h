@@ -115,11 +115,11 @@ public:
 
     explicit XDisasm(QObject *pParent=nullptr);
     ~XDisasm();
-    void setData(QIODevice *pDevice,OPTIONS *pOptions, qint64 nStartAddress,DM dm);
+    void setData(QIODevice *pDevice,OPTIONS *pOptions,qint64 nStartAddress,DM dm);
     void stop();
     STATS *getStats();
     static qint64 getVBSize(QMap<qint64,VIEW_BLOCK> *pMapVB);
-    static QString getDisasmString(csh disasm_handle, qint64 nAddress, char *pData, qint32 nDataSize);
+    static QString getDisasmString(csh disasm_handle,qint64 nAddress,char *pData,qint32 nDataSize);
 
     enum SM
     {
@@ -160,7 +160,7 @@ private:
     bool isEndBranchOpcode(uint nOpcodeID);
     static bool isJmpOpcode(uint nOpcodeID);
     static bool isCallOpcode(uint nOpcodeID);
-    void _disasm(qint64 nInitAddress, qint64 nAddress);
+    void _disasm(qint64 nInitAddress,qint64 nAddress);
     void _adjust();
     void _updatePositions();
     bool _insertOpcode(qint64 nAddress,RECORD *pOpcode);
@@ -170,12 +170,12 @@ signals:
     void processFinished();
 
 private:
-    DM dm;
-    csh disasm_handle;
-    bool bStop;
-    QIODevice *pDevice;
-    OPTIONS *pOptions;
-    qint64 nStartAddress;
+    DM g_dm;
+    csh g_disasm_handle;
+    bool g_bStop;
+    QIODevice *g_pDevice;
+    OPTIONS *g_pOptions;
+    qint64 g_nStartAddress;
 };
 
 #endif // XDISASM_H
