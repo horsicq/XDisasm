@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>642</width>
-    <height>259</height>
+    <width>566</width>
+    <height>224</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -41,12 +41,12 @@
          <number>1</number>
         </property>
         <item>
-         <widget class="QLabel" name="labelOpcodes">
-          <property name="text">
-           <string/>
-          </property>
+         <widget class="QLineEdit" name="lineEditOpcodes">
           <property name="alignment">
            <set>Qt::AlignCenter</set>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -78,12 +78,12 @@
          <number>1</number>
         </property>
         <item>
-         <widget class="QLabel" name="labelCalls">
-          <property name="text">
-           <string/>
-          </property>
+         <widget class="QLineEdit" name="lineEditCalls">
           <property name="alignment">
            <set>Qt::AlignCenter</set>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -115,12 +115,12 @@
          <number>1</number>
         </property>
         <item>
-         <widget class="QLabel" name="labelJumps">
-          <property name="text">
-           <string/>
-          </property>
+         <widget class="QLineEdit" name="lineEditJumps">
           <property name="alignment">
            <set>Qt::AlignCenter</set>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -152,12 +152,12 @@
          <number>1</number>
         </property>
         <item>
-         <widget class="QLabel" name="labelRefTo">
-          <property name="text">
-           <string/>
-          </property>
+         <widget class="QLineEdit" name="lineEditRefTo">
           <property name="alignment">
            <set>Qt::AlignCenter</set>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -189,12 +189,12 @@
          <number>1</number>
         </property>
         <item>
-         <widget class="QLabel" name="labelRefFrom">
-          <property name="text">
-           <string/>
-          </property>
+         <widget class="QLineEdit" name="lineEditRefFrom">
           <property name="alignment">
            <set>Qt::AlignCenter</set>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -230,12 +230,12 @@
          <number>1</number>
         </property>
         <item>
-         <widget class="QLabel" name="labelDataLabels">
-          <property name="text">
-           <string/>
-          </property>
+         <widget class="QLineEdit" name="lineEditDataLabels">
           <property name="alignment">
            <set>Qt::AlignCenter</set>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -267,12 +267,12 @@
          <number>1</number>
         </property>
         <item>
-         <widget class="QLabel" name="labelVB">
-          <property name="text">
-           <string/>
-          </property>
+         <widget class="QLineEdit" name="lineEditVB">
           <property name="alignment">
            <set>Qt::AlignCenter</set>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -304,12 +304,12 @@
          <number>1</number>
         </property>
         <item>
-         <widget class="QLabel" name="labelLabelStrings">
-          <property name="text">
-           <string/>
-          </property>
+         <widget class="QLineEdit" name="lineEditStrings">
           <property name="alignment">
            <set>Qt::AlignCenter</set>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -341,12 +341,12 @@
          <number>1</number>
         </property>
         <item>
-         <widget class="QLabel" name="labelPositions">
-          <property name="text">
-           <string/>
-          </property>
+         <widget class="QLineEdit" name="lineEditPositions">
           <property name="alignment">
            <set>Qt::AlignCenter</set>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -378,12 +378,12 @@
          <number>1</number>
         </property>
         <item>
-         <widget class="QLabel" name="labelAddresses">
-          <property name="text">
-           <string/>
-          </property>
+         <widget class="QLineEdit" name="lineEditAddresses">
           <property name="alignment">
            <set>Qt::AlignCenter</set>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
           </property>
          </widget>
         </item>

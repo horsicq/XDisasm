@@ -72,15 +72,15 @@ void DialogDisasmProcess::on_pushButtonCancel_clicked()
 void DialogDisasmProcess::timerSlot()
 {
     // TODO more info
-    ui->labelOpcodes->setText(QString("%1").arg(pDisasm->getStats()->mapRecords.count()));
-    ui->labelCalls->setText(QString("%1").arg(pDisasm->getStats()->stCalls.count()));
-    ui->labelJumps->setText(QString("%1").arg(pDisasm->getStats()->stJumps.count()));
-    ui->labelRefFrom->setText(QString("%1").arg(pDisasm->getStats()->mmapRefFrom.count()));
-    ui->labelRefTo->setText(QString("%1").arg(pDisasm->getStats()->mmapRefTo.count()));
+    ui->lineEditOpcodes->setText(QString("%1").arg(pDisasm->getStats()->mapRecords.count()));
+    ui->lineEditCalls->setText(QString("%1").arg(pDisasm->getStats()->stCalls.count()));
+    ui->lineEditJumps->setText(QString("%1").arg(pDisasm->getStats()->stJumps.count()));
+    ui->lineEditRefFrom->setText(QString("%1").arg(pDisasm->getStats()->mmapRefFrom.count()));
+    ui->lineEditRefTo->setText(QString("%1").arg(pDisasm->getStats()->mmapRefTo.count()));
 
-    ui->labelDataLabels->setText(QString("%1").arg(pDisasm->getStats()->mmapDataLabels.count()));
-    ui->labelVB->setText(QString("%1").arg(pDisasm->getStats()->mapVB.count()));
-    ui->labelLabelStrings->setText(QString("%1").arg(pDisasm->getStats()->mapLabelStrings.count()));
-    ui->labelPositions->setText(QString("%1").arg(pDisasm->getStats()->mapPositions.count()));
-    ui->labelAddresses->setText(QString("%1").arg(pDisasm->getStats()->mapAddresses.count()));
+    ui->lineEditDataLabels->setText(QString("%1").arg(pDisasm->getStats()->mmapDataLabels.count()));
+    ui->lineEditVB->setText(QString("%1").arg(pDisasm->getStats()->mapVB.count()));
+    ui->lineEditStrings->setText(QString("%1").arg(pDisasm->getStats()->mapLabelStrings.count()));
+    ui->lineEditPositions->setText(QString("%1").arg(pDisasm->getStats()->mapPositions.count()));
+    ui->lineEditAddresses->setText(QString("%1").arg(pDisasm->getStats()->mapAddresses.count()));
 }
