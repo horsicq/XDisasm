@@ -29,8 +29,10 @@
 class XDisasm : public QObject
 {
     Q_OBJECT
+
     static const int N_X64_OPCODE_SIZE=15;
     static const int N_OPCODE_COUNT=100000;
+
 public:
     enum DM
     {
