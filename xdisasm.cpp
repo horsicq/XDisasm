@@ -203,7 +203,7 @@ void XDisasm::processDisasm()
             g_pOptions->stats.nOverlaySize=elf.getOverlaySize();
             g_pOptions->stats.nOverlayOffset=elf.getOverlayOffset();
         }
-        else if((fileType==XBinary::FT_MACH32)||(fileType==XBinary::FT_MACH64))
+        else if((fileType==XBinary::FT_MACHO32)||(fileType==XBinary::FT_MACHO64))
         {
             XMACH mach(g_pDevice,g_pOptions->bIsImage,g_pOptions->nImageBase);
 
