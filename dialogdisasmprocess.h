@@ -22,9 +22,9 @@
 #define DIALOGDISASMPROCESS_H
 
 #include <QDialog>
-#include "xdisasm.h"
 #include <QThread>
 #include <QTimer>
+#include "xdisasm.h"
 
 namespace Ui {
 class DialogDisasmProcess;
@@ -48,9 +48,9 @@ signals:
 
 private:
     Ui::DialogDisasmProcess *ui;
-    QThread *pThread;
-    XDisasm *pDisasm;
-    QTimer *pTimer;
+    QThread *g_pThread;
+    XDisasm *g_pDisasm;
+    QTimer *g_pTimer;
 };
 
 #endif // DIALOGDISASMPROCESS_H
