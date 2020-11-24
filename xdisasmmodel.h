@@ -82,14 +82,14 @@ public:
     bool initDisasm();
 
 private:
-    QIODevice *pDevice;
-    XDisasm::STATS *pStats;
-    SHOWOPTIONS *pShowOptions;
+    QIODevice *g_pDevice;
+    XDisasm::STATS *g_pStats;
+    SHOWOPTIONS *g_pShowOptions;
 
-    QQueue<qint64> quRecords;
-    QMap<qint64,VEIW_RECORD> mapRecords;
-    csh disasm_handle;
-    bool bDisasmInit;
+    QQueue<qint64> g_quRecords;
+    QMap<qint64,VEIW_RECORD> g_mapRecords;
+    csh g_disasm_handle;
+    bool g_bDisasmInit;
 };
 
 #endif // XDISASMMODEL_H

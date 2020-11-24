@@ -23,18 +23,18 @@
 XDisasmModel::XDisasmModel(QIODevice *pDevice, XDisasm::STATS *pStats, SHOWOPTIONS *pShowOptions, QObject *pParent)
     : QAbstractTableModel(pParent)
 {
-    this->pDevice=pDevice;
-    this->pStats=pStats;
-    this->pShowOptions=pShowOptions;
+    this->g_pDevice=pDevice;
+    this->g_pStats=pStats;
+    this->g_pShowOptions=pShowOptions;
 
-    bDisasmInit=false;
+    g_bDisasmInit=false;
 }
 
 XDisasmModel::~XDisasmModel()
 {
-    if(bDisasmInit)
+    if(g_bDisasmInit)
     {
-        cs_close(&disasm_handle);
+        cs_close(&g_disasm_handle);
     }
 }
 
@@ -101,21 +101,21 @@ QVariant XDisasmModel::data(const QModelIndex &index, int nRole) const
 
         int nRow=index.row();
 
-        if(_this->quRecords.contains(nRow))
+        if(_this->g_quRecords.contains(nRow))
         {
-            vrRecord=_this->mapRecords.value(nRow);
+            vrRecord=_this->g_mapRecords.value(nRow);
         }
         else
         {
             vrRecord=_this->getViewRecord(nRow);
 
-            _this->quRecords.enqueue(nRow);
-            _this->mapRecords.insert(nRow,vrRecord);
+            _this->g_quRecords.enqueue(nRow);
+            _this->g_mapRecords.insert(nRow,vrRecord);
 
-            if(_this->quRecords.count()>1000) // TODO const
+            if(_this->g_quRecords.count()>1000) // TODO const
             {
-                qint64 _nPos=_this->quRecords.dequeue();
-                _this->mapRecords.remove(_nPos);
+                qint64 _nPos=_this->g_quRecords.dequeue();
+                _this->g_mapRecords.remove(_nPos);
             }
         }
 
@@ -146,7 +146,7 @@ QVariant XDisasmModel::data(const QModelIndex &index, int nRole) const
 
         qint64 nAddress=_this->positionToAddress(nRow);
 
-        result=XBinary::addressToOffset(&(pStats->memoryMap),nAddress);
+        result=XBinary::addressToOffset(&(g_pStats->memoryMap),nAddress);
     }
     else if(nRole==Qt::UserRole+UD_RELADDRESS)
     {
@@ -156,7 +156,7 @@ QVariant XDisasmModel::data(const QModelIndex &index, int nRole) const
 
         qint64 nAddress=_this->positionToAddress(nRow);
 
-        result=XBinary::addressToRelAddress(&(pStats->memoryMap),nAddress);
+        result=XBinary::addressToRelAddress(&(g_pStats->memoryMap),nAddress);
     }
     else if(nRole==Qt::UserRole+UD_SIZE)
     {
@@ -168,9 +168,9 @@ QVariant XDisasmModel::data(const QModelIndex &index, int nRole) const
 
         qint64 nAddress=_this->positionToAddress(nRow);
 
-        if(pStats->mapVB.contains(nAddress))
+        if(g_pStats->mapVB.contains(nAddress))
         {
-            result=pStats->mapVB.value(nAddress).nSize;
+            result=g_pStats->mapVB.value(nAddress).nSize;
         }
     }
 
@@ -183,7 +183,7 @@ XDisasmModel::VEIW_RECORD XDisasmModel::getViewRecord(int nRow)
 
     qint64 nAddress=positionToAddress(nRow);
 
-    qint64 nOffset=XBinary::addressToOffset(&(pStats->memoryMap),nAddress);
+    qint64 nOffset=XBinary::addressToOffset(&(g_pStats->memoryMap),nAddress);
 
     qint64 nSize=1;
 
@@ -202,18 +202,18 @@ XDisasmModel::VEIW_RECORD XDisasmModel::getViewRecord(int nRow)
         result.sOffset=XBinary::valueToHex((quint32)nOffset);
     }
 
-    if(pStats->mapVB.contains(nAddress))
+    if(g_pStats->mapVB.contains(nAddress))
     {
-        nSize=pStats->mapVB.value(nAddress).nSize;
+        nSize=g_pStats->mapVB.value(nAddress).nSize;
     }
 
     QByteArray baData;
 
     if(nOffset!=-1)
     {
-        if(pDevice->seek(nOffset))
+        if(g_pDevice->seek(nOffset))
         {
-            baData=pDevice->read(nSize);
+            baData=g_pDevice->read(nSize);
             result.sBytes=baData.toHex();
         }
     }
@@ -222,57 +222,57 @@ XDisasmModel::VEIW_RECORD XDisasmModel::getViewRecord(int nRow)
         result.sBytes=QString("byte 0x%1 dup(?)").arg(nSize,0,16);
     }
 
-    if(pStats->mapVB.value(nAddress).type==XDisasm::VBT_OPCODE)
+    if(g_pStats->mapVB.value(nAddress).type==XDisasm::VBT_OPCODE)
     {
 //        result.sOpcode=pStats->mapOpcodes.value(nAddress).sString;
-        if(!bDisasmInit)
+        if(!g_bDisasmInit)
         {
-            bDisasmInit=initDisasm();
+            g_bDisasmInit=initDisasm();
         }
 
-        result.sOpcode=XDisasm::getDisasmString(disasm_handle,nAddress,baData.data(),baData.size());
+        result.sOpcode=XDisasm::getDisasmString(g_disasm_handle,nAddress,baData.data(),baData.size());
 
-        if(pShowOptions->bShowLabels)
+        if(g_pShowOptions->bShowLabels)
         {
-            if(pStats->mmapRefTo.contains(nAddress))
+            if(g_pStats->mmapRefTo.contains(nAddress))
             {
-                QList<qint64> listRefs=pStats->mmapRefTo.values(nAddress);
+                QList<qint64> listRefs=g_pStats->mmapRefTo.values(nAddress);
 
                 int nNumberOfRefs=listRefs.count();
 
                 for(int i=0;i<nNumberOfRefs;i++)
                 {
                     QString sAddress=QString("0x%1").arg(listRefs.at(i),0,16);
-                    QString sRString=pStats->mapLabelStrings.value(listRefs.at(i));
+                    QString sRString=g_pStats->mapLabelStrings.value(listRefs.at(i));
                     result.sOpcode=result.sOpcode.replace(sAddress,sRString);
                 }
             }
         }
     }
 
-    result.sLabel=pStats->mapLabelStrings.value(nAddress);
+    result.sLabel=g_pStats->mapLabelStrings.value(nAddress);
 
     return result;
 }
 
 qint64 XDisasmModel::getPositionCount() const
 {
-    return pStats->nPositions;
+    return g_pStats->nPositions;
 }
 
 qint64 XDisasmModel::positionToAddress(qint64 nPosition)
 {
     qint64 nResult=0;
 
-    if(pStats->mapPositions.count())
+    if(g_pStats->mapPositions.count())
     {
-        nResult=pStats->mapPositions.value(nPosition,-1);
+        nResult=g_pStats->mapPositions.value(nPosition,-1);
 
         if(nResult==-1)
         {
-            QMap<qint64,qint64>::const_iterator iter=pStats->mapPositions.lowerBound(nPosition);
+            QMap<qint64,qint64>::const_iterator iter=g_pStats->mapPositions.lowerBound(nPosition);
 
-            if(iter!=pStats->mapPositions.end())
+            if(iter!=g_pStats->mapPositions.end())
             {
                 qint64 nDelta=iter.key()-nPosition;
 
@@ -280,11 +280,11 @@ qint64 XDisasmModel::positionToAddress(qint64 nPosition)
             }
             else
             {
-                qint64 nLastPosition=pStats->mapPositions.lastKey();
+                qint64 nLastPosition=g_pStats->mapPositions.lastKey();
                 qint64 nDelta=nPosition-nLastPosition;
 
-                nResult=pStats->mapPositions.value(nLastPosition);
-                nResult+=pStats->mapVB.value(nResult).nSize;
+                nResult=g_pStats->mapPositions.value(nLastPosition);
+                nResult+=g_pStats->mapVB.value(nResult).nSize;
 
                 if(nDelta>1)
                 {
@@ -301,24 +301,24 @@ qint64 XDisasmModel::addressToPosition(qint64 nAddress)
 {
     qint64 nResult=0;
 
-    if(pStats)
+    if(g_pStats)
     {
-        if(pStats->mapPositions.count())
+        if(g_pStats->mapPositions.count())
         {
-            nResult=pStats->mapAddresses.value(nAddress,-1);
+            nResult=g_pStats->mapAddresses.value(nAddress,-1);
 
             if(nResult==-1)
             {
-                QMap<qint64,qint64>::iterator iter=pStats->mapAddresses.lowerBound(nAddress);
+                QMap<qint64,qint64>::iterator iter=g_pStats->mapAddresses.lowerBound(nAddress);
 
-                if((iter!=pStats->mapAddresses.end())&&(iter!=pStats->mapAddresses.begin()))
+                if((iter!=g_pStats->mapAddresses.end())&&(iter!=g_pStats->mapAddresses.begin()))
                 {
                     iter--;
                     qint64 nPosition=iter.value();
 
-                    qint64 nKeyAddress=pStats->mapAddresses.key(nPosition);
+                    qint64 nKeyAddress=g_pStats->mapAddresses.key(nPosition);
 
-                    XDisasm::VIEW_BLOCK vb=pStats->mapVB.value(nKeyAddress);
+                    XDisasm::VIEW_BLOCK vb=g_pStats->mapVB.value(nKeyAddress);
 
                     if(vb.nSize)
                     {
@@ -332,9 +332,9 @@ qint64 XDisasmModel::addressToPosition(qint64 nAddress)
 
             if(nResult==-1)
             {
-                QMap<qint64,qint64>::const_iterator iterEnd=pStats->mapAddresses.lowerBound(nAddress);
+                QMap<qint64,qint64>::const_iterator iterEnd=g_pStats->mapAddresses.lowerBound(nAddress);
 
-                if(iterEnd!=pStats->mapAddresses.end())
+                if(iterEnd!=g_pStats->mapAddresses.end())
                 {
                     qint64 nKeyAddress=iterEnd.key();
                     qint64 nPosition=iterEnd.value();
@@ -345,11 +345,11 @@ qint64 XDisasmModel::addressToPosition(qint64 nAddress)
                 }
                 else
                 {
-                    qint64 nLastAddress=pStats->mapAddresses.lastKey();
-                    nResult=pStats->mapAddresses.value(nLastAddress);
+                    qint64 nLastAddress=g_pStats->mapAddresses.lastKey();
+                    nResult=g_pStats->mapAddresses.value(nLastAddress);
                     nResult++;
 
-                    qint64 nDelta=nAddress-(nLastAddress+pStats->mapVB.value(nLastAddress).nSize);
+                    qint64 nDelta=nAddress-(nLastAddress+g_pStats->mapVB.value(nLastAddress).nSize);
 
                     if(nDelta>0)
                     {
@@ -372,7 +372,7 @@ qint64 XDisasmModel::offsetToPosition(qint64 nOffset)
 {
     qint64 nResult=0;
 
-    qint64 nAddress=XBinary::offsetToAddress(&(pStats->memoryMap),nOffset);
+    qint64 nAddress=XBinary::offsetToAddress(&(g_pStats->memoryMap),nOffset);
 
     if(nAddress!=-1)
     {
@@ -386,7 +386,7 @@ qint64 XDisasmModel::relAddressToPosition(qint64 nRelAddress)
 {
     qint64 nResult=0;
 
-    qint64 nAddress=XBinary::relAddressToAddress(&(pStats->memoryMap),nRelAddress);
+    qint64 nAddress=XBinary::relAddressToAddress(&(g_pStats->memoryMap),nRelAddress);
 
     if(nAddress!=-1)
     {
@@ -398,7 +398,7 @@ qint64 XDisasmModel::relAddressToPosition(qint64 nRelAddress)
 
 XDisasm::STATS *XDisasmModel::getStats()
 {
-    return pStats;
+    return g_pStats;
 }
 
 void XDisasmModel::_beginResetModel()
@@ -414,18 +414,18 @@ void XDisasmModel::_endResetModel()
 
 void XDisasmModel::resetCache()
 {
-    mapRecords.clear();
-    quRecords.clear();
+    g_mapRecords.clear();
+    g_quRecords.clear();
 }
 
 bool XDisasmModel::initDisasm()
 {
     bool bResult=false;
 
-    cs_err err=cs_open(pStats->csarch,pStats->csmode,&disasm_handle);
+    cs_err err=cs_open(g_pStats->csarch,g_pStats->csmode,&g_disasm_handle);
     if(!err)
     {
-        cs_option(disasm_handle,CS_OPT_DETAIL,CS_OPT_ON); // TODO Check
+        cs_option(g_disasm_handle,CS_OPT_DETAIL,CS_OPT_ON); // TODO Check
     }
 
     return bResult;
