@@ -33,7 +33,7 @@ class DialogDisasm : public QDialog
     Q_OBJECT
 
 public:
-    explicit DialogDisasm(QWidget *pParent, QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShowOptions=0, XDisasm::OPTIONS *pDisasmOptions=0);
+    explicit DialogDisasm(QWidget *pParent,QIODevice *pDevice,XDisasmModel::SHOWOPTIONS *pShowOptions=0,XDisasm::OPTIONS *pDisasmOptions=0);
     ~DialogDisasm();
 
 private slots:

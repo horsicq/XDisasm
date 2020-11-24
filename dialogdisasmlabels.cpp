@@ -27,7 +27,7 @@ DialogDisasmLabels::DialogDisasmLabels(QWidget *pParent, XDisasm::STATS *pDisasm
 {
     ui->setupUi(this);
 
-    this->pDisasmStats=pDisasmStats;
+    this->g_pDisasmStats=pDisasmStats;
     g_nAddress=0;
 
     int nNumberOfLabels=pDisasmStats->mapLabelStrings.count();
