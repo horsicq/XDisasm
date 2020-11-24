@@ -47,17 +47,17 @@ private slots:
     void on_checkBoxUpper_toggled(bool bChecked);
     void on_lineEditWildcard_textChanged(const QString &sText);
     void on_pushButtonCopy_clicked();
-    QString replaceWild(QString sString, qint32 nOffset, qint32 nSize, QChar cWild);
+    QString replaceWild(QString sString, qint32 nOffset,qint32 nSize,QChar cWild);
     void on_spinBoxCount_valueChanged(int nValue);
 
     void on_comboBoxMethod_currentIndexChanged(int nIndex);
 
 private:
     Ui::DialogAsmSignature *ui;
-    QIODevice *pDevice;
-    XDisasmModel *pModel;
-    qint64 nAddress;
-    QList<XDisasm::SIGNATURE_RECORD> listRecords;
+    QIODevice *g_pDevice;
+    XDisasmModel *g_pModel;
+    qint64 g_nAddress;
+    QList<XDisasm::SIGNATURE_RECORD> g_listRecords;
 };
 
 #endif // DIALOGASMSIGNATURE_H

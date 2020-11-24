@@ -27,9 +27,9 @@ DialogAsmSignature::DialogAsmSignature(QWidget *pParent, QIODevice *pDevice, XDi
 {
     ui->setupUi(this);
 
-    this->pDevice=pDevice;
-    this->pModel=pModel;
-    this->nAddress=nAddress;
+    this->g_pDevice=pDevice;
+    this->g_pModel=pModel;
+    this->g_nAddress=nAddress;
 
 //    XOptions::setMonoFont(ui->tableWidgetSignature);
     XOptions::setMonoFont(ui->textEditSignature);
@@ -52,18 +52,18 @@ void DialogAsmSignature::reload()
 {
     XDisasm::SIGNATURE_OPTIONS options={};
 
-    options.csarch=pModel->getStats()->csarch;
-    options.csmode=pModel->getStats()->csmode;
-    options.memoryMap=pModel->getStats()->memoryMap;
-    options.pDevice=pDevice;
+    options.csarch=g_pModel->getStats()->csarch;
+    options.csmode=g_pModel->getStats()->csmode;
+    options.memoryMap=g_pModel->getStats()->memoryMap;
+    options.pDevice=g_pDevice;
     options.nCount=ui->spinBoxCount->value();
     options.sm=(XDisasm::SM)(ui->comboBoxMethod->currentData().toInt());
 
-    listRecords=XDisasm::getSignature(&options,nAddress);
+    g_listRecords=XDisasm::getSignature(&options,g_nAddress);
 
     int nSymbolWidth=XLineEditHEX::getSymbolWidth(ui->tableWidgetSignature);
 
-    int nNumberOfRecords=listRecords.count();
+    int nNumberOfRecords=g_listRecords.count();
 
     ui->tableWidgetSignature->clear();
 
@@ -81,19 +81,19 @@ void DialogAsmSignature::reload()
 
     for(int i=0;i<nNumberOfRecords;i++)
     {
-        ui->tableWidgetSignature->setItem(i,0,new QTableWidgetItem(XBinary::valueToHex(pModel->getStats()->memoryMap.mode,listRecords.at(i).nAddress)));
-        ui->tableWidgetSignature->setItem(i,1,new QTableWidgetItem(listRecords.at(i).baOpcode.toHex().data()));
+        ui->tableWidgetSignature->setItem(i,0,new QTableWidgetItem(XBinary::valueToHex(g_pModel->getStats()->memoryMap.mode,g_listRecords.at(i).nAddress)));
+        ui->tableWidgetSignature->setItem(i,1,new QTableWidgetItem(g_listRecords.at(i).baOpcode.toHex().data()));
 
-        if(!listRecords.at(i).bIsConst)
+        if(!g_listRecords.at(i).bIsConst)
         {
             QPushButton *pUseSignatureButton=new QPushButton(this);
-            pUseSignatureButton->setText(listRecords.at(i).sOpcode);
+            pUseSignatureButton->setText(g_listRecords.at(i).sOpcode);
             pUseSignatureButton->setCheckable(true);
             connect(pUseSignatureButton,SIGNAL(clicked()),this,SLOT(reloadSignature()));
 
             ui->tableWidgetSignature->setCellWidget(i,2,pUseSignatureButton);
 
-            if(listRecords.at(i).nDispSize)
+            if(g_listRecords.at(i).nDispSize)
             {
                 QPushButton *pDispButton=new QPushButton(this);
                 pDispButton->setText(QString("d"));
@@ -104,7 +104,7 @@ void DialogAsmSignature::reload()
                 ui->tableWidgetSignature->setCellWidget(i,3,pDispButton);
             }
 
-            if(listRecords.at(i).nImmSize)
+            if(g_listRecords.at(i).nImmSize)
             {
                 QPushButton *pImmButton=new QPushButton(this);
                 pImmButton->setText(QString("i"));
@@ -117,7 +117,7 @@ void DialogAsmSignature::reload()
         }
         else
         {
-            ui->tableWidgetSignature->setItem(i,2,new QTableWidgetItem(listRecords.at(i).sOpcode));
+            ui->tableWidgetSignature->setItem(i,2,new QTableWidgetItem(g_listRecords.at(i).sOpcode));
         }
     }
 
@@ -148,7 +148,7 @@ void DialogAsmSignature::reloadSignature()
         cWild=_sWild.at(0);
     }
 
-    int nNumberOfRecords=listRecords.count();
+    int nNumberOfRecords=g_listRecords.count();
 
     for(int i=0;i<nNumberOfRecords;i++)
     {
@@ -177,27 +177,27 @@ void DialogAsmSignature::reloadSignature()
             bImm=!(pImmButton->isChecked());
         }
 
-        int nSize=listRecords.at(i).baOpcode.size();
+        int nSize=g_listRecords.at(i).baOpcode.size();
 
         QString sRecord;
 
         if(bUse)
         {
-            sRecord=listRecords.at(i).baOpcode.toHex().data();
+            sRecord=g_listRecords.at(i).baOpcode.toHex().data();
 
             if(!bDisp)
             {
-                sRecord=replaceWild(sRecord,listRecords.at(i).nDispOffset,listRecords.at(i).nDispSize,cWild);
+                sRecord=replaceWild(sRecord,g_listRecords.at(i).nDispOffset,g_listRecords.at(i).nDispSize,cWild);
             }
 
             if(!bImm)
             {
-                sRecord=replaceWild(sRecord,listRecords.at(i).nImmOffset,listRecords.at(i).nImmSize,cWild);
+                sRecord=replaceWild(sRecord,g_listRecords.at(i).nImmOffset,g_listRecords.at(i).nImmSize,cWild);
             }
 
-            if(listRecords.at(i).bIsConst)
+            if(g_listRecords.at(i).bIsConst)
             {
-                sRecord=replaceWild(sRecord,listRecords.at(i).nImmOffset,listRecords.at(i).nImmSize,QChar('$'));
+                sRecord=replaceWild(sRecord,g_listRecords.at(i).nImmOffset,g_listRecords.at(i).nImmSize,QChar('$'));
             }
         }
         else
