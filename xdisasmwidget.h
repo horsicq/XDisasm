@@ -70,7 +70,7 @@ public:
     void hex(qint64 nOffset);
     void clear();
     ~XDisasmWidget();
-    void process(QIODevice *pDevice, XDisasm::OPTIONS *pOptions, qint64 nStartAddress, XDisasm::DM dm);
+    void process(QIODevice *pDevice,XDisasm::OPTIONS *pOptions,qint64 nStartAddress,XDisasm::DM dm);
     XDisasm::STATS *getDisasmStats();
     void setBackupFileName(QString sBackupFileName);
 
@@ -99,13 +99,13 @@ private slots:
 
 private:
     Ui::XDisasmWidget *ui;
-    QIODevice *pDevice;
-    XDisasmModel::SHOWOPTIONS *pShowOptions;
-    XDisasm::OPTIONS *pDisasmOptions;
-    XDisasmModel *pModel;
-    XDisasmModel::SHOWOPTIONS __showOptions;
-    XDisasm::OPTIONS __disasmOptions;
-    QString sBackupFileName; // TODO save backup
+    QIODevice *g_pDevice;
+    XDisasmModel::SHOWOPTIONS *g_pShowOptions;
+    XDisasm::OPTIONS *g_pDisasmOptions;
+    XDisasmModel *g_pModel;
+    XDisasmModel::SHOWOPTIONS g_showOptions;
+    XDisasm::OPTIONS g_disasmOptions;
+    QString g_sBackupFileName; // TODO save backup
 };
 
 #endif // FORMDISASM_H

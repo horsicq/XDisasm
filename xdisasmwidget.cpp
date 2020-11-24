@@ -42,34 +42,34 @@ XDisasmWidget::XDisasmWidget(QWidget *pParent) :
     new QShortcut(QKeySequence(XShortcuts::COPYRELADDRESS), this,SLOT(_copyRelAddress()));
     new QShortcut(QKeySequence(XShortcuts::HEX),            this,SLOT(_hex()));
 
-    pShowOptions=0;
-    pDisasmOptions=0;
-    pModel=0;
+    g_pShowOptions=0;
+    g_pDisasmOptions=0;
+    g_pModel=0;
 
-    __showOptions={};
-    __disasmOptions={};
+    g_showOptions={};
+    g_disasmOptions={};
 }
 
 void XDisasmWidget::setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShowOptions, XDisasm::OPTIONS *pDisasmOptions, bool bAuto)
 {
-    this->pDevice=pDevice;
+    this->g_pDevice=pDevice;
 
     if(pShowOptions)
     {
-        this->pShowOptions=pShowOptions;
+        this->g_pShowOptions=pShowOptions;
     }
     else
     {
-        this->pShowOptions=&__showOptions;
+        this->g_pShowOptions=&g_showOptions;
     }
 
     if(pDisasmOptions)
     {
-        this->pDisasmOptions=pDisasmOptions;
+        this->g_pDisasmOptions=pDisasmOptions;
     }
     else
     {
-        this->pDisasmOptions=&__disasmOptions;
+        this->g_pDisasmOptions=&g_disasmOptions;
     }
 
     QSet<XBinary::FT> stFileType=XBinary::getFileTypes(pDevice);
@@ -122,21 +122,21 @@ void XDisasmWidget::setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShow
 
 void XDisasmWidget::analyze()
 {
-    if(pDisasmOptions&&pShowOptions)
+    if(g_pDisasmOptions&&g_pShowOptions)
     {
         XBinary::FT fileType=(XBinary::FT)ui->comboBoxType->currentData().toInt();
-        pDisasmOptions->fileType=fileType;
+        g_pDisasmOptions->fileType=fileType;
 
-        pDisasmOptions->stats={};
+        g_pDisasmOptions->stats={};
 
         QItemSelectionModel *modelOld=ui->tableViewDisasm->selectionModel();
         ui->tableViewDisasm->setModel(0);
 
-        process(pDevice,pDisasmOptions,-1,XDisasm::DM_DISASM);
+        process(g_pDevice,g_pDisasmOptions,-1,XDisasm::DM_DISASM);
 
-        pModel=new XDisasmModel(pDevice,&(pDisasmOptions->stats),pShowOptions,this);
+        g_pModel=new XDisasmModel(g_pDevice,&(g_pDisasmOptions->stats),g_pShowOptions,this);
 
-        ui->tableViewDisasm->setModel(pModel);
+        ui->tableViewDisasm->setModel(g_pModel);
         delete modelOld;
 
         int nSymbolWidth=XLineEditHEX::getSymbolWidth(this);
@@ -154,17 +154,17 @@ void XDisasmWidget::analyze()
         ui->tableViewDisasm->horizontalHeader()->setSectionResizeMode(3,QHeaderView::Interactive);
         ui->tableViewDisasm->horizontalHeader()->setSectionResizeMode(4,QHeaderView::Stretch);
 
-        ui->pushButtonOverlay->setEnabled(pDisasmOptions->stats.bIsOverlayPresent);
+        ui->pushButtonOverlay->setEnabled(g_pDisasmOptions->stats.bIsOverlayPresent);
 
-        goToAddress(pDisasmOptions->stats.nEntryPointAddress);
+        goToAddress(g_pDisasmOptions->stats.nEntryPointAddress);
     }
 }
 
 void XDisasmWidget::goToAddress(qint64 nAddress)
 {
-    if(pModel)
+    if(g_pModel)
     {
-        qint64 nPosition=pModel->addressToPosition(nAddress);
+        qint64 nPosition=g_pModel->addressToPosition(nAddress);
 
         _goToPosition(nPosition);
     }
@@ -172,9 +172,9 @@ void XDisasmWidget::goToAddress(qint64 nAddress)
 
 void XDisasmWidget::goToOffset(qint64 nOffset)
 {
-    if(pModel)
+    if(g_pModel)
     {
-        qint64 nPosition=pModel->offsetToPosition(nOffset);
+        qint64 nPosition=g_pModel->offsetToPosition(nOffset);
 
         _goToPosition(nPosition);
     }
@@ -182,9 +182,9 @@ void XDisasmWidget::goToOffset(qint64 nOffset)
 
 void XDisasmWidget::goToRelAddress(qint64 nRelAddress)
 {
-    if(pModel)
+    if(g_pModel)
     {
-        qint64 nPosition=pModel->relAddressToPosition(nRelAddress);
+        qint64 nPosition=g_pModel->relAddressToPosition(nRelAddress);
 
         _goToPosition(nPosition);
     }
@@ -192,9 +192,9 @@ void XDisasmWidget::goToRelAddress(qint64 nRelAddress)
 
 void XDisasmWidget::goToDisasmAddress(qint64 nAddress)
 {
-    if(!pDisasmOptions->stats.bInit)
+    if(!g_pDisasmOptions->stats.bInit)
     {
-        process(pDevice,pDisasmOptions,nAddress,XDisasm::DM_DISASM);
+        process(g_pDevice,g_pDisasmOptions,nAddress,XDisasm::DM_DISASM);
     }
 
     goToAddress(nAddress);
@@ -202,43 +202,43 @@ void XDisasmWidget::goToDisasmAddress(qint64 nAddress)
 
 void XDisasmWidget::goToEntryPoint()
 {
-    if(!pDisasmOptions->stats.bInit)
+    if(!g_pDisasmOptions->stats.bInit)
     {
-        process(pDevice,pDisasmOptions,-1,XDisasm::DM_DISASM);
+        process(g_pDevice,g_pDisasmOptions,-1,XDisasm::DM_DISASM);
     }
 
-    goToAddress(pDisasmOptions->stats.nEntryPointAddress);
+    goToAddress(g_pDisasmOptions->stats.nEntryPointAddress);
 }
 
 void XDisasmWidget::disasm(qint64 nAddress)
 {
-    process(pDevice,pDisasmOptions,nAddress,XDisasm::DM_DISASM);
+    process(g_pDevice,g_pDisasmOptions,nAddress,XDisasm::DM_DISASM);
 
     goToAddress(nAddress);
 }
 
 void XDisasmWidget::toData(qint64 nAddress, qint64 nSize)
 {
-    process(pDevice,pDisasmOptions,nAddress,XDisasm::DM_TODATA);
+    process(g_pDevice,g_pDisasmOptions,nAddress,XDisasm::DM_TODATA);
 
     goToAddress(nAddress);
 }
 
 void XDisasmWidget::signature(qint64 nAddress, qint64 nSize)
 {
-    if(pDisasmOptions->stats.mapRecords.value(nAddress).type==XDisasm::RECORD_TYPE_OPCODE)
+    if(g_pDisasmOptions->stats.mapRecords.value(nAddress).type==XDisasm::RECORD_TYPE_OPCODE)
     {
-        DialogAsmSignature ds(this,pDevice,pModel,nAddress);
+        DialogAsmSignature ds(this,g_pDevice,g_pModel,nAddress);
 
         ds.exec();
     }
     else
     {
-        qint64 nOffset=XBinary::addressToOffset(&(pDisasmOptions->stats.memoryMap),nAddress);
+        qint64 nOffset=XBinary::addressToOffset(&(g_pDisasmOptions->stats.memoryMap),nAddress);
 
         if(nOffset!=-1)
         {
-            DialogHexSignature dhs(this,pDevice,nOffset,nSize);
+            DialogHexSignature dhs(this,g_pDevice,nOffset,nSize);
 
             dhs.exec();
         }
@@ -249,15 +249,15 @@ void XDisasmWidget::hex(qint64 nOffset)
 {
     QHexView::OPTIONS hexOptions={};
 
-    XBinary binary(pDevice);
+    XBinary binary(g_pDevice);
 
     hexOptions.memoryMap=binary.getMemoryMap();
-    hexOptions.sBackupFileName=sBackupFileName;
+    hexOptions.sBackupFileName=g_sBackupFileName;
     hexOptions.nStartAddress=nOffset;
     hexOptions.nStartSelectionAddress=nOffset;
     hexOptions.nSizeOfSelection=1;
 
-    DialogHex dialogHex(this,pDevice,&hexOptions);
+    DialogHex dialogHex(this,g_pDevice,&hexOptions);
 
     connect(&dialogHex,SIGNAL(editState(bool)),this,SLOT(setEdited(bool)));
 
@@ -283,9 +283,9 @@ void XDisasmWidget::process(QIODevice *pDevice,XDisasm::OPTIONS *pOptions, qint6
     ddp.setData(pDevice,pOptions,nStartAddress,dm);
     ddp.exec();
 
-    if(pModel)
+    if(g_pModel)
     {
-        pModel->resetCache();
+        g_pModel->resetCache();
     }
 
 //    if(pModel)
@@ -305,19 +305,19 @@ void XDisasmWidget::process(QIODevice *pDevice,XDisasm::OPTIONS *pOptions, qint6
 
 XDisasm::STATS *XDisasmWidget::getDisasmStats()
 {
-    return &(pDisasmOptions->stats);
+    return &(g_pDisasmOptions->stats);
 }
 
 void XDisasmWidget::setBackupFileName(QString sBackupFileName)
 {
-    this->sBackupFileName=sBackupFileName;
+    this->g_sBackupFileName=sBackupFileName;
 }
 
 void XDisasmWidget::on_pushButtonLabels_clicked()
 {
-    if(pModel)
+    if(g_pModel)
     {
-        DialogDisasmLabels dialogDisasmLabels(this,pModel->getStats());
+        DialogDisasmLabels dialogDisasmLabels(this,g_pModel->getStats());
 
         if(dialogDisasmLabels.exec()==QDialog::Accepted)
         {
@@ -328,7 +328,7 @@ void XDisasmWidget::on_pushButtonLabels_clicked()
 
 void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &pos)
 {
-    if(pModel)
+    if(g_pModel)
     {
         SELECTION_STAT selectionStat=getSelectionStat();
 
@@ -402,7 +402,7 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
         contextMenu.addAction(&actionHex);
         contextMenu.addAction(&actionSignature);
 
-        if((selectionStat.nSize)&&XBinary::isSolidAddressRange(&(pModel->getStats()->memoryMap),selectionStat.nAddress,selectionStat.nSize))
+        if((selectionStat.nSize)&&XBinary::isSolidAddressRange(&(g_pModel->getStats()->memoryMap),selectionStat.nAddress,selectionStat.nSize))
         {
             contextMenu.addAction(&actionDump);
         }
@@ -424,9 +424,9 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
 
 void XDisasmWidget::_goToAddress()
 {
-    if(pModel)
+    if(g_pModel)
     {
-        DialogGoToAddress da(this,&(pModel->getStats()->memoryMap),DialogGoToAddress::TYPE_ADDRESS);
+        DialogGoToAddress da(this,&(g_pModel->getStats()->memoryMap),DialogGoToAddress::TYPE_ADDRESS);
         if(da.exec()==QDialog::Accepted)
         {
             goToAddress(da.getValue());
@@ -436,9 +436,9 @@ void XDisasmWidget::_goToAddress()
 
 void XDisasmWidget::_goToRelAddress()
 {
-    if(pModel)
+    if(g_pModel)
     {
-        DialogGoToAddress da(this,&(pModel->getStats()->memoryMap),DialogGoToAddress::TYPE_REL_ADDRESS);
+        DialogGoToAddress da(this,&(g_pModel->getStats()->memoryMap),DialogGoToAddress::TYPE_REL_ADDRESS);
         if(da.exec()==QDialog::Accepted)
         {
             goToRelAddress(da.getValue());
@@ -448,9 +448,9 @@ void XDisasmWidget::_goToRelAddress()
 
 void XDisasmWidget::_goToOffset()
 {
-    if(pModel)
+    if(g_pModel)
     {
-        DialogGoToAddress da(this,&(pModel->getStats()->memoryMap),DialogGoToAddress::TYPE_OFFSET);
+        DialogGoToAddress da(this,&(g_pModel->getStats()->memoryMap),DialogGoToAddress::TYPE_OFFSET);
         if(da.exec()==QDialog::Accepted)
         {
             goToOffset(da.getValue());
@@ -465,7 +465,7 @@ void XDisasmWidget::_goToEntryPoint()
 
 void XDisasmWidget::_copyAddress()
 {
-    if(pModel)
+    if(g_pModel)
     {
         SELECTION_STAT selectionStat=getSelectionStat();
 
@@ -478,7 +478,7 @@ void XDisasmWidget::_copyAddress()
 
 void XDisasmWidget::_copyOffset()
 {
-    if(pModel)
+    if(g_pModel)
     {
         SELECTION_STAT selectionStat=getSelectionStat();
 
@@ -491,7 +491,7 @@ void XDisasmWidget::_copyOffset()
 
 void XDisasmWidget::_copyRelAddress()
 {
-    if(pModel)
+    if(g_pModel)
     {
         SELECTION_STAT selectionStat=getSelectionStat();
 
@@ -504,7 +504,7 @@ void XDisasmWidget::_copyRelAddress()
 
 void XDisasmWidget::_dumpToFile()
 {
-    if(pModel)
+    if(g_pModel)
     {
         SELECTION_STAT selectionStat=getSelectionStat();
 
@@ -515,11 +515,11 @@ void XDisasmWidget::_dumpToFile()
             QString sSaveFileName="Result"; // TODO default directory / TODO getDumpName
             QString sFileName=QFileDialog::getSaveFileName(this,tr("Save dump"),sSaveFileName,sFilter);
 
-            qint64 nOffset=XBinary::addressToOffset(&(pModel->getStats()->memoryMap),selectionStat.nAddress);
+            qint64 nOffset=XBinary::addressToOffset(&(g_pModel->getStats()->memoryMap),selectionStat.nAddress);
 
             if(!sFileName.isEmpty())
             {
-                DialogDumpProcess dd(this,pDevice,nOffset,selectionStat.nSize,sFileName,DumpProcess::DT_OFFSET);
+                DialogDumpProcess dd(this,g_pDevice,nOffset,selectionStat.nSize,sFileName,DumpProcess::DT_OFFSET);
 
                 dd.exec();
             }
@@ -529,7 +529,7 @@ void XDisasmWidget::_dumpToFile()
 
 void XDisasmWidget::_disasm()
 {
-    if(pModel)
+    if(g_pModel)
     {
         SELECTION_STAT selectionStat=getSelectionStat();
 
@@ -542,7 +542,7 @@ void XDisasmWidget::_disasm()
 
 void XDisasmWidget::_toData()
 {
-    if(pModel)
+    if(g_pModel)
     {
         SELECTION_STAT selectionStat=getSelectionStat();
 
@@ -555,7 +555,7 @@ void XDisasmWidget::_toData()
 
 void XDisasmWidget::_signature()
 {
-    if(pModel)
+    if(g_pModel)
     {
         SELECTION_STAT selectionStat=getSelectionStat();
 
@@ -568,7 +568,7 @@ void XDisasmWidget::_signature()
 
 void XDisasmWidget::_hex()
 {
-    if(pModel)
+    if(g_pModel)
     {
         SELECTION_STAT selectionStat=getSelectionStat();
 
@@ -619,7 +619,7 @@ void XDisasmWidget::_goToPosition(qint32 nPosition)
 
 void XDisasmWidget::on_pushButtonOverlay_clicked()
 {
-    hex(pDisasmOptions->stats.nOverlayOffset);
+    hex(g_pDisasmOptions->stats.nOverlayOffset);
 }
 
 void XDisasmWidget::setEdited(bool bState)
