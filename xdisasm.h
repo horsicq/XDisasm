@@ -21,10 +21,8 @@
 #ifndef XDISASM_H
 #define XDISASM_H
 
-#include <QObject>
 #include "xformats.h"
 #include "capstone/capstone.h"
-
 
 class XDisasm : public QObject
 {
