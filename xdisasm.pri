@@ -58,7 +58,7 @@ FORMS += \
 
 !contains(XCONFIG, qhexview) {
     XCONFIG += qhexview
-    include($$PWD/../QhexView/qhexview.pri)
+    include($$PWD/../QHexView/qhexview.pri)
 }
 
 !contains(XCONFIG, xoptions) {
