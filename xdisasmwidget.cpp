@@ -36,7 +36,7 @@ XDisasmWidget::XDisasmWidget(QWidget *pParent) :
     new QShortcut(QKeySequence(XShortcuts::DUMPTOFILE),     this,SLOT(_dumpToFile()));
     new QShortcut(QKeySequence(XShortcuts::DISASM),         this,SLOT(_disasm()));
     new QShortcut(QKeySequence(XShortcuts::TODATA),         this,SLOT(_toData()));
-    new QShortcut(QKeySequence(XShortcuts::SIGNATURE),      this,SLOT(_signature()));
+    new QShortcut(QKeySequence(XShortcuts::HEXSIGNATURE),   this,SLOT(_signature()));
     new QShortcut(QKeySequence(XShortcuts::COPYADDRESS),    this,SLOT(_copyAddress()));
     new QShortcut(QKeySequence(XShortcuts::COPYOFFSET),     this,SLOT(_copyOffset()));
     new QShortcut(QKeySequence(XShortcuts::COPYRELADDRESS), this,SLOT(_copyRelAddress()));
@@ -354,7 +354,7 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
         connect(&actionHex,SIGNAL(triggered()),this,SLOT(_hex()));
 
         QAction actionSignature(tr("Signature"),this);
-        actionSignature.setShortcut(QKeySequence(XShortcuts::SIGNATURE));
+        actionSignature.setShortcut(QKeySequence(XShortcuts::HEXSIGNATURE));
         connect(&actionSignature,SIGNAL(triggered()),this,SLOT(_signature()));
 
         QAction actionDump(tr("Dump to file"),this);
