@@ -7,8 +7,8 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -23,31 +23,31 @@
 
 #include <QDialog>
 #include <QStandardItemModel>
+
 #include "xdisasm.h"
 
 namespace Ui {
 class DialogDisasmLabels;
 }
 
-class DialogDisasmLabels : public QDialog
-{
+class DialogDisasmLabels : public QDialog {
     Q_OBJECT
 
-public:
-    explicit DialogDisasmLabels(QWidget *pParent,XDisasm::STATS *pDisasmStats);
+   public:
+    explicit DialogDisasmLabels(QWidget *pParent, XDisasm::STATS *pDisasmStats);
     ~DialogDisasmLabels();
     qint64 getAddress();
 
-private slots:
+   private slots:
     void on_pushButtonClose_clicked();
     void on_pushButtonGoTo_clicked();
     void on_tableViewLabels_doubleClicked(const QModelIndex &index);
     void goTo();
 
-private:
+   private:
     Ui::DialogDisasmLabels *ui;
     XDisasm::STATS *g_pDisasmStats;
     qint64 g_nAddress;
 };
 
-#endif // DIALOGDISASMLABELS_H
+#endif  // DIALOGDISASMLABELS_H

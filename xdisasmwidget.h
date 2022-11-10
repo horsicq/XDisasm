@@ -7,8 +7,8 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -21,33 +21,32 @@
 #ifndef FORMDISASM_H
 #define FORMDISASM_H
 
-#include <QWidget>
+#include <QClipboard>
+#include <QMenu>
 #include <QScrollBar>
 #include <QThread>
-#include <QMenu>
-#include <QClipboard>
-#include "xdisasmmodel.h"
+#include <QWidget>
+
+#include "dialogasmsignature.h"
 #include "dialogdisasmlabels.h"
-#include "xshortcuts.h"
-#include "dialoggotoaddress.h"
 #include "dialogdisasmprocess.h"
 #include "dialogdumpprocess.h"
-#include "xlineedithex.h"
-#include "dialoghexsignature.h"
-#include "dialogasmsignature.h"
+#include "dialoggotoaddress.h"
 #include "dialoghex.h"
+#include "dialoghexsignature.h"
+#include "xdisasmmodel.h"
+#include "xlineedithex.h"
 #include "xoptions.h"
+#include "xshortcuts.h"
 
 namespace Ui {
 class XDisasmWidget;
 }
 
-class XDisasmWidget : public QWidget
-{
+class XDisasmWidget : public QWidget {
     Q_OBJECT
 
-    struct SELECTION_STAT
-    {
+    struct SELECTION_STAT {
         qint64 nAddress;
         qint64 nOffset;
         qint64 nRelAddress;
@@ -55,9 +54,11 @@ class XDisasmWidget : public QWidget
         qint32 nCount;
     };
 
-public:
-    explicit XDisasmWidget(QWidget *pParent=nullptr);
-    void setData(QIODevice *pDevice,XDisasmModel::SHOWOPTIONS *pShowOptions=0,XDisasm::OPTIONS *pDisasmOptions=0,bool bAuto=true);
+   public:
+    explicit XDisasmWidget(QWidget *pParent = nullptr);
+    void setData(QIODevice *pDevice,
+                 XDisasmModel::SHOWOPTIONS *pShowOptions = 0,
+                 XDisasm::OPTIONS *pDisasmOptions = 0, bool bAuto = true);
     void analyze();
     void goToAddress(qint64 nAddress);
     void goToOffset(qint64 nOffset);
@@ -65,16 +66,17 @@ public:
     void goToDisasmAddress(qint64 nAddress);
     void goToEntryPoint();
     void disasm(qint64 nAddress);
-    void toData(qint64 nAddress,qint64 nSize);
-    void signature(qint64 nAddress,qint64 nSize);
+    void toData(qint64 nAddress, qint64 nSize);
+    void signature(qint64 nAddress, qint64 nSize);
     void hex(qint64 nOffset);
     void clear();
     ~XDisasmWidget();
-    void process(QIODevice *pDevice,XDisasm::OPTIONS *pOptions,qint64 nStartAddress,XDisasm::DM dm);
+    void process(QIODevice *pDevice, XDisasm::OPTIONS *pOptions,
+                 qint64 nStartAddress, XDisasm::DM dm);
     XDisasm::STATS *getDisasmStats();
     void setBackupFileName(QString sBackupFileName);
 
-private slots:
+   private slots:
     void on_pushButtonLabels_clicked();
     void on_tableViewDisasm_customContextMenuRequested(const QPoint &pos);
     void _goToAddress();
@@ -97,7 +99,7 @@ private slots:
     void on_pushButtonHex_clicked();
     void errorMessage(QString sText);
 
-private:
+   private:
     Ui::XDisasmWidget *ui;
     QIODevice *g_pDevice;
     XDisasmModel::SHOWOPTIONS *g_pShowOptions;
@@ -105,7 +107,7 @@ private:
     XDisasmModel *g_pModel;
     XDisasmModel::SHOWOPTIONS g_showOptions;
     XDisasm::OPTIONS g_disasmOptions;
-    QString g_sBackupFileName; // TODO save backup
+    QString g_sBackupFileName;  // TODO save backup
 };
 
-#endif // FORMDISASM_H
+#endif  // FORMDISASM_H

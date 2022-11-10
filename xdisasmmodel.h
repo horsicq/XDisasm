@@ -7,8 +7,8 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -23,32 +23,24 @@
 
 #include <QAbstractTableModel>
 #include <QQueue>
+
 #include "xdisasm.h"
 
-class XDisasmModel : public QAbstractTableModel
-{
+class XDisasmModel : public QAbstractTableModel {
     Q_OBJECT
 
-public:
-    enum UD
-    {
-        UD_ADDRESS=0,
-        UD_OFFSET,
-        UD_RELADDRESS,
-        UD_SIZE
-    };
+   public:
+    enum UD { UD_ADDRESS = 0, UD_OFFSET, UD_RELADDRESS, UD_SIZE };
 
-    enum DMCOLUMN
-    {
-        DMCOLUMN_ADDRESS=0,
+    enum DMCOLUMN {
+        DMCOLUMN_ADDRESS = 0,
         DMCOLUMN_OFFSET,
         DMCOLUMN_LABEL,
         DMCOLUMN_BYTES,
         DMCOLUMN_OPCODE
     };
 
-    struct VEIW_RECORD
-    {
+    struct VEIW_RECORD {
         QString sAddress;
         QString sOffset;
         QString sLabel;
@@ -56,19 +48,21 @@ public:
         QString sOpcode;
     };
 
-    struct SHOWOPTIONS
-    {
+    struct SHOWOPTIONS {
         bool bShowLabels;
     };
 
-    explicit XDisasmModel(QIODevice *pDevice,XDisasm::STATS *pStats,SHOWOPTIONS *pShowOptions,QObject *pParent);
+    explicit XDisasmModel(QIODevice *pDevice, XDisasm::STATS *pStats,
+                          SHOWOPTIONS *pShowOptions, QObject *pParent);
     ~XDisasmModel();
     // Header:
-    QVariant headerData(int section,Qt::Orientation orientation,int nRole=Qt::DisplayRole) const override;
+    QVariant headerData(int section, Qt::Orientation orientation,
+                        int nRole = Qt::DisplayRole) const override;
     // Basic functionality:
-    int rowCount(const QModelIndex &parent=QModelIndex()) const override;
-    int columnCount(const QModelIndex &parent=QModelIndex()) const override;
-    QVariant data(const QModelIndex &index,int nRole=Qt::DisplayRole) const override;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    QVariant data(const QModelIndex &index,
+                  int nRole = Qt::DisplayRole) const override;
     VEIW_RECORD getViewRecord(int nRow);
     qint64 getPositionCount() const;
     qint64 positionToAddress(qint64 nPosition);
@@ -81,15 +75,15 @@ public:
     void resetCache();
     bool initDisasm();
 
-private:
+   private:
     QIODevice *g_pDevice;
     XDisasm::STATS *g_pStats;
     SHOWOPTIONS *g_pShowOptions;
 
     QQueue<qint64> g_quRecords;
-    QMap<qint64,VEIW_RECORD> g_mapRecords;
+    QMap<qint64, VEIW_RECORD> g_mapRecords;
     csh g_disasm_handle;
     bool g_bDisasmInit;
 };
 
-#endif // XDISASMMODEL_H
+#endif  // XDISASMMODEL_H

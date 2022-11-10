@@ -7,8 +7,8 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -24,33 +24,34 @@
 #include <QDialog>
 #include <QThread>
 #include <QTimer>
+
 #include "xdisasm.h"
 
 namespace Ui {
 class DialogDisasmProcess;
 }
 
-class DialogDisasmProcess : public QDialog
-{
+class DialogDisasmProcess : public QDialog {
     Q_OBJECT
 
-public:
-    explicit DialogDisasmProcess(QWidget *pParent=nullptr);
+   public:
+    explicit DialogDisasmProcess(QWidget *pParent = nullptr);
     ~DialogDisasmProcess();
-    void setData(QIODevice *pDevice, XDisasm::OPTIONS *pOptions, qint64 nStartAddress, XDisasm::DM dm);
+    void setData(QIODevice *pDevice, XDisasm::OPTIONS *pOptions,
+                 qint64 nStartAddress, XDisasm::DM dm);
 
-private slots:
+   private slots:
     void on_pushButtonCancel_clicked();
     void timerSlot();
 
-signals:
+   signals:
     void errorMessage(QString sText);
 
-private:
+   private:
     Ui::DialogDisasmProcess *ui;
     QThread *g_pThread;
     XDisasm *g_pDisasm;
     QTimer *g_pTimer;
 };
 
-#endif // DIALOGDISASMPROCESS_H
+#endif  // DIALOGDISASMPROCESS_H

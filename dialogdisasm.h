@@ -7,8 +7,8 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -22,25 +22,27 @@
 #define DIALOGDISASM_H
 
 #include <QDialog>
+
 #include "xdisasmwidget.h"
 
 namespace Ui {
 class DialogDisasm;
 }
 
-class DialogDisasm : public QDialog
-{
+class DialogDisasm : public QDialog {
     Q_OBJECT
 
-public:
-    explicit DialogDisasm(QWidget *pParent,QIODevice *pDevice,XDisasmModel::SHOWOPTIONS *pShowOptions=0,XDisasm::OPTIONS *pDisasmOptions=0);
+   public:
+    explicit DialogDisasm(QWidget *pParent, QIODevice *pDevice,
+                          XDisasmModel::SHOWOPTIONS *pShowOptions = 0,
+                          XDisasm::OPTIONS *pDisasmOptions = 0);
     ~DialogDisasm();
 
-private slots:
+   private slots:
     void on_pushButtonClose_clicked();
 
-private:
+   private:
     Ui::DialogDisasm *ui;
 };
 
-#endif // DIALOGDISASM_H
+#endif  // DIALOGDISASM_H

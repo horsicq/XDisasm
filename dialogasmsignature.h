@@ -7,8 +7,8 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -21,8 +21,9 @@
 #ifndef DIALOGASMSIGNATURE_H
 #define DIALOGASMSIGNATURE_H
 
-#include <QDialog>
 #include <QClipboard>
+#include <QDialog>
+
 #include "xdisasmmodel.h"
 #include "xlineedithex.h"
 #include "xoptions.h"
@@ -31,28 +32,29 @@ namespace Ui {
 class DialogAsmSignature;
 }
 
-class DialogAsmSignature : public QDialog
-{
+class DialogAsmSignature : public QDialog {
     Q_OBJECT
 
-public:
-    explicit DialogAsmSignature(QWidget *pParent,QIODevice *pDevice,XDisasmModel *pModel,qint64 nAddress);
+   public:
+    explicit DialogAsmSignature(QWidget *pParent, QIODevice *pDevice,
+                                XDisasmModel *pModel, qint64 nAddress);
     ~DialogAsmSignature();
     void reload();
 
-private slots:
+   private slots:
     void on_pushButtonOK_clicked();
     void reloadSignature();
     void on_checkBoxSpaces_toggled(bool bChecked);
     void on_checkBoxUpper_toggled(bool bChecked);
     void on_lineEditWildcard_textChanged(const QString &sText);
     void on_pushButtonCopy_clicked();
-    QString replaceWild(QString sString, qint32 nOffset,qint32 nSize,QChar cWild);
+    QString replaceWild(QString sString, qint32 nOffset, qint32 nSize,
+                        QChar cWild);
     void on_spinBoxCount_valueChanged(int nValue);
 
     void on_comboBoxMethod_currentIndexChanged(int nIndex);
 
-private:
+   private:
     Ui::DialogAsmSignature *ui;
     QIODevice *g_pDevice;
     XDisasmModel *g_pModel;
@@ -60,4 +62,4 @@ private:
     QList<XDisasm::SIGNATURE_RECORD> g_listRecords;
 };
 
-#endif // DIALOGASMSIGNATURE_H
+#endif  // DIALOGASMSIGNATURE_H
