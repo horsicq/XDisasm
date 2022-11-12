@@ -35,26 +35,24 @@ class DialogAsmSignature;
 class DialogAsmSignature : public QDialog {
     Q_OBJECT
 
-   public:
-    explicit DialogAsmSignature(QWidget *pParent, QIODevice *pDevice,
-                                XDisasmModel *pModel, qint64 nAddress);
+public:
+    explicit DialogAsmSignature(QWidget *pParent, QIODevice *pDevice, XDisasmModel *pModel, qint64 nAddress);
     ~DialogAsmSignature();
     void reload();
 
-   private slots:
+private slots:
     void on_pushButtonOK_clicked();
     void reloadSignature();
     void on_checkBoxSpaces_toggled(bool bChecked);
     void on_checkBoxUpper_toggled(bool bChecked);
     void on_lineEditWildcard_textChanged(const QString &sText);
     void on_pushButtonCopy_clicked();
-    QString replaceWild(QString sString, qint32 nOffset, qint32 nSize,
-                        QChar cWild);
+    QString replaceWild(QString sString, qint32 nOffset, qint32 nSize, QChar cWild);
     void on_spinBoxCount_valueChanged(int nValue);
 
     void on_comboBoxMethod_currentIndexChanged(int nIndex);
 
-   private:
+private:
     Ui::DialogAsmSignature *ui;
     QIODevice *g_pDevice;
     XDisasmModel *g_pModel;

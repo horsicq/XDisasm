@@ -54,11 +54,9 @@ class XDisasmWidget : public QWidget {
         qint32 nCount;
     };
 
-   public:
+public:
     explicit XDisasmWidget(QWidget *pParent = nullptr);
-    void setData(QIODevice *pDevice,
-                 XDisasmModel::SHOWOPTIONS *pShowOptions = 0,
-                 XDisasm::OPTIONS *pDisasmOptions = 0, bool bAuto = true);
+    void setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShowOptions = 0, XDisasm::OPTIONS *pDisasmOptions = 0, bool bAuto = true);
     void analyze();
     void goToAddress(qint64 nAddress);
     void goToOffset(qint64 nOffset);
@@ -71,12 +69,11 @@ class XDisasmWidget : public QWidget {
     void hex(qint64 nOffset);
     void clear();
     ~XDisasmWidget();
-    void process(QIODevice *pDevice, XDisasm::OPTIONS *pOptions,
-                 qint64 nStartAddress, XDisasm::DM dm);
+    void process(QIODevice *pDevice, XDisasm::OPTIONS *pOptions, qint64 nStartAddress, XDisasm::DM dm);
     XDisasm::STATS *getDisasmStats();
     void setBackupFileName(QString sBackupFileName);
 
-   private slots:
+private slots:
     void on_pushButtonLabels_clicked();
     void on_tableViewDisasm_customContextMenuRequested(const QPoint &pos);
     void _goToAddress();
@@ -99,7 +96,7 @@ class XDisasmWidget : public QWidget {
     void on_pushButtonHex_clicked();
     void errorMessage(QString sText);
 
-   private:
+private:
     Ui::XDisasmWidget *ui;
     QIODevice *g_pDevice;
     XDisasmModel::SHOWOPTIONS *g_pShowOptions;

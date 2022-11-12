@@ -29,8 +29,13 @@
 class XDisasmModel : public QAbstractTableModel {
     Q_OBJECT
 
-   public:
-    enum UD { UD_ADDRESS = 0, UD_OFFSET, UD_RELADDRESS, UD_SIZE };
+public:
+    enum UD {
+        UD_ADDRESS = 0,
+        UD_OFFSET,
+        UD_RELADDRESS,
+        UD_SIZE
+    };
 
     enum DMCOLUMN {
         DMCOLUMN_ADDRESS = 0,
@@ -52,17 +57,14 @@ class XDisasmModel : public QAbstractTableModel {
         bool bShowLabels;
     };
 
-    explicit XDisasmModel(QIODevice *pDevice, XDisasm::STATS *pStats,
-                          SHOWOPTIONS *pShowOptions, QObject *pParent);
+    explicit XDisasmModel(QIODevice *pDevice, XDisasm::STATS *pStats, SHOWOPTIONS *pShowOptions, QObject *pParent);
     ~XDisasmModel();
     // Header:
-    QVariant headerData(int section, Qt::Orientation orientation,
-                        int nRole = Qt::DisplayRole) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int nRole = Qt::DisplayRole) const override;
     // Basic functionality:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
-    QVariant data(const QModelIndex &index,
-                  int nRole = Qt::DisplayRole) const override;
+    QVariant data(const QModelIndex &index, int nRole = Qt::DisplayRole) const override;
     VEIW_RECORD getViewRecord(int nRow);
     qint64 getPositionCount() const;
     qint64 positionToAddress(qint64 nPosition);
@@ -75,7 +77,7 @@ class XDisasmModel : public QAbstractTableModel {
     void resetCache();
     bool initDisasm();
 
-   private:
+private:
     QIODevice *g_pDevice;
     XDisasm::STATS *g_pStats;
     SHOWOPTIONS *g_pShowOptions;

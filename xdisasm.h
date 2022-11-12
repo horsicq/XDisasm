@@ -30,10 +30,19 @@ class XDisasm : public QObject {
     static const int N_X64_OPCODE_SIZE = 15;
     static const int N_OPCODE_COUNT = 100000;
 
-   public:
-    enum DM { DM_UNKNOWN = 0, DM_DISASM, DM_TODATA };
+public:
+    enum DM {
+        DM_UNKNOWN = 0,
+        DM_DISASM,
+        DM_TODATA
+    };
 
-    enum VBT { VBT_UNKNOWN = 0, VBT_OPCODE, VBT_DATA, VBT_DATABLOCK };
+    enum VBT {
+        VBT_UNKNOWN = 0,
+        VBT_OPCODE,
+        VBT_DATA,
+        VBT_DATABLOCK
+    };
 
     enum RECORD_TYPE {
         RECORD_TYPE_UNKNOWN = 0,
@@ -97,15 +106,16 @@ class XDisasm : public QObject {
 
     explicit XDisasm(QObject *pParent = nullptr);
     ~XDisasm();
-    void setData(QIODevice *pDevice, OPTIONS *pOptions, qint64 nStartAddress,
-                 DM dm);
+    void setData(QIODevice *pDevice, OPTIONS *pOptions, qint64 nStartAddress, DM dm);
     void stop();
     STATS *getStats();
     static qint64 getVBSize(QMap<qint64, VIEW_BLOCK> *pMapVB);
-    static QString getDisasmString(csh disasm_handle, qint64 nAddress,
-                                   char *pData, qint32 nDataSize);
+    static QString getDisasmString(csh disasm_handle, qint64 nAddress, char *pData, qint32 nDataSize);
 
-    enum SM { SM_NORMAL = 0, SM_RELATIVEADDRESS };
+    enum SM {
+        SM_NORMAL = 0,
+        SM_RELATIVEADDRESS
+    };
 
     struct SIGNATURE_OPTIONS {
         QIODevice *pDevice;
@@ -127,15 +137,14 @@ class XDisasm : public QObject {
         bool bIsConst;
     };
 
-    static QList<SIGNATURE_RECORD> getSignature(
-        SIGNATURE_OPTIONS *pSignatureOptions, qint64 nAddress);
+    static QList<SIGNATURE_RECORD> getSignature(SIGNATURE_OPTIONS *pSignatureOptions, qint64 nAddress);
 
-   public slots:
+public slots:
     void processDisasm();
     void processToData();
     void process();
 
-   private:
+private:
     bool isEndBranchOpcode(uint nOpcodeID);
     static bool isJmpOpcode(uint nOpcodeID);
     static bool isCallOpcode(uint nOpcodeID);
@@ -144,11 +153,11 @@ class XDisasm : public QObject {
     void _updatePositions();
     bool _insertOpcode(qint64 nAddress, RECORD *pOpcode);
 
-   signals:
+signals:
     void errorMessage(QString sText);
     void processFinished();
 
-   private:
+private:
     DM g_dm;
     csh g_disasm_handle;
     bool g_bStop;

@@ -20,9 +20,7 @@
 //
 #include "xdisasmmodel.h"
 
-XDisasmModel::XDisasmModel(QIODevice *pDevice, XDisasm::STATS *pStats,
-                           SHOWOPTIONS *pShowOptions, QObject *pParent)
-    : QAbstractTableModel(pParent) {
+XDisasmModel::XDisasmModel(QIODevice *pDevice, XDisasm::STATS *pStats, SHOWOPTIONS *pShowOptions, QObject *pParent) : QAbstractTableModel(pParent) {
     this->g_pDevice = pDevice;
     this->g_pStats = pStats;
     this->g_pShowOptions = pShowOptions;
@@ -36,8 +34,7 @@ XDisasmModel::~XDisasmModel() {
     }
 }
 
-QVariant XDisasmModel::headerData(int section, Qt::Orientation orientation,
-                                  int nRole) const {
+QVariant XDisasmModel::headerData(int section, Qt::Orientation orientation, int nRole) const {
     QVariant result;
 
     if (orientation == Qt::Horizontal) {
@@ -214,8 +211,7 @@ XDisasmModel::VEIW_RECORD XDisasmModel::getViewRecord(int nRow) {
             g_bDisasmInit = initDisasm();
         }
 
-        result.sOpcode = XDisasm::getDisasmString(g_disasm_handle, nAddress,
-                                                  baData.data(), baData.size());
+        result.sOpcode = XDisasm::getDisasmString(g_disasm_handle, nAddress, baData.data(), baData.size());
 
         if (g_pShowOptions->bShowLabels) {
             if (g_pStats->mmapRefTo.contains(nAddress)) {
@@ -224,10 +220,8 @@ XDisasmModel::VEIW_RECORD XDisasmModel::getViewRecord(int nRow) {
                 int nNumberOfRefs = listRefs.count();
 
                 for (int i = 0; i < nNumberOfRefs; i++) {
-                    QString sAddress =
-                        QString("0x%1").arg(listRefs.at(i), 0, 16);
-                    QString sRString =
-                        g_pStats->mapLabelStrings.value(listRefs.at(i));
+                    QString sAddress = QString("0x%1").arg(listRefs.at(i), 0, 16);
+                    QString sRString = g_pStats->mapLabelStrings.value(listRefs.at(i));
                     result.sOpcode = result.sOpcode.replace(sAddress, sRString);
                 }
             }
@@ -239,7 +233,9 @@ XDisasmModel::VEIW_RECORD XDisasmModel::getViewRecord(int nRow) {
     return result;
 }
 
-qint64 XDisasmModel::getPositionCount() const { return g_pStats->nPositions; }
+qint64 XDisasmModel::getPositionCount() const {
+    return g_pStats->nPositions;
+}
 
 qint64 XDisasmModel::positionToAddress(qint64 nPosition) {
     qint64 nResult = 0;
@@ -248,8 +244,7 @@ qint64 XDisasmModel::positionToAddress(qint64 nPosition) {
         nResult = g_pStats->mapPositions.value(nPosition, -1);
 
         if (nResult == -1) {
-            QMap<qint64, qint64>::const_iterator iter =
-                g_pStats->mapPositions.lowerBound(nPosition);
+            QMap<qint64, qint64>::const_iterator iter = g_pStats->mapPositions.lowerBound(nPosition);
 
             if (iter != g_pStats->mapPositions.end()) {
                 qint64 nDelta = iter.key() - nPosition;
@@ -280,11 +275,9 @@ qint64 XDisasmModel::addressToPosition(qint64 nAddress) {
             nResult = g_pStats->mapAddresses.value(nAddress, -1);
 
             if (nResult == -1) {
-                QMap<qint64, qint64>::iterator iter =
-                    g_pStats->mapAddresses.lowerBound(nAddress);
+                QMap<qint64, qint64>::iterator iter = g_pStats->mapAddresses.lowerBound(nAddress);
 
-                if ((iter != g_pStats->mapAddresses.end()) &&
-                    (iter != g_pStats->mapAddresses.begin())) {
+                if ((iter != g_pStats->mapAddresses.end()) && (iter != g_pStats->mapAddresses.begin())) {
                     iter--;
                     qint64 nPosition = iter.value();
 
@@ -293,8 +286,7 @@ qint64 XDisasmModel::addressToPosition(qint64 nAddress) {
                     XDisasm::VIEW_BLOCK vb = g_pStats->mapVB.value(nKeyAddress);
 
                     if (vb.nSize) {
-                        if ((vb.nAddress <= nAddress) &&
-                            (nAddress < (vb.nAddress + vb.nSize))) {
+                        if ((vb.nAddress <= nAddress) && (nAddress < (vb.nAddress + vb.nSize))) {
                             nResult = nPosition;
                         }
                     }
@@ -302,8 +294,7 @@ qint64 XDisasmModel::addressToPosition(qint64 nAddress) {
             }
 
             if (nResult == -1) {
-                QMap<qint64, qint64>::const_iterator iterEnd =
-                    g_pStats->mapAddresses.lowerBound(nAddress);
+                QMap<qint64, qint64>::const_iterator iterEnd = g_pStats->mapAddresses.lowerBound(nAddress);
 
                 if (iterEnd != g_pStats->mapAddresses.end()) {
                     qint64 nKeyAddress = iterEnd.key();
@@ -317,9 +308,7 @@ qint64 XDisasmModel::addressToPosition(qint64 nAddress) {
                     nResult = g_pStats->mapAddresses.value(nLastAddress);
                     nResult++;
 
-                    qint64 nDelta =
-                        nAddress - (nLastAddress +
-                                    g_pStats->mapVB.value(nLastAddress).nSize);
+                    qint64 nDelta = nAddress - (nLastAddress + g_pStats->mapVB.value(nLastAddress).nSize);
 
                     if (nDelta > 0) {
                         nResult += (nDelta);
@@ -352,8 +341,7 @@ qint64 XDisasmModel::offsetToPosition(qint64 nOffset) {
 qint64 XDisasmModel::relAddressToPosition(qint64 nRelAddress) {
     qint64 nResult = 0;
 
-    qint64 nAddress =
-        XBinary::relAddressToAddress(&(g_pStats->memoryMap), nRelAddress);
+    qint64 nAddress = XBinary::relAddressToAddress(&(g_pStats->memoryMap), nRelAddress);
 
     if (nAddress != -1) {
         nResult = addressToPosition(nAddress);
@@ -362,9 +350,13 @@ qint64 XDisasmModel::relAddressToPosition(qint64 nRelAddress) {
     return nResult;
 }
 
-XDisasm::STATS *XDisasmModel::getStats() { return g_pStats; }
+XDisasm::STATS *XDisasmModel::getStats() {
+    return g_pStats;
+}
 
-void XDisasmModel::_beginResetModel() { beginResetModel(); }
+void XDisasmModel::_beginResetModel() {
+    beginResetModel();
+}
 
 void XDisasmModel::_endResetModel() {
     resetCache();

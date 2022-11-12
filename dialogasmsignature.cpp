@@ -22,8 +22,7 @@
 
 #include "ui_dialogasmsignature.h"
 
-DialogAsmSignature::DialogAsmSignature(QWidget *pParent, QIODevice *pDevice,
-                                       XDisasmModel *pModel, qint64 nAddress)
+DialogAsmSignature::DialogAsmSignature(QWidget *pParent, QIODevice *pDevice, XDisasmModel *pModel, qint64 nAddress)
     : QDialog(pParent), ui(new Ui::DialogAsmSignature) {
     ui->setupUi(this);
 
@@ -38,13 +37,14 @@ DialogAsmSignature::DialogAsmSignature(QWidget *pParent, QIODevice *pDevice,
     QSignalBlocker signalBlocke2r(ui->comboBoxMethod);
 
     ui->comboBoxMethod->addItem("", XDisasm::SM_NORMAL);
-    ui->comboBoxMethod->addItem(tr("Relative virtual address"),
-                                XDisasm::SM_RELATIVEADDRESS);
+    ui->comboBoxMethod->addItem(tr("Relative virtual address"), XDisasm::SM_RELATIVEADDRESS);
 
     reload();
 }
 
-DialogAsmSignature::~DialogAsmSignature() { delete ui; }
+DialogAsmSignature::~DialogAsmSignature() {
+    delete ui;
+}
 
 void DialogAsmSignature::reload() {
     XDisasm::SIGNATURE_OPTIONS options = {};
@@ -77,21 +77,14 @@ void DialogAsmSignature::reload() {
     ui->tableWidgetSignature->setHorizontalHeaderLabels(listHeaders);
 
     for (int i = 0; i < nNumberOfRecords; i++) {
-        ui->tableWidgetSignature->setItem(
-            i, 0,
-            new QTableWidgetItem(
-                XBinary::valueToHex(g_pModel->getStats()->memoryMap.mode,
-                                    g_listRecords.at(i).nAddress)));
-        ui->tableWidgetSignature->setItem(
-            i, 1,
-            new QTableWidgetItem(g_listRecords.at(i).baOpcode.toHex().data()));
+        ui->tableWidgetSignature->setItem(i, 0, new QTableWidgetItem(XBinary::valueToHex(g_pModel->getStats()->memoryMap.mode, g_listRecords.at(i).nAddress)));
+        ui->tableWidgetSignature->setItem(i, 1, new QTableWidgetItem(g_listRecords.at(i).baOpcode.toHex().data()));
 
         if (!g_listRecords.at(i).bIsConst) {
             QPushButton *pUseSignatureButton = new QPushButton(this);
             pUseSignatureButton->setText(g_listRecords.at(i).sOpcode);
             pUseSignatureButton->setCheckable(true);
-            connect(pUseSignatureButton, SIGNAL(clicked()), this,
-                    SLOT(reloadSignature()));
+            connect(pUseSignatureButton, SIGNAL(clicked()), this, SLOT(reloadSignature()));
 
             ui->tableWidgetSignature->setCellWidget(i, 2, pUseSignatureButton);
 
@@ -100,8 +93,7 @@ void DialogAsmSignature::reload() {
                 pDispButton->setText(QString("d"));
                 pDispButton->setCheckable(true);
                 pDispButton->setMaximumWidth(nSymbolWidth * 6);
-                connect(pDispButton, SIGNAL(clicked()), this,
-                        SLOT(reloadSignature()));
+                connect(pDispButton, SIGNAL(clicked()), this, SLOT(reloadSignature()));
 
                 ui->tableWidgetSignature->setCellWidget(i, 3, pDispButton);
             }
@@ -111,14 +103,12 @@ void DialogAsmSignature::reload() {
                 pImmButton->setText(QString("i"));
                 pImmButton->setCheckable(true);
                 pImmButton->setMaximumWidth(nSymbolWidth * 6);
-                connect(pImmButton, SIGNAL(clicked()), this,
-                        SLOT(reloadSignature()));
+                connect(pImmButton, SIGNAL(clicked()), this, SLOT(reloadSignature()));
 
                 ui->tableWidgetSignature->setCellWidget(i, 4, pImmButton);
             }
         } else {
-            ui->tableWidgetSignature->setItem(
-                i, 2, new QTableWidgetItem(g_listRecords.at(i).sOpcode));
+            ui->tableWidgetSignature->setItem(i, 2, new QTableWidgetItem(g_listRecords.at(i).sOpcode));
         }
     }
 
@@ -128,16 +118,11 @@ void DialogAsmSignature::reload() {
     ui->tableWidgetSignature->setColumnWidth(3, nSymbolWidth * 6);
     ui->tableWidgetSignature->setColumnWidth(4, nSymbolWidth * 6);
 
-    ui->tableWidgetSignature->horizontalHeader()->setSectionResizeMode(
-        0, QHeaderView::Interactive);
-    ui->tableWidgetSignature->horizontalHeader()->setSectionResizeMode(
-        1, QHeaderView::Stretch);
-    ui->tableWidgetSignature->horizontalHeader()->setSectionResizeMode(
-        2, QHeaderView::Interactive);
-    ui->tableWidgetSignature->horizontalHeader()->setSectionResizeMode(
-        3, QHeaderView::Interactive);
-    ui->tableWidgetSignature->horizontalHeader()->setSectionResizeMode(
-        4, QHeaderView::Interactive);
+    ui->tableWidgetSignature->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Interactive);
+    ui->tableWidgetSignature->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    ui->tableWidgetSignature->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Interactive);
+    ui->tableWidgetSignature->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Interactive);
+    ui->tableWidgetSignature->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Interactive);
 
     reloadSignature();
 }
@@ -159,12 +144,9 @@ void DialogAsmSignature::reloadSignature() {
         bool bDisp = true;
         bool bImm = true;
 
-        QPushButton *pUseSignatureButton = dynamic_cast<QPushButton *>(
-            ui->tableWidgetSignature->cellWidget(i, 2));
-        QPushButton *pDispButton = dynamic_cast<QPushButton *>(
-            ui->tableWidgetSignature->cellWidget(i, 3));
-        QPushButton *pImmButton = dynamic_cast<QPushButton *>(
-            ui->tableWidgetSignature->cellWidget(i, 4));
+        QPushButton *pUseSignatureButton = dynamic_cast<QPushButton *>(ui->tableWidgetSignature->cellWidget(i, 2));
+        QPushButton *pDispButton = dynamic_cast<QPushButton *>(ui->tableWidgetSignature->cellWidget(i, 3));
+        QPushButton *pImmButton = dynamic_cast<QPushButton *>(ui->tableWidgetSignature->cellWidget(i, 4));
 
         if (pUseSignatureButton) {
             bUse = !(pUseSignatureButton->isChecked());
@@ -188,18 +170,15 @@ void DialogAsmSignature::reloadSignature() {
             sRecord = g_listRecords.at(i).baOpcode.toHex().data();
 
             if (!bDisp) {
-                sRecord = replaceWild(sRecord, g_listRecords.at(i).nDispOffset,
-                                      g_listRecords.at(i).nDispSize, cWild);
+                sRecord = replaceWild(sRecord, g_listRecords.at(i).nDispOffset, g_listRecords.at(i).nDispSize, cWild);
             }
 
             if (!bImm) {
-                sRecord = replaceWild(sRecord, g_listRecords.at(i).nImmOffset,
-                                      g_listRecords.at(i).nImmSize, cWild);
+                sRecord = replaceWild(sRecord, g_listRecords.at(i).nImmOffset, g_listRecords.at(i).nImmSize, cWild);
             }
 
             if (g_listRecords.at(i).bIsConst) {
-                sRecord = replaceWild(sRecord, g_listRecords.at(i).nImmOffset,
-                                      g_listRecords.at(i).nImmSize, QChar('$'));
+                sRecord = replaceWild(sRecord, g_listRecords.at(i).nImmOffset, g_listRecords.at(i).nImmSize, QChar('$'));
             }
         } else {
             for (int j = 0; j < nSize; j++) {
@@ -236,7 +215,9 @@ void DialogAsmSignature::reloadSignature() {
     ui->textEditSignature->setText(sText);
 }
 
-void DialogAsmSignature::on_pushButtonOK_clicked() { this->close(); }
+void DialogAsmSignature::on_pushButtonOK_clicked() {
+    this->close();
+}
 
 void DialogAsmSignature::on_checkBoxSpaces_toggled(bool bChecked) {
     reloadSignature();
@@ -255,8 +236,7 @@ void DialogAsmSignature::on_pushButtonCopy_clicked() {
     clipboard->setText(ui->textEditSignature->toPlainText());
 }
 
-QString DialogAsmSignature::replaceWild(QString sString, qint32 nOffset,
-                                        qint32 nSize, QChar cWild) {
+QString DialogAsmSignature::replaceWild(QString sString, qint32 nOffset, qint32 nSize, QChar cWild) {
     QString sResult = sString;
     QString sWild;
 

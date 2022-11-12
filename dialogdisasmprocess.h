@@ -34,20 +34,19 @@ class DialogDisasmProcess;
 class DialogDisasmProcess : public QDialog {
     Q_OBJECT
 
-   public:
+public:
     explicit DialogDisasmProcess(QWidget *pParent = nullptr);
     ~DialogDisasmProcess();
-    void setData(QIODevice *pDevice, XDisasm::OPTIONS *pOptions,
-                 qint64 nStartAddress, XDisasm::DM dm);
+    void setData(QIODevice *pDevice, XDisasm::OPTIONS *pOptions, qint64 nStartAddress, XDisasm::DM dm);
 
-   private slots:
+private slots:
     void on_pushButtonCancel_clicked();
     void timerSlot();
 
-   signals:
+signals:
     void errorMessage(QString sText);
 
-   private:
+private:
     Ui::DialogDisasmProcess *ui;
     QThread *g_pThread;
     XDisasm *g_pDisasm;

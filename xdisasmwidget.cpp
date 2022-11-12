@@ -22,32 +22,22 @@
 
 #include "ui_xdisasmwidget.h"
 
-XDisasmWidget::XDisasmWidget(QWidget *pParent)
-    : QWidget(pParent), ui(new Ui::XDisasmWidget) {
+XDisasmWidget::XDisasmWidget(QWidget *pParent) : QWidget(pParent), ui(new Ui::XDisasmWidget) {
     ui->setupUi(this);
 
     XOptions::setMonoFont(ui->tableViewDisasm);
 
-    new QShortcut(QKeySequence(XShortcuts::GOTOENTRYPOINT), this,
-                  SLOT(_goToEntryPoint()));
-    new QShortcut(QKeySequence(XShortcuts::GOTOADDRESS), this,
-                  SLOT(_goToAddress()));
-    new QShortcut(QKeySequence(XShortcuts::GOTOOFFSET), this,
-                  SLOT(_goToOffset()));
-    new QShortcut(QKeySequence(XShortcuts::GOTORELADDRESS), this,
-                  SLOT(_goToRelAddress()));
-    new QShortcut(QKeySequence(XShortcuts::DUMPTOFILE), this,
-                  SLOT(_dumpToFile()));
+    new QShortcut(QKeySequence(XShortcuts::GOTOENTRYPOINT), this, SLOT(_goToEntryPoint()));
+    new QShortcut(QKeySequence(XShortcuts::GOTOADDRESS), this, SLOT(_goToAddress()));
+    new QShortcut(QKeySequence(XShortcuts::GOTOOFFSET), this, SLOT(_goToOffset()));
+    new QShortcut(QKeySequence(XShortcuts::GOTORELADDRESS), this, SLOT(_goToRelAddress()));
+    new QShortcut(QKeySequence(XShortcuts::DUMPTOFILE), this, SLOT(_dumpToFile()));
     new QShortcut(QKeySequence(XShortcuts::DISASM), this, SLOT(_disasm()));
     new QShortcut(QKeySequence(XShortcuts::TODATA), this, SLOT(_toData()));
-    new QShortcut(QKeySequence(XShortcuts::HEXSIGNATURE), this,
-                  SLOT(_signature()));
-    new QShortcut(QKeySequence(XShortcuts::COPYADDRESS), this,
-                  SLOT(_copyAddress()));
-    new QShortcut(QKeySequence(XShortcuts::COPYOFFSET), this,
-                  SLOT(_copyOffset()));
-    new QShortcut(QKeySequence(XShortcuts::COPYRELADDRESS), this,
-                  SLOT(_copyRelAddress()));
+    new QShortcut(QKeySequence(XShortcuts::HEXSIGNATURE), this, SLOT(_signature()));
+    new QShortcut(QKeySequence(XShortcuts::COPYADDRESS), this, SLOT(_copyAddress()));
+    new QShortcut(QKeySequence(XShortcuts::COPYOFFSET), this, SLOT(_copyOffset()));
+    new QShortcut(QKeySequence(XShortcuts::COPYRELADDRESS), this, SLOT(_copyRelAddress()));
     new QShortcut(QKeySequence(XShortcuts::HEX), this, SLOT(_hex()));
 
     g_pShowOptions = 0;
@@ -58,9 +48,7 @@ XDisasmWidget::XDisasmWidget(QWidget *pParent)
     g_disasmOptions = {};
 }
 
-void XDisasmWidget::setData(QIODevice *pDevice,
-                            XDisasmModel::SHOWOPTIONS *pShowOptions,
-                            XDisasm::OPTIONS *pDisasmOptions, bool bAuto) {
+void XDisasmWidget::setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShowOptions, XDisasm::OPTIONS *pDisasmOptions, bool bAuto) {
     this->g_pDevice = pDevice;
 
     if (pShowOptions) {
@@ -83,11 +71,9 @@ void XDisasmWidget::setData(QIODevice *pDevice,
     stFileType.insert(XBinary::FT_BINARY64);
     stFileType.insert(XBinary::FT_COM);
 
-    QList<XBinary::FT> listFileTypes =
-        XBinary::_getFileTypeListFromSet(stFileType);
+    QList<XBinary::FT> listFileTypes = XBinary::_getFileTypeListFromSet(stFileType);
 
-    XFormats::setFileTypeComboBox(ui->comboBoxType, &listFileTypes,
-                                  pDisasmOptions->fileType);
+    XFormats::setFileTypeComboBox(ui->comboBoxType, &listFileTypes, pDisasmOptions->fileType);
 
     if (bAuto) {
         analyze();
@@ -96,8 +82,7 @@ void XDisasmWidget::setData(QIODevice *pDevice,
 
 void XDisasmWidget::analyze() {
     if (g_pDisasmOptions && g_pShowOptions) {
-        XBinary::FT fileType =
-            (XBinary::FT)ui->comboBoxType->currentData().toInt();
+        XBinary::FT fileType = (XBinary::FT)ui->comboBoxType->currentData().toInt();
         g_pDisasmOptions->fileType = fileType;
 
         g_pDisasmOptions->stats = {};
@@ -107,8 +92,7 @@ void XDisasmWidget::analyze() {
 
         process(g_pDevice, g_pDisasmOptions, -1, XDisasm::DM_DISASM);
 
-        g_pModel = new XDisasmModel(g_pDevice, &(g_pDisasmOptions->stats),
-                                    g_pShowOptions, this);
+        g_pModel = new XDisasmModel(g_pDevice, &(g_pDisasmOptions->stats), g_pShowOptions, this);
 
         ui->tableViewDisasm->setModel(g_pModel);
         delete modelOld;
@@ -122,19 +106,13 @@ void XDisasmWidget::analyze() {
         ui->tableViewDisasm->setColumnWidth(3, nSymbolWidth * 20);
         ui->tableViewDisasm->setColumnWidth(4, nSymbolWidth * 8);
 
-        ui->tableViewDisasm->horizontalHeader()->setSectionResizeMode(
-            0, QHeaderView::Interactive);
-        ui->tableViewDisasm->horizontalHeader()->setSectionResizeMode(
-            1, QHeaderView::Interactive);
-        ui->tableViewDisasm->horizontalHeader()->setSectionResizeMode(
-            2, QHeaderView::Interactive);
-        ui->tableViewDisasm->horizontalHeader()->setSectionResizeMode(
-            3, QHeaderView::Interactive);
-        ui->tableViewDisasm->horizontalHeader()->setSectionResizeMode(
-            4, QHeaderView::Stretch);
+        ui->tableViewDisasm->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Interactive);
+        ui->tableViewDisasm->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Interactive);
+        ui->tableViewDisasm->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Interactive);
+        ui->tableViewDisasm->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Interactive);
+        ui->tableViewDisasm->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Stretch);
 
-        ui->pushButtonOverlay->setEnabled(
-            g_pDisasmOptions->stats.bIsOverlayPresent);
+        ui->pushButtonOverlay->setEnabled(g_pDisasmOptions->stats.bIsOverlayPresent);
 
         goToAddress(g_pDisasmOptions->stats.nEntryPointAddress);
     }
@@ -193,14 +171,12 @@ void XDisasmWidget::toData(qint64 nAddress, qint64 nSize) {
 }
 
 void XDisasmWidget::signature(qint64 nAddress, qint64 nSize) {
-    if (g_pDisasmOptions->stats.mapRecords.value(nAddress).type ==
-        XDisasm::RECORD_TYPE_OPCODE) {
+    if (g_pDisasmOptions->stats.mapRecords.value(nAddress).type == XDisasm::RECORD_TYPE_OPCODE) {
         DialogAsmSignature ds(this, g_pDevice, g_pModel, nAddress);
 
         ds.exec();
     } else {
-        qint64 nOffset = XBinary::addressToOffset(
-            &(g_pDisasmOptions->stats.memoryMap), nAddress);
+        qint64 nOffset = XBinary::addressToOffset(&(g_pDisasmOptions->stats.memoryMap), nAddress);
 
         if (nOffset != -1) {
             DialogHexSignature dhs(this, g_pDevice, nOffset, nSize);
@@ -228,16 +204,18 @@ void XDisasmWidget::hex(qint64 nOffset) {
     dialogHex.exec();
 }
 
-void XDisasmWidget::clear() { ui->tableViewDisasm->setModel(0); }
+void XDisasmWidget::clear() {
+    ui->tableViewDisasm->setModel(0);
+}
 
-XDisasmWidget::~XDisasmWidget() { delete ui; }
+XDisasmWidget::~XDisasmWidget() {
+    delete ui;
+}
 
-void XDisasmWidget::process(QIODevice *pDevice, XDisasm::OPTIONS *pOptions,
-                            qint64 nStartAddress, XDisasm::DM dm) {
+void XDisasmWidget::process(QIODevice *pDevice, XDisasm::OPTIONS *pOptions, qint64 nStartAddress, XDisasm::DM dm) {
     DialogDisasmProcess ddp(this);
 
-    connect(&ddp, SIGNAL(errorMessage(QString)), this,
-            SLOT(errorMessage(QString)));
+    connect(&ddp, SIGNAL(errorMessage(QString)), this, SLOT(errorMessage(QString)));
 
     ddp.setData(pDevice, pOptions, nStartAddress, dm);
     ddp.exec();
@@ -279,8 +257,7 @@ void XDisasmWidget::on_pushButtonLabels_clicked() {
     }
 }
 
-void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(
-    const QPoint &pos) {
+void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &pos) {
     if (g_pModel) {
         SELECTION_STAT selectionStat = getSelectionStat();
 
@@ -289,26 +266,20 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(
         QMenu goToMenu(tr("Go to"), this);
 
         QAction actionGoToEntryPoint(tr("Entry point"), this);
-        actionGoToEntryPoint.setShortcut(
-            QKeySequence(XShortcuts::GOTOENTRYPOINT));
-        connect(&actionGoToEntryPoint, SIGNAL(triggered()), this,
-                SLOT(_goToEntryPoint()));
+        actionGoToEntryPoint.setShortcut(QKeySequence(XShortcuts::GOTOENTRYPOINT));
+        connect(&actionGoToEntryPoint, SIGNAL(triggered()), this, SLOT(_goToEntryPoint()));
 
         QAction actionGoToAddress(tr("Virtual address"), this);
         actionGoToAddress.setShortcut(QKeySequence(XShortcuts::GOTOADDRESS));
-        connect(&actionGoToAddress, SIGNAL(triggered()), this,
-                SLOT(_goToAddress()));
+        connect(&actionGoToAddress, SIGNAL(triggered()), this, SLOT(_goToAddress()));
 
         QAction actionGoToRelAddress(tr("Relative virtual address"), this);
-        actionGoToRelAddress.setShortcut(
-            QKeySequence(XShortcuts::GOTORELADDRESS));
-        connect(&actionGoToRelAddress, SIGNAL(triggered()), this,
-                SLOT(_goToRelAddress()));
+        actionGoToRelAddress.setShortcut(QKeySequence(XShortcuts::GOTORELADDRESS));
+        connect(&actionGoToRelAddress, SIGNAL(triggered()), this, SLOT(_goToRelAddress()));
 
         QAction actionGoToOffset(tr("File offset"), this);
         actionGoToOffset.setShortcut(QKeySequence(XShortcuts::GOTOOFFSET));
-        connect(&actionGoToOffset, SIGNAL(triggered()), this,
-                SLOT(_goToOffset()));
+        connect(&actionGoToOffset, SIGNAL(triggered()), this, SLOT(_goToOffset()));
 
         goToMenu.addAction(&actionGoToEntryPoint);
         goToMenu.addAction(&actionGoToAddress);
@@ -321,19 +292,15 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(
 
         QAction actionCopyAddress(tr("Virtual address"), this);
         actionCopyAddress.setShortcut(QKeySequence(XShortcuts::COPYADDRESS));
-        connect(&actionCopyAddress, SIGNAL(triggered()), this,
-                SLOT(_copyAddress()));
+        connect(&actionCopyAddress, SIGNAL(triggered()), this, SLOT(_copyAddress()));
 
         QAction actionCopyRelAddress(tr("Relative virtual address"), this);
-        actionCopyRelAddress.setShortcut(
-            QKeySequence(XShortcuts::COPYRELADDRESS));
-        connect(&actionCopyRelAddress, SIGNAL(triggered()), this,
-                SLOT(_copyRelAddress()));
+        actionCopyRelAddress.setShortcut(QKeySequence(XShortcuts::COPYRELADDRESS));
+        connect(&actionCopyRelAddress, SIGNAL(triggered()), this, SLOT(_copyRelAddress()));
 
         QAction actionCopyOffset(tr("File offset"), this);
         actionCopyOffset.setShortcut(QKeySequence(XShortcuts::COPYOFFSET));
-        connect(&actionCopyOffset, SIGNAL(triggered()), this,
-                SLOT(_copyOffset()));
+        connect(&actionCopyOffset, SIGNAL(triggered()), this, SLOT(_copyOffset()));
 
         copyMenu.addAction(&actionCopyAddress);
         copyMenu.addAction(&actionCopyRelAddress);
@@ -347,8 +314,7 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(
 
         QAction actionSignature(tr("Signature"), this);
         actionSignature.setShortcut(QKeySequence(XShortcuts::HEXSIGNATURE));
-        connect(&actionSignature, SIGNAL(triggered()), this,
-                SLOT(_signature()));
+        connect(&actionSignature, SIGNAL(triggered()), this, SLOT(_signature()));
 
         QAction actionDump(tr("Dump to file"), this);
         actionDump.setShortcut(QKeySequence(XShortcuts::DUMPTOFILE));
@@ -365,10 +331,7 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(
         contextMenu.addAction(&actionHex);
         contextMenu.addAction(&actionSignature);
 
-        if ((selectionStat.nSize) &&
-            XBinary::isSolidAddressRange(&(g_pModel->getStats()->memoryMap),
-                                         selectionStat.nAddress,
-                                         selectionStat.nSize)) {
+        if ((selectionStat.nSize) && XBinary::isSolidAddressRange(&(g_pModel->getStats()->memoryMap), selectionStat.nAddress, selectionStat.nSize)) {
             contextMenu.addAction(&actionDump);
         }
 
@@ -388,8 +351,7 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(
 
 void XDisasmWidget::_goToAddress() {
     if (g_pModel) {
-        DialogGoToAddress da(this, &(g_pModel->getStats()->memoryMap),
-                             DialogGoToAddress::TYPE_ADDRESS);
+        DialogGoToAddress da(this, &(g_pModel->getStats()->memoryMap), DialogGoToAddress::TYPE_ADDRESS);
         if (da.exec() == QDialog::Accepted) {
             goToAddress(da.getValue());
         }
@@ -398,8 +360,7 @@ void XDisasmWidget::_goToAddress() {
 
 void XDisasmWidget::_goToRelAddress() {
     if (g_pModel) {
-        DialogGoToAddress da(this, &(g_pModel->getStats()->memoryMap),
-                             DialogGoToAddress::TYPE_REL_ADDRESS);
+        DialogGoToAddress da(this, &(g_pModel->getStats()->memoryMap), DialogGoToAddress::TYPE_REL_ADDRESS);
         if (da.exec() == QDialog::Accepted) {
             goToRelAddress(da.getValue());
         }
@@ -408,23 +369,23 @@ void XDisasmWidget::_goToRelAddress() {
 
 void XDisasmWidget::_goToOffset() {
     if (g_pModel) {
-        DialogGoToAddress da(this, &(g_pModel->getStats()->memoryMap),
-                             DialogGoToAddress::TYPE_OFFSET);
+        DialogGoToAddress da(this, &(g_pModel->getStats()->memoryMap), DialogGoToAddress::TYPE_OFFSET);
         if (da.exec() == QDialog::Accepted) {
             goToOffset(da.getValue());
         }
     }
 }
 
-void XDisasmWidget::_goToEntryPoint() { goToEntryPoint(); }
+void XDisasmWidget::_goToEntryPoint() {
+    goToEntryPoint();
+}
 
 void XDisasmWidget::_copyAddress() {
     if (g_pModel) {
         SELECTION_STAT selectionStat = getSelectionStat();
 
         if (selectionStat.nSize) {
-            QApplication::clipboard()->setText(
-                QString("%1").arg(selectionStat.nAddress, 0, 16));
+            QApplication::clipboard()->setText(QString("%1").arg(selectionStat.nAddress, 0, 16));
         }
     }
 }
@@ -434,8 +395,7 @@ void XDisasmWidget::_copyOffset() {
         SELECTION_STAT selectionStat = getSelectionStat();
 
         if (selectionStat.nSize) {
-            QApplication::clipboard()->setText(
-                QString("%1").arg(selectionStat.nOffset, 0, 16));
+            QApplication::clipboard()->setText(QString("%1").arg(selectionStat.nOffset, 0, 16));
         }
     }
 }
@@ -445,8 +405,7 @@ void XDisasmWidget::_copyRelAddress() {
         SELECTION_STAT selectionStat = getSelectionStat();
 
         if (selectionStat.nSize) {
-            QApplication::clipboard()->setText(
-                QString("%1").arg(selectionStat.nRelAddress, 0, 16));
+            QApplication::clipboard()->setText(QString("%1").arg(selectionStat.nRelAddress, 0, 16));
         }
     }
 }
@@ -458,18 +417,13 @@ void XDisasmWidget::_dumpToFile() {
         if (selectionStat.nSize) {
             QString sFilter;
             sFilter += QString("%1 (*.bin)").arg(tr("Raw data"));
-            QString sSaveFileName =
-                "Result";  // TODO default directory / TODO getDumpName
-            QString sFileName = QFileDialog::getSaveFileName(
-                this, tr("Save dump"), sSaveFileName, sFilter);
+            QString sSaveFileName = "Result";  // TODO default directory / TODO getDumpName
+            QString sFileName = QFileDialog::getSaveFileName(this, tr("Save dump"), sSaveFileName, sFilter);
 
-            qint64 nOffset = XBinary::addressToOffset(
-                &(g_pModel->getStats()->memoryMap), selectionStat.nAddress);
+            qint64 nOffset = XBinary::addressToOffset(&(g_pModel->getStats()->memoryMap), selectionStat.nAddress);
 
             if (!sFileName.isEmpty()) {
-                DialogDumpProcess dd(this, g_pDevice, nOffset,
-                                     selectionStat.nSize, sFileName,
-                                     DumpProcess::DT_OFFSET);
+                DialogDumpProcess dd(this, g_pDevice, nOffset, selectionStat.nSize, sFileName, DumpProcess::DT_OFFSET);
 
                 dd.exec();
             }
@@ -524,43 +478,31 @@ XDisasmWidget::SELECTION_STAT XDisasmWidget::getSelectionStat() {
     result.nCount = il.count();
 
     if (result.nCount) {
-        result.nAddress =
-            il.at(0).data(Qt::UserRole + XDisasmModel::UD_ADDRESS).toLongLong();
-        result.nOffset =
-            il.at(0).data(Qt::UserRole + XDisasmModel::UD_OFFSET).toLongLong();
-        result.nRelAddress =
-            il.at(0)
-                .data(Qt::UserRole + XDisasmModel::UD_RELADDRESS)
-                .toLongLong();
+        result.nAddress = il.at(0).data(Qt::UserRole + XDisasmModel::UD_ADDRESS).toLongLong();
+        result.nOffset = il.at(0).data(Qt::UserRole + XDisasmModel::UD_OFFSET).toLongLong();
+        result.nRelAddress = il.at(0).data(Qt::UserRole + XDisasmModel::UD_RELADDRESS).toLongLong();
 
-        qint64 nLastElementAddress =
-            il.at(result.nCount - 1)
-                .data(Qt::UserRole + XDisasmModel::UD_ADDRESS)
-                .toLongLong();
-        qint64 nLastElementSize =
-            il.at(result.nCount - 1)
-                .data(Qt::UserRole + XDisasmModel::UD_SIZE)
-                .toLongLong();
+        qint64 nLastElementAddress = il.at(result.nCount - 1).data(Qt::UserRole + XDisasmModel::UD_ADDRESS).toLongLong();
+        qint64 nLastElementSize = il.at(result.nCount - 1).data(Qt::UserRole + XDisasmModel::UD_SIZE).toLongLong();
 
-        result.nSize =
-            (nLastElementAddress + nLastElementSize) - result.nAddress;
+        result.nSize = (nLastElementAddress + nLastElementSize) - result.nAddress;
     }
 
     return result;
 }
 
-void XDisasmWidget::on_pushButtonAnalyze_clicked() { analyze(); }
+void XDisasmWidget::on_pushButtonAnalyze_clicked() {
+    analyze();
+}
 
 void XDisasmWidget::_goToPosition(qint32 nPosition) {
     if (ui->tableViewDisasm->verticalScrollBar()->maximum() == 0) {
-        ui->tableViewDisasm->verticalScrollBar()->setMaximum(
-            nPosition);  // Hack
+        ui->tableViewDisasm->verticalScrollBar()->setMaximum(nPosition);  // Hack
     }
 
     ui->tableViewDisasm->verticalScrollBar()->setValue(nPosition);
 
-    ui->tableViewDisasm->setCurrentIndex(
-        ui->tableViewDisasm->model()->index(nPosition, 0));
+    ui->tableViewDisasm->setCurrentIndex(ui->tableViewDisasm->model()->index(nPosition, 0));
 }
 
 void XDisasmWidget::on_pushButtonOverlay_clicked() {
@@ -573,7 +515,9 @@ void XDisasmWidget::setEdited(bool bState) {
     }
 }
 
-void XDisasmWidget::on_pushButtonHex_clicked() { hex(0); }
+void XDisasmWidget::on_pushButtonHex_clicked() {
+    hex(0);
+}
 
 void XDisasmWidget::errorMessage(QString sText) {
     QMessageBox::critical(this, tr("Error"), sText);
