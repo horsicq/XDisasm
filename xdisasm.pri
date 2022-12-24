@@ -61,6 +61,11 @@ FORMS += \
     include($$PWD/../QHexView/qhexview.pri)
 }
 
+!contains(XCONFIG, allformatwidgets) {
+    XCONFIG += allformatwidgets
+    include($$PWD/../FormatWidgets/allformatwidgets.pri)
+}
+
 !contains(XCONFIG, xoptions) {
     XCONFIG += xoptions
     include($$PWD/../XOptions/xoptions.pri)

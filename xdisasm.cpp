@@ -230,7 +230,7 @@ void XDisasm::processDisasm() {
             g_pOptions->stats.nEntryPointAddress = binary.getEntryPointAddress(&g_pOptions->stats.memoryMap);
         }
 
-        g_pOptions->stats.nImageBase = g_pOptions->stats.memoryMap.nBaseAddress;
+        g_pOptions->stats.nImageBase = g_pOptions->stats.memoryMap.nModuleAddress;
         //        pOptions->stats.nImageSize=XBinary::getTotalVirtualSize(&(pOptions->stats.memoryMap));
         g_pOptions->stats.nImageSize = g_pOptions->stats.memoryMap.nImageSize;
 

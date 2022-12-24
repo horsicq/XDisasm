@@ -27,18 +27,18 @@ XDisasmWidget::XDisasmWidget(QWidget *pParent) : QWidget(pParent), ui(new Ui::XD
 
     XOptions::setMonoFont(ui->tableViewDisasm);
 
-    new QShortcut(QKeySequence(XShortcuts::GOTOENTRYPOINT), this, SLOT(_goToEntryPoint()));
-    new QShortcut(QKeySequence(XShortcuts::GOTOADDRESS), this, SLOT(_goToAddress()));
-    new QShortcut(QKeySequence(XShortcuts::GOTOOFFSET), this, SLOT(_goToOffset()));
-    new QShortcut(QKeySequence(XShortcuts::GOTORELADDRESS), this, SLOT(_goToRelAddress()));
-    new QShortcut(QKeySequence(XShortcuts::DUMPTOFILE), this, SLOT(_dumpToFile()));
-    new QShortcut(QKeySequence(XShortcuts::DISASM), this, SLOT(_disasm()));
-    new QShortcut(QKeySequence(XShortcuts::TODATA), this, SLOT(_toData()));
-    new QShortcut(QKeySequence(XShortcuts::HEXSIGNATURE), this, SLOT(_signature()));
-    new QShortcut(QKeySequence(XShortcuts::COPYADDRESS), this, SLOT(_copyAddress()));
-    new QShortcut(QKeySequence(XShortcuts::COPYOFFSET), this, SLOT(_copyOffset()));
-    new QShortcut(QKeySequence(XShortcuts::COPYRELADDRESS), this, SLOT(_copyRelAddress()));
-    new QShortcut(QKeySequence(XShortcuts::HEX), this, SLOT(_hex()));
+//    new QShortcut(QKeySequence(XShortcuts::GOTOENTRYPOINT), this, SLOT(_goToEntryPoint()));
+//    new QShortcut(QKeySequence(XShortcuts::GOTOADDRESS), this, SLOT(_goToAddress()));
+//    new QShortcut(QKeySequence(XShortcuts::GOTOOFFSET), this, SLOT(_goToOffset()));
+//    new QShortcut(QKeySequence(XShortcuts::GOTORELADDRESS), this, SLOT(_goToRelAddress()));
+//    new QShortcut(QKeySequence(XShortcuts::DUMPTOFILE), this, SLOT(_dumpToFile()));
+//    new QShortcut(QKeySequence(XShortcuts::DISASM), this, SLOT(_disasm()));
+//    new QShortcut(QKeySequence(XShortcuts::TODATA), this, SLOT(_toData()));
+//    new QShortcut(QKeySequence(XShortcuts::HEXSIGNATURE), this, SLOT(_signature()));
+//    new QShortcut(QKeySequence(XShortcuts::COPYADDRESS), this, SLOT(_copyAddress()));
+//    new QShortcut(QKeySequence(XShortcuts::COPYOFFSET), this, SLOT(_copyOffset()));
+//    new QShortcut(QKeySequence(XShortcuts::COPYRELADDRESS), this, SLOT(_copyRelAddress()));
+//    new QShortcut(QKeySequence(XShortcuts::HEX), this, SLOT(_hex()));
 
     g_pShowOptions = 0;
     g_pDisasmOptions = 0;
@@ -73,7 +73,7 @@ void XDisasmWidget::setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShow
 
     QList<XBinary::FT> listFileTypes = XBinary::_getFileTypeListFromSet(stFileType);
 
-    XFormats::setFileTypeComboBox(ui->comboBoxType, &listFileTypes, pDisasmOptions->fileType);
+    XFormats::setFileTypeComboBox(this->g_pDisasmOptions->fileType, pDevice, ui->comboBoxType);
 
     if (bAuto) {
         analyze();
@@ -266,19 +266,19 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
         QMenu goToMenu(tr("Go to"), this);
 
         QAction actionGoToEntryPoint(tr("Entry point"), this);
-        actionGoToEntryPoint.setShortcut(QKeySequence(XShortcuts::GOTOENTRYPOINT));
+//        actionGoToEntryPoint.setShortcut(QKeySequence(XShortcuts::GOTOENTRYPOINT));
         connect(&actionGoToEntryPoint, SIGNAL(triggered()), this, SLOT(_goToEntryPoint()));
 
         QAction actionGoToAddress(tr("Virtual address"), this);
-        actionGoToAddress.setShortcut(QKeySequence(XShortcuts::GOTOADDRESS));
+ //       actionGoToAddress.setShortcut(QKeySequence(XShortcuts::GOTOADDRESS));
         connect(&actionGoToAddress, SIGNAL(triggered()), this, SLOT(_goToAddress()));
 
         QAction actionGoToRelAddress(tr("Relative virtual address"), this);
-        actionGoToRelAddress.setShortcut(QKeySequence(XShortcuts::GOTORELADDRESS));
+ //       actionGoToRelAddress.setShortcut(QKeySequence(XShortcuts::GOTORELADDRESS));
         connect(&actionGoToRelAddress, SIGNAL(triggered()), this, SLOT(_goToRelAddress()));
 
         QAction actionGoToOffset(tr("File offset"), this);
-        actionGoToOffset.setShortcut(QKeySequence(XShortcuts::GOTOOFFSET));
+//        actionGoToOffset.setShortcut(QKeySequence(XShortcuts::GOTOOFFSET));
         connect(&actionGoToOffset, SIGNAL(triggered()), this, SLOT(_goToOffset()));
 
         goToMenu.addAction(&actionGoToEntryPoint);
@@ -291,15 +291,15 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
         QMenu copyMenu(tr("Copy"), this);
 
         QAction actionCopyAddress(tr("Virtual address"), this);
-        actionCopyAddress.setShortcut(QKeySequence(XShortcuts::COPYADDRESS));
+//        actionCopyAddress.setShortcut(QKeySequence(XShortcuts::COPYADDRESS));
         connect(&actionCopyAddress, SIGNAL(triggered()), this, SLOT(_copyAddress()));
 
         QAction actionCopyRelAddress(tr("Relative virtual address"), this);
-        actionCopyRelAddress.setShortcut(QKeySequence(XShortcuts::COPYRELADDRESS));
+//        actionCopyRelAddress.setShortcut(QKeySequence(XShortcuts::COPYRELADDRESS));
         connect(&actionCopyRelAddress, SIGNAL(triggered()), this, SLOT(_copyRelAddress()));
 
         QAction actionCopyOffset(tr("File offset"), this);
-        actionCopyOffset.setShortcut(QKeySequence(XShortcuts::COPYOFFSET));
+//        actionCopyOffset.setShortcut(QKeySequence(XShortcuts::COPYOFFSET));
         connect(&actionCopyOffset, SIGNAL(triggered()), this, SLOT(_copyOffset()));
 
         copyMenu.addAction(&actionCopyAddress);
@@ -309,23 +309,23 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
         contextMenu.addMenu(&copyMenu);
 
         QAction actionHex(QString("Hex"), this);
-        actionHex.setShortcut(QKeySequence(XShortcuts::HEX));
+//        actionHex.setShortcut(QKeySequence(XShortcuts::HEX));
         connect(&actionHex, SIGNAL(triggered()), this, SLOT(_hex()));
 
         QAction actionSignature(tr("Signature"), this);
-        actionSignature.setShortcut(QKeySequence(XShortcuts::HEXSIGNATURE));
+//        actionSignature.setShortcut(QKeySequence(XShortcuts::HEXSIGNATURE));
         connect(&actionSignature, SIGNAL(triggered()), this, SLOT(_signature()));
 
         QAction actionDump(tr("Dump to file"), this);
-        actionDump.setShortcut(QKeySequence(XShortcuts::DUMPTOFILE));
+//        actionDump.setShortcut(QKeySequence(XShortcuts::DUMPTOFILE));
         connect(&actionDump, SIGNAL(triggered()), this, SLOT(_dumpToFile()));
 
         QAction actionDisasm(tr("Disasm"), this);
-        actionDisasm.setShortcut(QKeySequence(XShortcuts::DISASM));
+//        actionDisasm.setShortcut(QKeySequence(XShortcuts::DISASM));
         connect(&actionDisasm, SIGNAL(triggered()), this, SLOT(_disasm()));
 
         QAction actionToData(tr("To data"), this);
-        actionToData.setShortcut(QKeySequence(XShortcuts::TODATA));
+//        actionToData.setShortcut(QKeySequence(XShortcuts::TODATA));
         connect(&actionToData, SIGNAL(triggered()), this, SLOT(_toData()));
 
         contextMenu.addAction(&actionHex);
@@ -360,7 +360,7 @@ void XDisasmWidget::_goToAddress() {
 
 void XDisasmWidget::_goToRelAddress() {
     if (g_pModel) {
-        DialogGoToAddress da(this, &(g_pModel->getStats()->memoryMap), DialogGoToAddress::TYPE_REL_ADDRESS);
+        DialogGoToAddress da(this, &(g_pModel->getStats()->memoryMap), DialogGoToAddress::TYPE_RELVIRTUALADDRESS);
         if (da.exec() == QDialog::Accepted) {
             goToRelAddress(da.getValue());
         }
