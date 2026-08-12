@@ -20,6 +20,8 @@
 //
 #include "xdisasmwidget.h"
 
+#include <limits>
+
 #include "ui_xdisasmwidget.h"
 
 XDisasmWidget::XDisasmWidget(QWidget *pParent) : QWidget(pParent), ui(new Ui::XDisasmWidget) {
@@ -351,9 +353,10 @@ void XDisasmWidget::on_tableViewDisasm_customContextMenuRequested(const QPoint &
 
 void XDisasmWidget::_goToAddress() {
     if (g_pModel) {
-        DialogGoToAddress da(this, &(g_pModel->getStats()->memoryMap), DialogGoToAddress::TYPE_ADDRESS);
+        DialogGoToAddress da(this, &(g_pModel->getStats()->memoryMap), DialogGoToAddress::TYPE_ADDRESS, 0,
+                             static_cast<XADDR>((std::numeric_limits<qint64>::max)()));
         if (da.exec() == QDialog::Accepted) {
-            goToAddress(da.getValue());
+            goToAddress(static_cast<qint64>(da.getValue_XADDR()));
         }
     }
 }
@@ -362,7 +365,7 @@ void XDisasmWidget::_goToRelAddress() {
     if (g_pModel) {
         DialogGoToAddress da(this, &(g_pModel->getStats()->memoryMap), DialogGoToAddress::TYPE_RELVIRTUALADDRESS);
         if (da.exec() == QDialog::Accepted) {
-            goToRelAddress(da.getValue());
+            goToRelAddress(da.getValue_XADDR());
         }
     }
 }
@@ -371,7 +374,7 @@ void XDisasmWidget::_goToOffset() {
     if (g_pModel) {
         DialogGoToAddress da(this, &(g_pModel->getStats()->memoryMap), DialogGoToAddress::TYPE_OFFSET);
         if (da.exec() == QDialog::Accepted) {
-            goToOffset(da.getValue());
+            goToOffset(static_cast<qint64>(da.getValue_XADDR()));
         }
     }
 }
