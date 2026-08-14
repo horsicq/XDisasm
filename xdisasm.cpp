@@ -139,7 +139,7 @@ void XDisasm::processDisasm() {
         XBinary::FT fileType = g_pOptions->fileType;
 
         if (fileType == XBinary::FT_UNKNOWN) {
-            fileType = XBinary::getPrefFileType(g_pDevice);
+            fileType = XFormats::getPrefFileType(g_pDevice, XBinary::FT_FLAG_EXECUTABLES);
         }
 
         if ((fileType == XBinary::FT_PE32) || (fileType == XBinary::FT_PE64)) {

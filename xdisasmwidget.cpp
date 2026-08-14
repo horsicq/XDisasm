@@ -65,7 +65,7 @@ void XDisasmWidget::setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShow
         this->g_pDisasmOptions = &g_disasmOptions;
     }
 
-    QSet<XBinary::FT> stFileType = XBinary::getFileTypes(pDevice);
+    QSet<XBinary::FT> stFileType = XBinary::getFileTypes(pDevice, XBinary::FT_FLAG_EXECUTABLES);
 
     stFileType.remove(XBinary::FT_BINARY);
     stFileType.insert(XBinary::FT_BINARY16);
