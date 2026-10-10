@@ -30,17 +30,19 @@ class DialogDisasm;
 }
 
 class DialogDisasm : public QDialog {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    explicit DialogDisasm(QWidget *pParent, QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShowOptions = 0, XDisasm::OPTIONS *pDisasmOptions = 0);
-    ~DialogDisasm();
+  explicit DialogDisasm(QWidget *pParent, QIODevice *pDevice,
+                        XDisasmModel::SHOWOPTIONS *pShowOptions = 0,
+                        XDisasm::OPTIONS *pDisasmOptions = 0);
+  ~DialogDisasm();
 
 private slots:
-    void on_pushButtonClose_clicked();
+  void on_pushButtonClose_clicked();
 
 private:
-    Ui::DialogDisasm *ui;
+  Ui::DialogDisasm *ui;
 };
 
-#endif  // DIALOGDISASM_H
+#endif // DIALOGDISASM_H

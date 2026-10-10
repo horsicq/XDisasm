@@ -22,19 +22,17 @@
 
 #include "ui_dialogdisasm.h"
 
-DialogDisasm::DialogDisasm(QWidget *pParent, QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShowOptions, XDisasm::OPTIONS *pDisasmOptions)
+DialogDisasm::DialogDisasm(QWidget *pParent, QIODevice *pDevice,
+                           XDisasmModel::SHOWOPTIONS *pShowOptions,
+                           XDisasm::OPTIONS *pDisasmOptions)
     : QDialog(pParent), ui(new Ui::DialogDisasm) {
-    ui->setupUi(this);
+  ui->setupUi(this);
 
-    setWindowFlags(Qt::Window);
+  setWindowFlags(Qt::Window);
 
-    ui->widgetDisasm->setData(pDevice, pShowOptions, pDisasmOptions, true);
+  ui->widgetDisasm->setData(pDevice, pShowOptions, pDisasmOptions, true);
 }
 
-DialogDisasm::~DialogDisasm() {
-    delete ui;
-}
+DialogDisasm::~DialogDisasm() { delete ui; }
 
-void DialogDisasm::on_pushButtonClose_clicked() {
-    this->close();
-}
+void DialogDisasm::on_pushButtonClose_clicked() { this->close(); }

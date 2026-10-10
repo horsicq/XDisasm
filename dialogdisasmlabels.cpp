@@ -22,83 +22,83 @@
 
 #include "ui_dialogdisasmlabels.h"
 
-DialogDisasmLabels::DialogDisasmLabels(QWidget *pParent, XDisasm::STATS *pDisasmStats) : QDialog(pParent), ui(new Ui::DialogDisasmLabels) {
-    ui->setupUi(this);
+DialogDisasmLabels::DialogDisasmLabels(QWidget *pParent,
+                                       XDisasm::STATS *pDisasmStats)
+    : QDialog(pParent), ui(new Ui::DialogDisasmLabels) {
+  ui->setupUi(this);
 
-    this->g_pDisasmStats = pDisasmStats;
-    g_nAddress = 0;
+  this->g_pDisasmStats = pDisasmStats;
+  g_nAddress = 0;
 
-    int nNumberOfLabels = pDisasmStats->mapLabelStrings.count();
+  int nNumberOfLabels = pDisasmStats->mapLabelStrings.count();
 
-    QStandardItemModel *pModel = new QStandardItemModel(nNumberOfLabels, 2, this);
+  QStandardItemModel *pModel = new QStandardItemModel(nNumberOfLabels, 2, this);
 
-    pModel->setHeaderData(0, Qt::Horizontal, tr("Name"));
-    pModel->setHeaderData(1, Qt::Horizontal, tr("Address"));
+  pModel->setHeaderData(0, Qt::Horizontal, tr("Name"));
+  pModel->setHeaderData(1, Qt::Horizontal, tr("Address"));
 
-    int i = 0;
-    QMapIterator<qint64, QString> iMap(pDisasmStats->mapLabelStrings);
-    while (iMap.hasNext()) {
-        iMap.next();
+  int i = 0;
+  QMapIterator<qint64, QString> iMap(pDisasmStats->mapLabelStrings);
+  while (iMap.hasNext()) {
+    iMap.next();
 
-        QString sName = iMap.value();
-        qint64 nAddress = iMap.key();
+    QString sName = iMap.value();
+    qint64 nAddress = iMap.key();
 
-        QStandardItem *pItemName = new QStandardItem;
-        pItemName->setText(sName);
-        pItemName->setData(nAddress);
-        pModel->setItem(i, 0, pItemName);
+    QStandardItem *pItemName = new QStandardItem;
+    pItemName->setText(sName);
+    pItemName->setData(nAddress);
+    pModel->setItem(i, 0, pItemName);
 
-        QStandardItem *pItemAddress = new QStandardItem;
-        pItemAddress->setText(QString("0x%1").arg(nAddress, 8, 16, QChar('0')));  // TODO function in Binary
-        pModel->setItem(i, 1, pItemAddress);
+    QStandardItem *pItemAddress = new QStandardItem;
+    pItemAddress->setText(QString("0x%1").arg(
+        nAddress, 8, 16, QChar('0'))); // TODO function in Binary
+    pModel->setItem(i, 1, pItemAddress);
 
-        i++;
-    }
+    i++;
+  }
 
-    ui->tableViewLabels->setModel(pModel);
+  ui->tableViewLabels->setModel(pModel);
 
-    ui->tableViewLabels->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
-    ui->tableViewLabels->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Interactive);
+  ui->tableViewLabels->horizontalHeader()->setSectionResizeMode(
+      0, QHeaderView::Stretch);
+  ui->tableViewLabels->horizontalHeader()->setSectionResizeMode(
+      1, QHeaderView::Interactive);
 
-    ui->pushButtonGoTo->setEnabled(nNumberOfLabels);
+  ui->pushButtonGoTo->setEnabled(nNumberOfLabels);
 
-    if (nNumberOfLabels) {
-        ui->tableViewLabels->setCurrentIndex(pModel->index(0, 0));
-    }
+  if (nNumberOfLabels) {
+    ui->tableViewLabels->setCurrentIndex(pModel->index(0, 0));
+  }
 }
 
-DialogDisasmLabels::~DialogDisasmLabels() {
-    delete ui;
-}
+DialogDisasmLabels::~DialogDisasmLabels() { delete ui; }
 
-qint64 DialogDisasmLabels::getAddress() {
-    return g_nAddress;
-}
+qint64 DialogDisasmLabels::getAddress() { return g_nAddress; }
 
 void DialogDisasmLabels::on_pushButtonClose_clicked() {
-    done(QDialog::Rejected);
+  done(QDialog::Rejected);
 }
 
-void DialogDisasmLabels::on_pushButtonGoTo_clicked() {
-    goTo();
-}
+void DialogDisasmLabels::on_pushButtonGoTo_clicked() { goTo(); }
 
-void DialogDisasmLabels::on_tableViewLabels_doubleClicked(const QModelIndex &index) {
-    Q_UNUSED(index)
+void DialogDisasmLabels::on_tableViewLabels_doubleClicked(
+    const QModelIndex &index) {
+  Q_UNUSED(index)
 
-    goTo();
+  goTo();
 }
 
 void DialogDisasmLabels::goTo() {
-    QItemSelectionModel *pSelectionModel = ui->tableViewLabels->selectionModel();
+  QItemSelectionModel *pSelectionModel = ui->tableViewLabels->selectionModel();
 
-    if (pSelectionModel) {
-        QModelIndexList listIndexes = pSelectionModel->selectedRows(0);
+  if (pSelectionModel) {
+    QModelIndexList listIndexes = pSelectionModel->selectedRows(0);
 
-        if (listIndexes.count()) {
-            g_nAddress = listIndexes.at(0).data(Qt::UserRole + 1).toLongLong();
+    if (listIndexes.count()) {
+      g_nAddress = listIndexes.at(0).data(Qt::UserRole + 1).toLongLong();
 
-            done(QDialog::Accepted);
-        }
+      done(QDialog::Accepted);
     }
+  }
 }

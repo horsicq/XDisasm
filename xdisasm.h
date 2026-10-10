@@ -25,145 +25,136 @@
 #include "xformats.h"
 
 class XDisasm : public QObject {
-    Q_OBJECT
+  Q_OBJECT
 
-    static const int N_X64_OPCODE_SIZE = 15;
-    static const int N_OPCODE_COUNT = 100000;
+  static const int N_X64_OPCODE_SIZE = 15;
+  static const int N_OPCODE_COUNT = 100000;
 
 public:
-    enum DM {
-        DM_UNKNOWN = 0,
-        DM_DISASM,
-        DM_TODATA
-    };
+  enum DM { DM_UNKNOWN = 0, DM_DISASM, DM_TODATA };
 
-    enum VBT {
-        VBT_UNKNOWN = 0,
-        VBT_OPCODE,
-        VBT_DATA,
-        VBT_DATABLOCK
-    };
+  enum VBT { VBT_UNKNOWN = 0, VBT_OPCODE, VBT_DATA, VBT_DATABLOCK };
 
-    enum RECORD_TYPE {
-        RECORD_TYPE_UNKNOWN = 0,
-        RECORD_TYPE_OPCODE,
-        RECORD_TYPE_DATA,
-    };
+  enum RECORD_TYPE {
+    RECORD_TYPE_UNKNOWN = 0,
+    RECORD_TYPE_OPCODE,
+    RECORD_TYPE_DATA,
+  };
 
-    struct RECORD {
-        qint64 nOffset;
-        qint64 nSize;
-        RECORD_TYPE type;
-    };
+  struct RECORD {
+    qint64 nOffset;
+    qint64 nSize;
+    RECORD_TYPE type;
+  };
 
-    //    enum LABEL_TYPE
-    //    {
-    //        LABEL_TYPE_UNKNOWN=0;
-    //        LABEL_TYPE_
-    //    };
+  //    enum LABEL_TYPE
+  //    {
+  //        LABEL_TYPE_UNKNOWN=0;
+  //        LABEL_TYPE_
+  //    };
 
-    struct LABEL {
-        qint64 nName;
-    };
+  struct LABEL {
+    qint64 nName;
+  };
 
-    struct VIEW_BLOCK {
-        qint64 nAddress;
-        qint64 nOffset;
-        qint64 nSize;
-        VBT type;
-    };
+  struct VIEW_BLOCK {
+    qint64 nAddress;
+    qint64 nOffset;
+    qint64 nSize;
+    VBT type;
+  };
 
-    struct STATS {
-        bool bInit;
-        XBinary::_MEMORY_MAP memoryMap;
-        cs_arch csarch;
-        cs_mode csmode;
-        qint64 nImageBase;
-        qint64 nImageSize;
-        qint64 nEntryPointAddress;
-        QMap<qint64, RECORD> mapRecords;
-        QMultiMap<qint64, qint64> mmapRefTo;
-        QMultiMap<qint64, qint64> mmapRefFrom;
-        QSet<qint64> stCalls;
-        QSet<qint64> stJumps;
-        QMultiMap<qint64, qint64> mmapDataLabels;  // TODO Check
-        QMap<qint64, VIEW_BLOCK> mapVB;
-        QMap<qint64, QString> mapLabelStrings;
-        qint64 nPositions;
-        QMap<qint64, qint64> mapPositions;
-        QMap<qint64, qint64> mapAddresses;
-        bool bIsOverlayPresent;
-        qint64 nOverlayOffset;
-        qint64 nOverlaySize;
-    };
+  struct STATS {
+    bool bInit;
+    XBinary::_MEMORY_MAP memoryMap;
+    cs_arch csarch;
+    cs_mode csmode;
+    qint64 nImageBase;
+    qint64 nImageSize;
+    qint64 nEntryPointAddress;
+    QMap<qint64, RECORD> mapRecords;
+    QMultiMap<qint64, qint64> mmapRefTo;
+    QMultiMap<qint64, qint64> mmapRefFrom;
+    QSet<qint64> stCalls;
+    QSet<qint64> stJumps;
+    QMultiMap<qint64, qint64> mmapDataLabels; // TODO Check
+    QMap<qint64, VIEW_BLOCK> mapVB;
+    QMap<qint64, QString> mapLabelStrings;
+    qint64 nPositions;
+    QMap<qint64, qint64> mapPositions;
+    QMap<qint64, qint64> mapAddresses;
+    bool bIsOverlayPresent;
+    qint64 nOverlayOffset;
+    qint64 nOverlaySize;
+  };
 
-    struct OPTIONS {
-        bool bIsImage;
-        qint64 nImageBase;
-        XBinary::FT fileType;
-        XDisasm::STATS stats;
-    };
+  struct OPTIONS {
+    bool bIsImage;
+    qint64 nImageBase;
+    XBinary::FT fileType;
+    XDisasm::STATS stats;
+  };
 
-    explicit XDisasm(QObject *pParent = nullptr);
-    ~XDisasm();
-    void setData(QIODevice *pDevice, OPTIONS *pOptions, qint64 nStartAddress, DM dm);
-    void stop();
-    STATS *getStats();
-    static qint64 getVBSize(QMap<qint64, VIEW_BLOCK> *pMapVB);
-    static QString getDisasmString(csh disasm_handle, qint64 nAddress, char *pData, qint32 nDataSize);
+  explicit XDisasm(QObject *pParent = nullptr);
+  ~XDisasm();
+  void setData(QIODevice *pDevice, OPTIONS *pOptions, qint64 nStartAddress,
+               DM dm);
+  void stop();
+  STATS *getStats();
+  static qint64 getVBSize(QMap<qint64, VIEW_BLOCK> *pMapVB);
+  static QString getDisasmString(csh disasm_handle, qint64 nAddress,
+                                 char *pData, qint32 nDataSize);
 
-    enum SM {
-        SM_NORMAL = 0,
-        SM_RELATIVEADDRESS
-    };
+  enum SM { SM_NORMAL = 0, SM_RELATIVEADDRESS };
 
-    struct SIGNATURE_OPTIONS {
-        QIODevice *pDevice;
-        XBinary::_MEMORY_MAP memoryMap;
-        cs_arch csarch;
-        cs_mode csmode;
-        int nCount;
-        SM sm;
-    };
+  struct SIGNATURE_OPTIONS {
+    QIODevice *pDevice;
+    XBinary::_MEMORY_MAP memoryMap;
+    cs_arch csarch;
+    cs_mode csmode;
+    int nCount;
+    SM sm;
+  };
 
-    struct SIGNATURE_RECORD {
-        qint64 nAddress;
-        QString sOpcode;
-        QByteArray baOpcode;
-        qint32 nDispOffset;
-        qint32 nDispSize;
-        qint32 nImmOffset;
-        qint32 nImmSize;
-        bool bIsConst;
-    };
+  struct SIGNATURE_RECORD {
+    qint64 nAddress;
+    QString sOpcode;
+    QByteArray baOpcode;
+    qint32 nDispOffset;
+    qint32 nDispSize;
+    qint32 nImmOffset;
+    qint32 nImmSize;
+    bool bIsConst;
+  };
 
-    static QList<SIGNATURE_RECORD> getSignature(SIGNATURE_OPTIONS *pSignatureOptions, qint64 nAddress);
+  static QList<SIGNATURE_RECORD>
+  getSignature(SIGNATURE_OPTIONS *pSignatureOptions, qint64 nAddress);
 
 public slots:
-    void processDisasm();
-    void processToData();
-    void process();
+  void processDisasm();
+  void processToData();
+  void process();
 
 private:
-    bool isEndBranchOpcode(uint nOpcodeID);
-    static bool isJmpOpcode(uint nOpcodeID);
-    static bool isCallOpcode(uint nOpcodeID);
-    void _disasm(qint64 nInitAddress, qint64 nAddress);
-    void _adjust();
-    void _updatePositions();
-    bool _insertOpcode(qint64 nAddress, RECORD *pOpcode);
+  bool isEndBranchOpcode(uint nOpcodeID);
+  static bool isJmpOpcode(uint nOpcodeID);
+  static bool isCallOpcode(uint nOpcodeID);
+  void _disasm(qint64 nInitAddress, qint64 nAddress);
+  void _adjust();
+  void _updatePositions();
+  bool _insertOpcode(qint64 nAddress, RECORD *pOpcode);
 
 signals:
-    void errorMessage(QString sText);
-    void processFinished();
+  void errorMessage(QString sText);
+  void processFinished();
 
 private:
-    DM g_dm;
-    csh g_disasm_handle;
-    bool g_bStop;
-    QIODevice *g_pDevice;
-    OPTIONS *g_pOptions;
-    qint64 g_nStartAddress;
+  DM g_dm;
+  csh g_disasm_handle;
+  bool g_bStop;
+  QIODevice *g_pDevice;
+  OPTIONS *g_pOptions;
+  qint64 g_nStartAddress;
 };
 
-#endif  // XDISASM_H
+#endif // XDISASM_H

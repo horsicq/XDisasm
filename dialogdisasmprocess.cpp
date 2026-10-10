@@ -22,59 +22,71 @@
 
 #include "ui_dialogdisasmprocess.h"
 
-DialogDisasmProcess::DialogDisasmProcess(QWidget *pParent) : QDialog(pParent), ui(new Ui::DialogDisasmProcess) {
-    ui->setupUi(this);
+DialogDisasmProcess::DialogDisasmProcess(QWidget *pParent)
+    : QDialog(pParent), ui(new Ui::DialogDisasmProcess) {
+  ui->setupUi(this);
 
-    g_pDisasm = new XDisasm;
-    g_pThread = new QThread;
+  g_pDisasm = new XDisasm;
+  g_pThread = new QThread;
 
-    g_pDisasm->moveToThread(g_pThread);
+  g_pDisasm->moveToThread(g_pThread);
 
-    connect(g_pDisasm, SIGNAL(processFinished()), this, SLOT(close()));
-    connect(g_pThread, SIGNAL(started()), g_pDisasm, SLOT(process()));
-    connect(g_pDisasm, SIGNAL(errorMessage(QString)), this, SIGNAL(errorMessage(QString)));
+  connect(g_pDisasm, SIGNAL(processFinished()), this, SLOT(close()));
+  connect(g_pThread, SIGNAL(started()), g_pDisasm, SLOT(process()));
+  connect(g_pDisasm, SIGNAL(errorMessage(QString)), this,
+          SIGNAL(errorMessage(QString)));
 
-    g_pTimer = new QTimer(this);
-    connect(g_pTimer, SIGNAL(timeout()), this, SLOT(timerSlot()));
+  g_pTimer = new QTimer(this);
+  connect(g_pTimer, SIGNAL(timeout()), this, SLOT(timerSlot()));
 }
 
 DialogDisasmProcess::~DialogDisasmProcess() {
-    g_pTimer->stop();
-    delete g_pTimer;
+  g_pTimer->stop();
+  delete g_pTimer;
 
-    g_pDisasm->stop();
+  g_pDisasm->stop();
 
-    g_pThread->quit();
-    g_pThread->wait();
+  g_pThread->quit();
+  g_pThread->wait();
 
-    delete ui;
+  delete ui;
 
-    delete g_pThread;
-    delete g_pDisasm;
+  delete g_pThread;
+  delete g_pDisasm;
 }
 
-void DialogDisasmProcess::setData(QIODevice *pDevice, XDisasm::OPTIONS *pOptions, qint64 nStartAddress, XDisasm::DM dm) {
-    g_pDisasm->setData(pDevice, pOptions, nStartAddress, dm);
+void DialogDisasmProcess::setData(QIODevice *pDevice,
+                                  XDisasm::OPTIONS *pOptions,
+                                  qint64 nStartAddress, XDisasm::DM dm) {
+  g_pDisasm->setData(pDevice, pOptions, nStartAddress, dm);
 
-    g_pThread->start();
-    g_pTimer->start(1000);
+  g_pThread->start();
+  g_pTimer->start(1000);
 }
 
-void DialogDisasmProcess::on_pushButtonCancel_clicked() {
-    g_pDisasm->stop();
-}
+void DialogDisasmProcess::on_pushButtonCancel_clicked() { g_pDisasm->stop(); }
 
 void DialogDisasmProcess::timerSlot() {
-    // TODO more info
-    ui->lineEditOpcodes->setText(QString("%1").arg(g_pDisasm->getStats()->mapRecords.count()));
-    ui->lineEditCalls->setText(QString("%1").arg(g_pDisasm->getStats()->stCalls.count()));
-    ui->lineEditJumps->setText(QString("%1").arg(g_pDisasm->getStats()->stJumps.count()));
-    ui->lineEditRefFrom->setText(QString("%1").arg(g_pDisasm->getStats()->mmapRefFrom.count()));
-    ui->lineEditRefTo->setText(QString("%1").arg(g_pDisasm->getStats()->mmapRefTo.count()));
+  // TODO more info
+  ui->lineEditOpcodes->setText(
+      QString("%1").arg(g_pDisasm->getStats()->mapRecords.count()));
+  ui->lineEditCalls->setText(
+      QString("%1").arg(g_pDisasm->getStats()->stCalls.count()));
+  ui->lineEditJumps->setText(
+      QString("%1").arg(g_pDisasm->getStats()->stJumps.count()));
+  ui->lineEditRefFrom->setText(
+      QString("%1").arg(g_pDisasm->getStats()->mmapRefFrom.count()));
+  ui->lineEditRefTo->setText(
+      QString("%1").arg(g_pDisasm->getStats()->mmapRefTo.count()));
 
-    ui->lineEditDataLabels->setText(QString("%1").arg(g_pDisasm->getStats()->mmapDataLabels.count()));
-    ui->lineEditVB->setText(QString("%1").arg(g_pDisasm->getStats()->mapVB.count()));
-    ui->lineEditStrings->setText(QString("%1").arg(g_pDisasm->getStats()->mapLabelStrings.count()));
-    ui->lineEditPositions->setText(QString("%1").arg(g_pDisasm->getStats()->mapPositions.count()));
-    ui->lineEditAddresses->setText(QString("%1").arg(g_pDisasm->getStats()->mapAddresses.count()));
+  ui->lineEditDataLabels->setText(
+      QString("%1").arg(g_pDisasm->getStats()->mmapDataLabels.count()));
+  ui->lineEditVB->setText(
+      QString("%1").arg(g_pDisasm->getStats()->mapVB.count()));
+  ui->lineEditStrings->setText(
+      QString("%1").arg(g_pDisasm->getStats()->mapLabelStrings.count()));
+  ui->lineEditPositions->setText(
+      QString("%1").arg(g_pDisasm->getStats()->mapPositions.count()));
+  ui->lineEditAddresses->setText(
+      QString("%1").arg(g_pDisasm->getStats()->mapAddresses.count()));
 }

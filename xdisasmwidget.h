@@ -44,67 +44,69 @@ class XDisasmWidget;
 }
 
 class XDisasmWidget : public QWidget {
-    Q_OBJECT
+  Q_OBJECT
 
-    struct SELECTION_STAT {
-        qint64 nAddress;
-        qint64 nOffset;
-        qint64 nRelAddress;
-        qint64 nSize;
-        qint32 nCount;
-    };
+  struct SELECTION_STAT {
+    qint64 nAddress;
+    qint64 nOffset;
+    qint64 nRelAddress;
+    qint64 nSize;
+    qint32 nCount;
+  };
 
 public:
-    explicit XDisasmWidget(QWidget *pParent = nullptr);
-    void setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShowOptions = 0, XDisasm::OPTIONS *pDisasmOptions = 0, bool bAuto = true);
-    void analyze();
-    void goToAddress(qint64 nAddress);
-    void goToOffset(qint64 nOffset);
-    void goToRelAddress(qint64 nRelAddress);
-    void goToDisasmAddress(qint64 nAddress);
-    void goToEntryPoint();
-    void disasm(qint64 nAddress);
-    void toData(qint64 nAddress, qint64 nSize);
-    void signature(qint64 nAddress, qint64 nSize);
-    void hex(qint64 nOffset);
-    void clear();
-    ~XDisasmWidget();
-    void process(QIODevice *pDevice, XDisasm::OPTIONS *pOptions, qint64 nStartAddress, XDisasm::DM dm);
-    XDisasm::STATS *getDisasmStats();
-    void setBackupFileName(QString sBackupFileName);
+  explicit XDisasmWidget(QWidget *pParent = nullptr);
+  void setData(QIODevice *pDevice, XDisasmModel::SHOWOPTIONS *pShowOptions = 0,
+               XDisasm::OPTIONS *pDisasmOptions = 0, bool bAuto = true);
+  void analyze();
+  void goToAddress(qint64 nAddress);
+  void goToOffset(qint64 nOffset);
+  void goToRelAddress(qint64 nRelAddress);
+  void goToDisasmAddress(qint64 nAddress);
+  void goToEntryPoint();
+  void disasm(qint64 nAddress);
+  void toData(qint64 nAddress, qint64 nSize);
+  void signature(qint64 nAddress, qint64 nSize);
+  void hex(qint64 nOffset);
+  void clear();
+  ~XDisasmWidget();
+  void process(QIODevice *pDevice, XDisasm::OPTIONS *pOptions,
+               qint64 nStartAddress, XDisasm::DM dm);
+  XDisasm::STATS *getDisasmStats();
+  void setBackupFileName(QString sBackupFileName);
 
 private slots:
-    void on_pushButtonLabels_clicked();
-    void on_tableViewDisasm_customContextMenuRequested(const QPoint &pos);
-    void _goToAddress();
-    void _goToRelAddress();
-    void _goToOffset();
-    void _goToEntryPoint();
-    void _copyAddress();
-    void _copyOffset();
-    void _copyRelAddress();
-    void _dumpToFile();
-    void _disasm();
-    void _toData();
-    void _signature();
-    void _hex();
-    SELECTION_STAT getSelectionStat();
-    void on_pushButtonAnalyze_clicked();
-    void _goToPosition(qint32 nPosition);
-    void on_pushButtonOverlay_clicked();
-    void setEdited(bool bState);
-    void on_pushButtonHex_clicked();
-    void errorMessage(QString sText);
+  void on_pushButtonLabels_clicked();
+  void on_tableViewDisasm_customContextMenuRequested(const QPoint &pos);
+  void _goToAddress();
+  void _goToRelAddress();
+  void _goToOffset();
+  void _goToEntryPoint();
+  void _copyAddress();
+  void _copyOffset();
+  void _copyRelAddress();
+  void _dumpToFile();
+  void _disasm();
+  void _toData();
+  void _signature();
+  void _hex();
+  SELECTION_STAT getSelectionStat();
+  void on_pushButtonAnalyze_clicked();
+  void _goToPosition(qint32 nPosition);
+  void on_pushButtonOverlay_clicked();
+  void setEdited(bool bState);
+  void on_pushButtonHex_clicked();
+  void errorMessage(QString sText);
 
 private:
-    Ui::XDisasmWidget *ui;
-    QIODevice *g_pDevice;
-    XDisasmModel::SHOWOPTIONS *g_pShowOptions;
-    XDisasm::OPTIONS *g_pDisasmOptions;
-    XDisasmModel *g_pModel;
-    XDisasmModel::SHOWOPTIONS g_showOptions;
-    XDisasm::OPTIONS g_disasmOptions;
-    QString g_sBackupFileName;  // TODO save backup
+  Ui::XDisasmWidget *ui;
+  QIODevice *g_pDevice;
+  XDisasmModel::SHOWOPTIONS *g_pShowOptions;
+  XDisasm::OPTIONS *g_pDisasmOptions;
+  XDisasmModel *g_pModel;
+  XDisasmModel::SHOWOPTIONS g_showOptions;
+  XDisasm::OPTIONS g_disasmOptions;
+  QString g_sBackupFileName; // TODO save backup
 };
 
-#endif  // FORMDISASM_H
+#endif // FORMDISASM_H

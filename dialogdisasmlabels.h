@@ -31,23 +31,23 @@ class DialogDisasmLabels;
 }
 
 class DialogDisasmLabels : public QDialog {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    explicit DialogDisasmLabels(QWidget *pParent, XDisasm::STATS *pDisasmStats);
-    ~DialogDisasmLabels();
-    qint64 getAddress();
+  explicit DialogDisasmLabels(QWidget *pParent, XDisasm::STATS *pDisasmStats);
+  ~DialogDisasmLabels();
+  qint64 getAddress();
 
 private slots:
-    void on_pushButtonClose_clicked();
-    void on_pushButtonGoTo_clicked();
-    void on_tableViewLabels_doubleClicked(const QModelIndex &index);
-    void goTo();
+  void on_pushButtonClose_clicked();
+  void on_pushButtonGoTo_clicked();
+  void on_tableViewLabels_doubleClicked(const QModelIndex &index);
+  void goTo();
 
 private:
-    Ui::DialogDisasmLabels *ui;
-    XDisasm::STATS *g_pDisasmStats;
-    qint64 g_nAddress;
+  Ui::DialogDisasmLabels *ui;
+  XDisasm::STATS *g_pDisasmStats;
+  qint64 g_nAddress;
 };
 
-#endif  // DIALOGDISASMLABELS_H
+#endif // DIALOGDISASMLABELS_H
